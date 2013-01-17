@@ -1,0 +1,624 @@
+%!PS
+
+% Library routines
+
+/in { 72 mul } bind def
+/mm { 2.83464566929 mul } bind def
+
+%--->     --   landscape   --
+% Puts the printer into landscape mode.
+/landscape
+{
+    90 rotate
+     0 -8.5 in translate
+} bind def
+
+%--->     /new_name  [array]  /font_name   ReEncodeFont   --
+% font_name is a font to be reencoded.
+% array is a set of offsets and character names to be encoded.
+% new_name is the name to call the font.
+%
+% Example: /MyFont [8#201 /eacute] /Times-Roman ReEncodeFont
+%          /MyFont findfont
+%
+% This routine was copied somewhat from:
+%          _Understanding Postscript_, 3ed, David A. Holzgang.
+/ReEncodeFont
+{
+    1 dict begin    % for temp variable /NewFontDict
+
+    findfont              % Look up the old font
+    dup maxlength dict    % Make new font dictionary (same size as old one)
+    exch  % forall key/value pairs in old font
+    {
+	1 index  /FID eq     % Don't copy the /FID entry
+	{
+	    pop pop
+	}
+	% else
+	{
+	    1 index /Encoding eq  % Do a deep copy of the encoding vector
+	    {
+		dup length array copy    % make the copy
+	    } if
+
+	    2 index 3 1 roll put     % put it in the new dictionary
+	} ifelse
+
+    } forall
+
+    /NewFontDict exch def    % save the font dict for later manipulation
+    NewFontDict /FontName 3 index put   % Give the font its name
+    aload   % run through the user's encoding modifications
+    length 2 idiv
+    {
+	NewFontDict /Encoding get
+	3 1 roll put
+    } repeat
+
+    NewFontDict definefont pop
+    end
+} def
+
+% Encoding array for this document
+/calc-codes
+[
+    8#300  /ellipsis
+    8#301  /quoteleft
+    8#302  /quotedblleft
+    8#303  /quoteright
+    8#304  /quotedblright
+    8#305  /endash
+    8#306  /emdash
+
+    8#310  /divide
+    8#311  /multiply
+    8#312  /onequarter
+    8#313  /onehalf
+    8#314  /threequarters
+    8#315  /infinity
+    8#316  /theta
+    8#317  /pi
+
+    8#320  /minute
+    8#321  /second
+    8#322  /twosuperior
+    8#323  /nsuperior
+    8#324  /arrowleft
+    8#325  /arrowright
+    8#326  /arrowdblleft
+    8#327  /arrowdblright
+
+    8#331  /ff
+    8#332  /fi
+    8#333  /fl
+    8#334  /ffi
+    8#335  /ffl
+
+    8#340  /fraction
+    8#341  /minus
+] def
+
+/TR calc-codes /Times-Roman  ReEncodeFont
+/TI calc-codes /Times-Italic ReEncodeFont
+
+% ----------------------------------------------------------------
+% Constants
+%landscape
+/paper-w     8.5 in def
+/paper-h    11   in def
+/top-marg    1   in def
+/left-marg   1   in def
+/right-marg  1   in def
+/bot-marg    1   in def
+/left-x     left-marg              def
+/right-x    paper-w right-marg sub def
+/bot-y      bot-marg               def
+/top-y      paper-h top-marg sub   def
+/page-w     right-x left-x sub     def
+/page-h     top-y   bot-y sub      def
+/init-y     top-y                  def
+/heading-x  left-x                 def
+/keycol-x   left-x                 def
+/text-x     keycol-x 1 in add      def
+/arg-x      text-x 0.5 in add      def  % argument-modifier condition
+/argtext-x  arg-x 0.4 in add       def  % argument explanation
+/b4head-h   6                      def  % vertical space before heading
+
+% Global status variables
+/cur-y      init-y                 def
+/cur-fs     0                      def
+/nl-pend?   false                  def  % true if newline is pending
+
+% FONTS
+/set-font  { /cur-fs exch def   setfont } def
+
+% For section headings
+/heading-fs     14 def
+/heading-f      /Times-Roman findfont heading-fs scalefont def
+/set-heading-f  { heading-f heading-fs set-font } def
+
+% For key sequences
+/key-fs         10 def
+/key-f          /Courier-Bold findfont key-fs     scalefont def
+/set-key-f      { key-f key-fs set-font } def
+
+% For non-literals in the key-sequence column
+/kstx-fs        key-fs def
+/kstx-f         /TI findfont kstx-fs    scalefont def
+/set-kstx-f     { kstx-f kstx-fs set-font } def
+
+% For narrative text
+/text-fs        key-fs def
+/text-f         /TR findfont text-fs     scalefont def
+/set-text-f     { text-f text-fs set-font } def
+
+% For variables in the narrative text
+/var-fs        key-fs def
+/var-f         /TI findfont var-fs     scalefont def
+/set-var-f     { var-f var-fs set-font } def
+
+% For comments in narrative text
+/comm-fs        8 def
+/comm-f         /TI findfont comm-fs     scalefont def
+/set-comm-f     { comm-f comm-fs set-font } def
+
+% For key sequences in narrative text
+/textkey-fs     text-fs def
+/textkey-f      /Courier     findfont textkey-fs     scalefont def
+/set-textkey-f  { textkey-f textkey-fs set-font } def
+
+% For subscripts/superscripts
+/scr-fs         text-fs 0.7 mul def
+/scr-f          /TI findfont scr-fs scalefont def
+/sup-dy         text-fs scr-fs sub def
+/sub-dy         sup-dy neg def
+
+% For listing prefix arguments that modify behavior
+/arg-fs         8 def
+/arg-f          /Helvetica-Italic     findfont arg-fs     scalefont def
+/set-arg-f      { arg-f arg-fs set-font } def
+
+% For describing those prefix arguments
+/argtext-fs     arg-fs def
+/argtext-f      /TR findfont argtext-fs     scalefont def
+/set-argtext-f  { argtext-f argtext-fs set-font } def
+
+% for debugging/testing/etc
+/sp
+{
+    0 setlinewidth
+
+    % newpath
+    % left-x  bot-y moveto
+    % right-x bot-y lineto
+    % right-x top-y lineto
+    % left-x  top-y lineto
+    % closepath stroke
+
+    showpage
+%    landscape
+} def
+
+
+% Positioning
+/newpage
+{
+    sp
+    /cur-y init-y def
+} def
+
+% move current Y down by specified amount
+/downby
+{
+    % too close to bottom?
+    dup bot-y add cur-y gt {newpage} if
+
+    /cur-y exch cur-y exch sub def
+} bind def
+
+% move current Y down by current font size
+/down?
+{
+    nl-pend? {cur-fs downby} if
+    /nl-pend? false def
+} bind def
+
+% Signal that the next text to be shown has to move current Y down
+/newline { /nl-pend? true def } def
+
+% allow for space before a line -- but not at top of page
+% immediate -- does not matter if newline pending
+/space-before-line
+{
+    % do nothing if at top of page
+    cur-y top-y eq
+    {pop}
+    {
+        dup
+
+        % too close to bottom?
+        bot-y add cur-y gt
+        {pop newpage}
+        {/cur-y exch cur-y exch sub def}
+        ifelse
+    } ifelse
+} bind def
+
+/key-seq-moveto
+{
+    set-key-f
+    down?
+    keycol-x cur-y moveto
+} def
+
+% TEXT DISPLAY
+
+% Display heading (does not matter if newline is pending)
+/heading
+{
+    newline
+    set-heading-f
+    b4head-h space-before-line
+    down?
+    heading-x cur-y moveto
+    show
+    newline
+} def
+
+% Show key sequence
+/at-key
+{
+    key-seq-moveto
+    show
+} def
+
+% Show non-literal text for a key sequence, at point.
+/non-lit
+{
+    set-kstx-f
+    show
+} def
+
+% Show key sequence literal text, at point
+/key
+{
+    set-key-f
+    show
+} def
+
+% Show key sequence literal text, in narrative, at point
+/textkey
+{
+    set-textkey-f
+    show
+} def
+
+% Show (or start) text narrative for a key sequence
+/at-text
+{
+    set-text-f
+    down?
+    text-x cur-y moveto
+    show
+} def
+
+% Show narrative text, at current point
+/text
+{
+    set-text-f
+    show
+} def
+
+% Show comment at current point
+/comment
+{
+    set-comm-f
+    show
+} def
+
+% Show variable at current point
+/var
+{
+    set-var-f
+    show
+} def
+
+% Show key sequence + text
+/command
+{
+    newline
+    exch at-key at-text
+} def
+
+/subscript
+{
+    gsave
+      scr-f setfont
+      0 sub-dy rmoveto show
+      currentpoint pop   % current x
+    grestore
+    currentpoint exch pop   % current-x, previous-y
+    moveto
+} def
+
+/superscript
+{
+    gsave
+      scr-f setfont
+      0 sup-dy rmoveto show
+      currentpoint pop   % current x
+    grestore
+    currentpoint exch pop   % current-x, previous-y
+    moveto
+} def
+
+% Show a prefix-argument description
+% This always involves a newline.
+% Two parameters: prefix condition, and text.
+% Leaves font set for argtext, and point immediately after text.
+/prefix
+{
+    exch
+    
+    newline
+    set-arg-f
+    down?
+    arg-x cur-y moveto
+
+    % No argument condition?
+    dup () eq
+    { pop (arg) }
+    { (n ) show}
+    ifelse
+    show
+
+    set-argtext-f
+    argtext-x cur-y moveto
+    show
+} def
+
+% Show text at current point, as a key sequence.
+/keyshow
+{
+    set-key-f
+    show
+} def
+
+/greek
+{
+    /Symbol cur-fs selectfont
+    glyphshow
+} def
+/gsh { glyphshow } bind def
+
+
+% ----------------------------------------------------------------
+% Here we go
+
+% ================
+(Data Entry) heading
+key-seq-moveto ( n ) non-lit (:) key ( d) non-lit
+        (Fraction: ) at-text (n)var  ( is numerator, ) text (d) var ( is denominator.) text
+newline
+(\() at-key (real ) non-lit (,) key ( imag) non-lit (\)) key
+        (Complex (rectangular)) at-text
+newline
+(\() at-key (r ) non-lit (;) key ( \316) non-lit   (\)) key
+        (Complex (polar)) at-text
+newline
+([) at-key (a ) non-lit (,) key ( b ) non-lit (,) key ( \300 ) non-lit (]) key
+        (Vector) at-text
+% newline
+% ([[) at-key (a ) non-lit (,) key ( b ) non-lit (,) key ( \300 ) non-lit (],) key ( \300 ) non-lit (]) key
+%        (Matrix) at-text
+newline
+(") at-key (hello) non-lit (") key
+        (String \306 vector of ASCII codes) at-text
+newline
+key-seq-moveto (16 ) non-lit (h) key ( 40 ) non-lit (m) key ( 20 ) non-lit (s) key
+        (HMS form (hour, minute, second)) at-text
+newline
+key-seq-moveto (16 ) non-lit (@) key ( 40 ) non-lit (') key ( 20 ) non-lit (") key
+        (HMS form (degree, minute, second)) at-text
+newline
+key-seq-moveto (16 ) non-lit (o) key ( 40 ) non-lit (') key ( 20 ) non-lit (") key
+        (HMS form (o \327 degree)) at-text
+newline
+('<) at-key ( date ) non-lit (>) key
+        (Date form) at-text
+newline
+key-seq-moveto (base ) non-lit (#) key ( number) non-lit
+        (Enter number in arbitrary radix; e.g. ) at-text (16#09AB) textkey (.) text
+
+
+% ================
+(Stack Operations) heading
+(RET) (Duplicate ST(1)) command
+    (> 0) (duplicate n stack items) prefix
+    (< 0) (copy the specified stack item) prefix
+    (= 0) (duplicate entire stack) prefix
+(DEL) (Delete (pop) ST(1)) command
+    (> 0) (delete n stack items) prefix
+    (< 0) (delete nth stack item) prefix
+    (= 0) (clear entire stack) prefix
+(TAB) (Swap ) command (x) var ( & ) text (y) text
+    (> 0) (move ST(1) to position n, rotate items downward) prefix
+    (< 0) (rotate entire stack downward n times) prefix
+    (= 0) (reverse entires stack) prefix
+newline
+(M-TAB) at-key (Same as ) at-text (TAB) textkey (, but rotates UPWARD) text
+
+5 downby
+( `) () command ((backtick)) comment ( Edit top of stack. ) text (C-c C-c) textkey ( to return) text
+(d [) (Move stack pointer up) command
+    18 0 rmoveto (\306) show  ( ) comment /temp-x currentpoint pop def
+    (\302freezes\304 part of the stack) show
+(d ]) (Move stack pointer down) command
+    temp-x cur-y moveto (as a place to hold values) comment
+
+(M-3 m g) (Current stack size) command
+( ~) (Pop top-of-stack, and use it as a prefix for next command) command
+(K) (Peform next operation, but keep arguments on stack) command
+(M-RET) (Push arguments to last operation back onto stack) command
+
+
+% ================
+(Modes) heading
+( p) (Precision) command
+(m r) (Radians) command
+(m d) (Degrees ) command   ((default)) comment
+4 downby
+(d 2) (Display in ) command
+        /temp-x currentpoint pop def
+        (binary) show
+newline (d 8) at-key  temp-x cur-y moveto (octal) text
+newline (d 0) at-key  temp-x cur-y moveto (decimal) text
+newline (d 6) at-key  temp-x cur-y moveto (hexadecimal) text
+newline (d r) at-key  temp-x cur-y moveto ((with prefix)) comment ( arbitrary radix from 2\30536) text
+4 downby
+(d f) (Fixed-point display ) command
+(d n) (Floating-point ) command ((normal)) comment ( display) text
+(d s) (Scientific notation ) command
+(d e) (Engineering notation ) command
+
+% ================
+(Stack Trail) heading
+(t i) (Go in to trail) command
+(t o) (Go out of trail) command
+(t d) (Toggle trail display) command
+        (= 0) (turn trail display off) prefix
+        (= 1) (turn it on) prefix
+4 downby
+(t p) (Move to previous trail entry) command
+(t n) (Move to next trail entry) command
+(t y) (Yank current trail entry to stack) command
+(t [) (Move to first trail entry) command
+(t ]) (Move to last trail entry) command
+(t b) (Move back one screen) command
+(t f) (Move forward one screen) command
+(t h) (Move trail pointer HERE to cursor position) command
+4 downby 
+(t m) (Mark \306 enter a string to be used as a label) command
+(t s) (Search forward in trail) command
+(t r) (Search backward in trail) command
+(t k) (Kill the current trail line) command
+
+% ================
+(Killing, Copying, Yanking) heading
+(C-k) (kill stack item at cursor) command
+(M-k) (copy stack item at cursor to kill ring) command
+(C-w) (kill stack items between mark & point) command
+(M-w) (copy stack items between mark & point) command
+    (> 0) (copy/kill n lines starting at the current stack position) prefix
+    (< 0) (copy/kill n lines above the current stack position) prefix
+(C-y) (yank from kill ring) command
+(C-x * g) (parse region in current buffer, into vector of values) command
+    (= 0) (grabs current line) prefix
+    (> 0) (grabs from point to n lines forward) prefix
+(C-x * r) (parses region in current buffer as (matrix) rectangle of values) command
+    () (matrix will have only 1 column) prefix
+(C-x * :) (grab a rectangle of numbers in columns, sum them) command
+(C-x * _) (grab a rectangle of numbers in rows, sum them) command
+( y) (copies top of stack into most-recently-used buffer) command
+(C-x * y) (copies top of stack HERE) command
+
+% ================
+(Percentages) heading
+(M-%) (Converts ST(1) to percentage: 8 \325 8%) command
+(c %) (Converts decimal to percent: 0.08 \325 8%) command
+(M-% *) (Calculate ) command (x) var (% of ) text (y) var
+(/ c %) (Calculates what percent ) command (x) var ( is of ) text (y) var
+(b %) (Percent change from ) command (y) var ( to ) text (x) var
+
+% ================
+(Binary) heading
+(b c) () command /quotedblleft gsh (Clip) show /quotedblright gsh ( to current word size) show
+        () (word size ) prefix ((default: 32)) comment
+(b a) (Bitwise AND) command
+(b o) (Bitwise OR) command
+(b x) (Bitwise XOR) command
+(b n) (Bitwise NOT) command
+(b u) (Unpack binary number into vector of bit position numbers) command
+(b p) (Pack such a vector into a binary number) command
+newline
+key-seq-moveto (there are also a ton of shift & rotate operations) comment
+
+% ================
+(General operations) heading
+( L) (Natural logarithm) command
+( E) (e) command   (x) superscript
+(I L) (also e) command  (x) superscript
+(H L) (Common logarithm) command
+2 downby
+(I H L) (10) command   (x) superscript
+( B)  (log) command    (x) subscript   (\() text (y) var (\)) text
+( =)  (Evaluate ) command ((formula, variable, etc.)) comment
+() (predefined variables: ) command (e)     comment (, ) text
+                                    (pi)    comment (, ) text
+                                    (i)     comment (, ) text
+                                    (phi)   comment (, ) text
+                                    (gamma) comment (, ) text
+                                    (inf)   comment (, ) text
+                                    (nan)   comment
+(  ^) (Power: ) command (y) var (x) superscript
+(I ^) (Root: ) command (y) var (1\340x) superscript
+( \\) (Integer division) command
+( :)  (Fraction division) command
+( %)  (Modulo) command
+4 downby
+( A)  (|) command (x) var (| \306 absolute value (or complex magnitude)) text
+(  R) (Round to nearest integer) command
+(I R) (Truncate to integer (round towards zero)) command
+(1 %) (Fractional part of ) command (x) var
+4 downby
+(f s) (Sign operator, returns \3411, 0, or 1) command
+(f h) (Hypotenuse operation: sqrt\() command (x) var (\322 + ) text (y) var (\322\)) text
+(f n) (Minimum of ) command (x) var ( and ) text (y) var
+(f x) (Maximum of ) command (x) var ( and ) text (y) var
+(f [) (Decrement ) command (x) var
+(f ]) (Increment ) command (x) var
+4 downby
+(k g) (GCD of two integers or fractions) command
+(k l) (LCM of two integers or fractions) command
+( !)  (Factorial or gamma) command
+(k c) (Combinations: ) command (y) var (-choose-) text (x) var
+
+% ================
+(Date/Time operations) heading
+(t N) (Push current date/time onto stack) command
+(t U) (Convert date to/from Unix epoch seconds) command
+(t D) (Convert date to/from julian number) command
+(v p) (Pack stack elements into a date or time:) command
+        (=  \3413) (Make a time (HMS) from top three stack elements) prefix
+        (= \34114) (Make a date (YMD) from top three stack elements) prefix
+        (= \34115) (Make a date/time from top six stack elements) prefix
+
+
+% ================
+% NEW STYLE MARKUP
+(Data Entry) heading
+kc (n)v ( : )k (d)v
+dc (Fraction: )d (n)v ( is numerator, )d (d)v ( is denominator.)d  nl
+
+kc (\()k (real )v (,)k ( imag)v (\))k
+dc (Complex (rectangular))d nl
+
+kc (\()k (r )v (;)k ( \316)v  (\))k
+dc (Complex (polar))d  nl
+
+kc (C-w)k  dc (kill stack items between mark & point)d  nl
+kc (M-w)k  dc (copy stack items between mark & point)d  nl
+    arg (> 0)d argdesc(copy/kill n lines starting at the current stack position)d nl
+    arg (< 0)d argdesc(copy/kill n lines above the current stack position)d  nl
+
+kc (TAB)k dc (Swap )d (x)v ( & )d (y)v nl
+    arg(> 0)d argdesc(move )d (ST(1))v ( to position )d (n)v (, rotate items downward)d nl
+    arg(< 0)d argdesc(rotate entire stack downward n times)d nl
+    arg(= 0)d argdesc(reverse entires stack)d nl
+
+kc (I H L)k dc (10)d  (x) sup nl
+dc ( B)k    dc (log)d (x) sub (\()d (y)v (\))d nl
+
+    
+sp
