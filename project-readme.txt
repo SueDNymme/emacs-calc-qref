@@ -1,0 +1,23 @@
+Project "emacs-calc-qref" - A quick-reference guide for Emacs Calc.
+
+This is a PostScript document that lists many useful Calc commands.
+
+Releases:
+    (none yet!)
+
+-------------------------------------------------------------------------------------
+This file, project-readme.txt, contains a high-level description of the project
+(above), and describes any development branches (below).
+-------------------------------------------------------------------------------------
+
+
+---- This project's branches: -------------------------------------------------------
+
+(none yet!)
+
+
+-------------------------------------------------------------------------------------
+For emacs:
+;; Local Variables: **
+;; fill-column: 85 **
+;; End: **

@@ -1,0 +1,7 @@
+# Emacs temp and support files
+*~
+\#*\#
+TAGS
+
+# Distro files
+*.tar.gz
