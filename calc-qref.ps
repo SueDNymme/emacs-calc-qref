@@ -104,6 +104,7 @@
 
 % ----------------------------------------------------------------
 % Constants
+% ----------------------------------------------------------------
 %landscape
 /paper-w     8.5 in def
 /paper-h    11   in def
@@ -125,12 +126,29 @@
 /argtext-x  arg-x 0.4 in add       def  % argument explanation
 /b4head-h   6                      def  % vertical space before heading
 
+% ----------------------------------------------------------------
 % Global status variables
 /cur-y      init-y                 def
 /cur-fs     0                      def
 /nl-pend?   false                  def  % true if newline is pending
 
 % FONTS
+% There are various types of text we will be printing
+%        k  key sequences
+%        d  descriptive text
+%        v  variable names
+%        c  comments and asides
+% And there are various places we will use these types of text
+%        kc key-sequence column
+%        dc description column
+%        pa prefix-argument column
+%        pd prefix action description column
+% The current text-type and current text-locale are stored in global variables
+/cur-ttype /k  def
+/cur-tloc  /kc def
+% The locales are stored in a dictionary... of dictionaries? Must think this out.
+% ERIC STOPPED HERE 01/17/2013.
+
 /set-font  { /cur-fs exch def   setfont } def
 
 % For section headings
