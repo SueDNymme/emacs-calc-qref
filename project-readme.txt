@@ -13,7 +13,8 @@ This file, project-readme.txt, contains a high-level description of the project
 
 ---- This project's branches: -------------------------------------------------------
 
-(none yet!)
+01/17/2013    "initial"
+    Initial version of the document.
 
 
 -------------------------------------------------------------------------------------
