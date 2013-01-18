@@ -144,10 +144,78 @@
 %        pa prefix-argument column
 %        pd prefix action description column
 % The current text-type and current text-locale are stored in global variables
-/cur-ttype /k  def
-/cur-tloc  /kc def
-% The locales are stored in a dictionary... of dictionaries? Must think this out.
-% ERIC STOPPED HERE 01/17/2013.
+/cur-ttype /nil  def
+/cur-tloc  /nil  def
+
+/locales 4 dict def
+locales begin
+    /kc 5 dict def    kc begin
+        /k  some-font def
+        /d  some-font def
+        /v  some-font def
+        /c  some-font def
+        /x  000 def
+        end
+    /dc 5 dict def    dc begin
+        /k  some-font def
+        /d  some-font def
+        /v  some-font def
+        /c  some-font def
+        /x  000 def
+        end
+    /pa 5 dict def    pa begin
+        /k  some-font def
+        /d  some-font def
+        /v  some-font def
+        /c  some-font def
+        /x  000 def
+        end
+    /pd 5 dict def    pd begin
+        /k  some-font def
+        /d  some-font def
+        /v  some-font def
+        /c  some-font def
+        /x  000 def
+        end
+end
+
+
+% /loc set-locale --
+/set-locale
+{
+    dup cur-tloc eq
+    {
+        pop   % already there
+    }
+    {
+        % locales is a dictionary of  loc-symbol => type-dictionary
+        dup /cur-tloc exch def
+        locales exch get          % TODO: what if symbol not found?
+        /cur-locale exch def
+    } ifelse
+} def
+
+% /type set-type --
+/set-type
+{
+    dup cur-ttype eq
+    {
+        pop
+    }
+    {
+        % cur-fonts is dictionary of  type-symbol => font
+        dup /cur-ttype exch def
+        cur-locale exch get          % TODO: what if symbol not found?
+        setfont
+    } ifelse
+} def
+
+/v
+{
+    /v set-type         % TODO: is there a "curproc"?
+    down?
+    show
+} def
 
 /set-font  { /cur-fs exch def   setfont } def
 
