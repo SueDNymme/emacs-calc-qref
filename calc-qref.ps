@@ -13,6 +13,14 @@
      0 -8.5 in translate
 } bind def
 
+%-->     --   cur-fs   num
+% Returns the vertical point-size of the current font.
+/cur-fs
+{
+    currentfont /FontMatrix get
+    3 get 1000 mul
+} bind def
+
 %--->     /new_name  [array]  /font_name   ReEncodeFont   --
 % font_name is a font to be reencoded.
 % array is a set of offsets and character names to be encoded.
@@ -94,26 +102,36 @@
     8#333  /fl
     8#334  /ffi
     8#335  /ffl
+    8#336  /arrowlongboth
 
     8#340  /fraction
     8#341  /minus
+    8#342  /radical
+    8#343  /notequal
 ] def
 
-/TR calc-codes /Times-Roman  ReEncodeFont
-/TI calc-codes /Times-Italic ReEncodeFont
+/TB  calc-codes /Palatino-Bold   ReEncodeFont
+/TR  calc-codes /Palatino-Roman  ReEncodeFont
+/TI  calc-codes /Palatino-Italic ReEncodeFont
+/ARG calc-codes /Univers-Condensed-MediumItalic ReEncodeFont
 
 % ----------------------------------------------------------------
 % Constants
 % ----------------------------------------------------------------
-%landscape
-/paper-w     8.5 in def
-/paper-h    11   in def
-/top-marg    1   in def
-/left-marg   1   in def
-/right-marg  1   in def
-/bot-marg    1   in def
+landscape
+/paper-h     8.5 in def
+/paper-w    11   in def
+/top-marg    0.9 in def
+/left-marg   0.7 in def
+/right-marg  0.7 in def
+/bot-marg    0.8 in def
+/num-cols    2      def
+/gutter-w    0.7 in def
+/page-w paper-w left-marg sub right-marg sub def
+/page-h paper-h top-marg  sub bot-marg   sub def
+/col-w  page-w  num-cols 1 sub gutter-w mul sub   num-cols div  def
 /left-x     left-marg              def
-/right-x    paper-w right-marg sub def
+/right-x    left-x col-w add def
 /bot-y      bot-marg               def
 /top-y      paper-h top-marg sub   def
 /page-w     right-x left-x sub     def
@@ -123,60 +141,123 @@
 /keycol-x   left-x                 def
 /text-x     keycol-x 1 in add      def
 /arg-x      text-x 0.5 in add      def  % argument-modifier condition
-/argtext-x  arg-x 0.4 in add       def  % argument explanation
-/b4head-h   6                      def  % vertical space before heading
+/argtext-x  arg-x 0.5 in add       def  % argument explanation
+/cur-col     0      def   % columns are numbered 0 to n-1
+/cur-page    1      def   % pages are numbered from 1
+/col-xs        % column x-positions
+    [
+    left-marg
+    0 1 num-cols { pop dup col-w add gutter-w add } for
+    ] def
+
+/eoc        % end of column
+{
+    % gsave 1 setlinewidth newpath
+    % left-x bot-y moveto
+    % right-x bot-y lineto
+    % right-x top-y lineto
+    % left-x top-y lineto closepath stroke
+    % grestore
+    
+    /cur-col cur-col 1 add def        % increment column number
+    cur-col num-cols ge { eop } if    % go to next page?
+    /cur-y top-y def                  % at top of column
+    /left-x col-xs cur-col get def    % adjust left-x for column
+    /right-x left-x col-w add def
+    left-x cur-y moveto
+} bind def
+
+/eop        % end of page
+{
+    sp
+    /cur-page cur-page 1 add def
+    /cur-col 0 def
+    /cur-y top-y def
+    /left-x left-marg def
+    left-x cur-y moveto
+} bind def
+
 
 % ----------------------------------------------------------------
 % Global status variables
 /cur-y      init-y                 def
-/cur-fs     0                      def
 /nl-pend?   false                  def  % true if newline is pending
 
 % FONTS
+
+
 % There are various types of text we will be printing
 %        k  key sequences
 %        d  descriptive text
 %        v  variable names
 %        c  comments and asides
 % And there are various places we will use these types of text
+%        hc heading location
 %        kc key-sequence column
 %        dc description column
 %        pa prefix-argument column
 %        pd prefix action description column
+
+
 % The current text-type and current text-locale are stored in global variables
 /cur-ttype /nil  def
 /cur-tloc  /nil  def
 
 /locales 4 dict def
 locales begin
+    % Section headings
+    /hc 5 dict def    hc begin
+        /ds 14 def
+        /d  /TB findfont ds scalefont def
+        /sa 6 def    % space above line
+        /sb 3 def    % space below line
+        /xp 0 def
+        end
+
+    % Key-sequence column
     /kc 5 dict def    kc begin
-        /k  some-font def
-        /d  some-font def
-        /v  some-font def
-        /c  some-font def
-        /x  000 def
+        /ks 10 def
+        /k  /Helvetica-Bold findfont ks scalefont def
+        /vs ks def
+        /v  /TI findfont vs scalefont def
+        /cs 8 def
+        /c  /TI findfont cs scalefont def
+        /xp 0 def
         end
+
+    % Descriptive-text column
     /dc 5 dict def    dc begin
-        /k  some-font def
-        /d  some-font def
-        /v  some-font def
-        /c  some-font def
-        /x  000 def
+        /ks   kc /ks get  def   % same font size as in kc area
+        /k  /LetterGothic-Italic findfont ks scalefont def
+        /ds   kc /ks get  def
+        /d  /TR findfont ds scalefont def
+        /vs   kc /vs get  def
+        /v    kc /v  get  def
+        /cs   kc /cs get  def
+        /c    kc /c  get  def
+        /xp 1 in def
         end
+
+    % For prefix-argument conditional area
     /pa 5 dict def    pa begin
-        /k  some-font def
-        /d  some-font def
-        /v  some-font def
-        /c  some-font def
-        /x  000 def
+        /ds 8 def
+        /d  /ARG findfont ds scalefont def
+        /cs 6 def
+        /c  /TI findfont cs scalefont def
+        /xp 0.8 in def
         end
     /pd 5 dict def    pd begin
-        /k  some-font def
-        /d  some-font def
-        /v  some-font def
-        /c  some-font def
-        /x  000 def
+        /ks  pa /ds get def
+        /k /Courier-Bold findfont ks scalefont def
+        /ds ks def
+        /d  /TR findfont ds scalefont def
+        /vs ks def
+        /v  /TI findfont vs scalefont def
+        /cs ks 0.9 mul def
+        /c  /TI findfont vs scalefont def
+        /xp 1.3 in  def
         end
+
 end
 
 
@@ -192,8 +273,12 @@ end
         dup /cur-tloc exch def
         locales exch get          % TODO: what if symbol not found?
         /cur-locale exch def
+        /cur-ttype /nil def
     } ifelse
-} def
+
+    cur-locale /xp get left-x add   % x-position of column
+    cur-y moveto
+} bind def
 
 % /type set-type --
 /set-type
@@ -208,99 +293,47 @@ end
         cur-locale exch get          % TODO: what if symbol not found?
         setfont
     } ifelse
-} def
-
-/v
-{
-    /v set-type         % TODO: is there a "curproc"?
     down?
-    show
-} def
+} bind def
 
-/set-font  { /cur-fs exch def   setfont } def
 
-% For section headings
-/heading-fs     14 def
-/heading-f      /Times-Roman findfont heading-fs scalefont def
-/set-heading-f  { heading-f heading-fs set-font } def
+% Go places
+/hc {/hc set-locale} bind def
+/kc {/kc set-locale} bind def
+/dc {/dc set-locale} bind def
+/pa {/pa set-locale} bind def
+/pd {/pd set-locale} bind def
 
-% For key sequences
-/key-fs         10 def
-/key-f          /Courier-Bold findfont key-fs     scalefont def
-/set-key-f      { key-f key-fs set-font } def
+% Show things
+/k { /k set-type  show} bind def
+/v { /v set-type  show} bind def
+/d { /d set-type  show} bind def
+/c { /c set-type  show} bind def
 
-% For non-literals in the key-sequence column
-/kstx-fs        key-fs def
-/kstx-f         /TI findfont kstx-fs    scalefont def
-/set-kstx-f     { kstx-f kstx-fs set-font } def
-
-% For narrative text
-/text-fs        key-fs def
-/text-f         /TR findfont text-fs     scalefont def
-/set-text-f     { text-f text-fs set-font } def
-
-% For variables in the narrative text
-/var-fs        key-fs def
-/var-f         /TI findfont var-fs     scalefont def
-/set-var-f     { var-f var-fs set-font } def
-
-% For comments in narrative text
-/comm-fs        8 def
-/comm-f         /TI findfont comm-fs     scalefont def
-/set-comm-f     { comm-f comm-fs set-font } def
-
-% For key sequences in narrative text
-/textkey-fs     text-fs def
-/textkey-f      /Courier     findfont textkey-fs     scalefont def
-/set-textkey-f  { textkey-f textkey-fs set-font } def
-
-% For subscripts/superscripts
-/scr-fs         text-fs 0.7 mul def
-/scr-f          /TI findfont scr-fs scalefont def
-/sup-dy         text-fs scr-fs sub def
-/sub-dy         sup-dy neg def
-
-% For listing prefix arguments that modify behavior
-/arg-fs         8 def
-/arg-f          /Helvetica-Italic     findfont arg-fs     scalefont def
-/set-arg-f      { arg-f arg-fs set-font } def
-
-% For describing those prefix arguments
-/argtext-fs     arg-fs def
-/argtext-f      /TR findfont argtext-fs     scalefont def
-/set-argtext-f  { argtext-f argtext-fs set-font } def
-
-% for debugging/testing/etc
-/sp
+% heading is a little different
+/h
 {
-    0 setlinewidth
+    hc  % set heading locale
+    % space above heading
+    cur-locale begin   sb  d  ds  sa   end
+    space-before-line  % sa
+    downby             % ds
+    setfont            % d
+    exch show          % arg to this function
+    downby             % sb
+    nl
+} bind def
 
-    % newpath
-    % left-x  bot-y moveto
-    % right-x bot-y lineto
-    % right-x top-y lineto
-    % left-x  top-y lineto
-    % closepath stroke
-
-    showpage
-%    landscape
-} def
-
-
-% Positioning
-/newpage
-{
-    sp
-    /cur-y init-y def
-} def
 
 % move current Y down by specified amount
 /downby
 {
     % too close to bottom?
-    dup bot-y add cur-y gt {newpage} if
+    dup bot-y add cur-y gt {eoc} if
 
-    /cur-y exch cur-y exch sub def
+    /cur-y exch neg cur-y add def
+
+    cur-locale /xp get left-x add  cur-y moveto
 } bind def
 
 % move current Y down by current font size
@@ -310,401 +343,368 @@ end
     /nl-pend? false def
 } bind def
 
+
+% for debugging/testing/etc
+/sp
+{
+%   0 setlinewidth
+
+    % newpath
+    % left-x  bot-y moveto
+    % right-x bot-y lineto
+    % right-x top-y lineto
+    % left-x  top-y lineto
+    % closepath stroke
+
+    showpage
+    landscape
+} def
+
+
+% Positioning
+/newpage
+{
+    sp
+    /cur-y init-y def
+    left-x cur-y moveto
+} def
+
 % Signal that the next text to be shown has to move current Y down
-/newline { /nl-pend? true def } def
+/nl { /nl-pend? true def } def
+
 
 % allow for space before a line -- but not at top of page
 % immediate -- does not matter if newline pending
 /space-before-line
 {
     % do nothing if at top of page
-    cur-y top-y eq
+    cur-y init-y eq
     {pop}
     {
         dup
 
         % too close to bottom?
         bot-y add cur-y gt
-        {pop newpage}
+        {pop eoc}
         {/cur-y exch cur-y exch sub def}
         ifelse
     } ifelse
 } bind def
 
-/key-seq-moveto
-{
-    set-key-f
-    down?
-    keycol-x cur-y moveto
-} def
 
-% TEXT DISPLAY
+/save-x { /temp-x currentpoint pop def } bind def
+/at-x   { temp-x  currentpoint exch pop moveto } bind def
 
-% Display heading (does not matter if newline is pending)
-/heading
-{
-    newline
-    set-heading-f
-    b4head-h space-before-line
-    down?
-    heading-x cur-y moveto
-    show
-    newline
-} def
-
-% Show key sequence
-/at-key
-{
-    key-seq-moveto
-    show
-} def
-
-% Show non-literal text for a key sequence, at point.
-/non-lit
-{
-    set-kstx-f
-    show
-} def
-
-% Show key sequence literal text, at point
-/key
-{
-    set-key-f
-    show
-} def
-
-% Show key sequence literal text, in narrative, at point
-/textkey
-{
-    set-textkey-f
-    show
-} def
-
-% Show (or start) text narrative for a key sequence
-/at-text
-{
-    set-text-f
-    down?
-    text-x cur-y moveto
-    show
-} def
-
-% Show narrative text, at current point
-/text
-{
-    set-text-f
-    show
-} def
-
-% Show comment at current point
-/comment
-{
-    set-comm-f
-    show
-} def
-
-% Show variable at current point
-/var
-{
-    set-var-f
-    show
-} def
-
-% Show key sequence + text
-/command
-{
-    newline
-    exch at-key at-text
-} def
-
-/subscript
+/supscr
 {
     gsave
-      scr-f setfont
-      0 sub-dy rmoveto show
-      currentpoint pop   % current x
+        /TI  cur-fs  0.7 mul  selectfont
+        0    cur-fs  0.4 mul  rmoveto show
+        currentpoint pop   % current x
     grestore
     currentpoint exch pop   % current-x, previous-y
     moveto
 } def
 
-/superscript
+/subscr
 {
     gsave
-      scr-f setfont
-      0 sup-dy rmoveto show
-      currentpoint pop   % current x
+        /TI  cur-fs  0.7 mul  selectfont
+        0    cur-fs -0.3 mul  rmoveto show
+        currentpoint pop   % current x
     grestore
     currentpoint exch pop   % current-x, previous-y
     moveto
 } def
 
-% Show a prefix-argument description
-% This always involves a newline.
-% Two parameters: prefix condition, and text.
-% Leaves font set for argtext, and point immediately after text.
-/prefix
-{
-    exch
-    
-    newline
-    set-arg-f
-    down?
-    arg-x cur-y moveto
-
-    % No argument condition?
-    dup () eq
-    { pop (arg) }
-    { (n ) show}
-    ifelse
-    show
-
-    set-argtext-f
-    argtext-x cur-y moveto
-    show
-} def
-
-% Show text at current point, as a key sequence.
-/keyshow
-{
-    set-key-f
-    show
-} def
-
-/greek
-{
-    /Symbol cur-fs selectfont
-    glyphshow
-} def
-/gsh { glyphshow } bind def
 
 
 % ----------------------------------------------------------------
 % Here we go
 
 % ================
-(Data Entry) heading
-key-seq-moveto ( n ) non-lit (:) key ( d) non-lit
-        (Fraction: ) at-text (n)var  ( is numerator, ) text (d) var ( is denominator.) text
-newline
-(\() at-key (real ) non-lit (,) key ( imag) non-lit (\)) key
-        (Complex (rectangular)) at-text
-newline
-(\() at-key (r ) non-lit (;) key ( \316) non-lit   (\)) key
-        (Complex (polar)) at-text
-newline
-([) at-key (a ) non-lit (,) key ( b ) non-lit (,) key ( \300 ) non-lit (]) key
-        (Vector) at-text
-% newline
-% ([[) at-key (a ) non-lit (,) key ( b ) non-lit (,) key ( \300 ) non-lit (],) key ( \300 ) non-lit (]) key
-%        (Matrix) at-text
-newline
-(") at-key (hello) non-lit (") key
-        (String \306 vector of ASCII codes) at-text
-newline
-key-seq-moveto (16 ) non-lit (h) key ( 40 ) non-lit (m) key ( 20 ) non-lit (s) key
-        (HMS form (hour, minute, second)) at-text
-newline
-key-seq-moveto (16 ) non-lit (@) key ( 40 ) non-lit (') key ( 20 ) non-lit (") key
-        (HMS form (degree, minute, second)) at-text
-newline
-key-seq-moveto (16 ) non-lit (o) key ( 40 ) non-lit (') key ( 20 ) non-lit (") key
-        (HMS form (o \327 degree)) at-text
-newline
-('<) at-key ( date ) non-lit (>) key
-        (Date form) at-text
-newline
-key-seq-moveto (base ) non-lit (#) key ( number) non-lit
-        (Enter number in arbitrary radix; e.g. ) at-text (16#09AB) textkey (.) text
+(Data Entry)h
+kc ( n )v (:)k ( d)v                           dc (Fraction: )d (n)v  ( is numerator, )d (d)v ( is denominator.)d  nl
+kc (\()k (real )v (,)k ( imag)v (\))k          dc (Complex (rectangular))d                                         nl
+kc (\()k (r )v (;)k ( \316)v   (\))k           dc (Complex (polar))d                                               nl
+kc ([)k (a )v (,)k ( b )v (,)k ( \300 )v (])k  dc (Vector)d                                                        nl
+% kc ([[)k (a )v (,)k ( b )v (,)k ( \300 )v (],)k ( \300 )v (])k  dc (Matrix)d                                                        nl
+kc (")k (hello)v (")k                          dc (String \306 vector of ASCII codes)d                             nl
+kc (16 )v (h)k ( 40 )v (m)k ( 20 )v (s)k       dc (HMS form (hour, minute, second))d                               nl
+kc (16 )v (@)k ( 40 )v (')k ( 20 )v (")k       dc (HMS form (degree, minute, second))d                             nl
+kc (16 )v (o)k ( 40 )v (')k ( 20 )v (")k       dc (HMS form (o \327 degree))d                                      nl
+kc ('<)k ( date )v (>)k                        dc (Date form)d                                                     nl
+kc (base )v (#)k ( number)v                    dc (Enter number in arbitrary radix; e.g. )d (16#09AB)k (.)d        nl
 
+% Hack!
+% from this point on, we don't need such a wide first column.
+locales /dc get  dup /xp get 27 sub /xp exch put
+% End hack!
 
 % ================
-(Stack Operations) heading
-(RET) (Duplicate ST(1)) command
-    (> 0) (duplicate n stack items) prefix
-    (< 0) (copy the specified stack item) prefix
-    (= 0) (duplicate entire stack) prefix
-(DEL) (Delete (pop) ST(1)) command
-    (> 0) (delete n stack items) prefix
-    (< 0) (delete nth stack item) prefix
-    (= 0) (clear entire stack) prefix
-(TAB) (Swap ) command (x) var ( & ) text (y) text
-    (> 0) (move ST(1) to position n, rotate items downward) prefix
-    (< 0) (rotate entire stack downward n times) prefix
-    (= 0) (reverse entires stack) prefix
-newline
-(M-TAB) at-key (Same as ) at-text (TAB) textkey (, but rotates UPWARD) text
+(Stack Operations)h
+kc (RET)k      dc (Duplicate )d (x)v                                                nl
+    pa (n > 0)d  pd (duplicate )d (n)v ( stack items)d                              nl
+    pa (n < 0)d  pd (copy the )d (nth)v ( stack item)d                              nl
+    pa (n = 0)d  pd (duplicate entire stack)d                                       nl
+kc (DEL)k      dc (Delete (pop) )d (x)v                                             nl
+    pa (n > 0)d  pd (delete )d (n)v ( stack items)d                                 nl
+    pa (n < 0)d  pd (delete )d (nth)v ( stack item)d                                nl
+    pa (n = 0)d  pd (clear entire stack)d                                           nl
+kc (TAB)k      dc (Swap )d (x)v ( & )d (y)v                                         nl
+    pa (n > 0)d  pd (move )d (x)v ( to position )d (n)v (, rotate items downward)d  nl
+    pa (n < 0)d  pd (rotate entire stack downward )d (n)v ( times)d                 nl
+    pa (n = 0)d  pd (reverse entires stack)d                                        nl
+kc (M-TAB)k    dc (Same as )d (TAB)k (, but rotates UPWARD)d                        nl
 
 5 downby
-( `) () command ((backtick)) comment ( Edit top of stack. ) text (C-c C-c) textkey ( to return) text
-(d [) (Move stack pointer up) command
-    18 0 rmoveto (\306) show  ( ) comment /temp-x currentpoint pop def
-    (\302freezes\304 part of the stack) show
-(d ]) (Move stack pointer down) command
-    temp-x cur-y moveto (as a place to hold values) comment
+kc (`)k        dc ((backtick))c ( Edit top of stack. )d (C-c C-c)k ( to return)d  nl
+kc (d [)k      dc (Move stack pointer up)d
+    18 0 rmoveto (\306 )d save-x (\302freezes\304 part of the stack)c             nl
+kc (d ])k      dc (Move stack pointer down)d at-x (as a place to hold values)c    nl
 
-(M-3 m g) (Current stack size) command
-( ~) (Pop top-of-stack, and use it as a prefix for next command) command
-(K) (Peform next operation, but keep arguments on stack) command
-(M-RET) (Push arguments to last operation back onto stack) command
+kc (M-3 m g)k  dc (Current stack size)d                                           nl
+kc (~)k        dc (Pop top-of-stack, and use it as a prefix for next command)d    nl
+kc (K)k        dc (Peform next operation, but keep arguments on stack)d           nl
+kc (M-RET)k    dc (Push arguments to last operation back onto stack)d             nl
+
+% ================
+(Rounding) h
+kc (R)k    dc (Round to nearest integer)d                                nl
+kc (I R)k  dc (Truncate to integer (round towards zero) )d ((Also truncates dates))c                nl
+kc (F)k    dc (Floor: truncate toward \341\315)d nl
+kc (1 %)k  dc (Fractional part of )d (x)v                                nl
 
 
 % ================
-(Modes) heading
-( p) (Precision) command
-(m r) (Radians) command
-(m d) (Degrees ) command   ((default)) comment
-4 downby
-(d 2) (Display in ) command
-        /temp-x currentpoint pop def
-        (binary) show
-newline (d 8) at-key  temp-x cur-y moveto (octal) text
-newline (d 0) at-key  temp-x cur-y moveto (decimal) text
-newline (d 6) at-key  temp-x cur-y moveto (hexadecimal) text
-newline (d r) at-key  temp-x cur-y moveto ((with prefix)) comment ( arbitrary radix from 2\30536) text
-4 downby
-(d f) (Fixed-point display ) command
-(d n) (Floating-point ) command ((normal)) comment ( display) text
-(d s) (Scientific notation ) command
-(d e) (Engineering notation ) command
+(Random numbers)h
+kc (k r)k dc (Random number between 0 and )d (x)v nl
+          dc (Result will be integer or float depending on )c (x)v (\303s type)c nl
+        pa (with arg)c pd (Use argument instead of top-of-stack)d nl
+kc (k a)k dc (Random-again: make another with same parameters)d nl
+
+eoc
 
 % ================
-(Stack Trail) heading
-(t i) (Go in to trail) command
-(t o) (Go out of trail) command
-(t d) (Toggle trail display) command
-        (= 0) (turn trail display off) prefix
-        (= 1) (turn it on) prefix
+(Modes)h
+kc (I)k    dc (Note: )c (I)k ( prefix before any display mode affects only the top-of-stack,)c nl
+           dc (and only temporarily. Handy for base conversions!)c nl
+kc (p)k    dc (Precision)d                                nl
+kc (m r)k  dc (Radians)d                                  nl
+kc (m d)k  dc (Degrees )d   ((default))c                  nl
 4 downby
-(t p) (Move to previous trail entry) command
-(t n) (Move to next trail entry) command
-(t y) (Yank current trail entry to stack) command
-(t [) (Move to first trail entry) command
-(t ]) (Move to last trail entry) command
-(t b) (Move back one screen) command
-(t f) (Move forward one screen) command
-(t h) (Move trail pointer HERE to cursor position) command
+kc (d 2)k  dc (Display in )d   save-x (binary)d            nl
+kc (d 8)k  dc                  at-x   (octal)d             nl
+kc (d 0)k  dc                  at-x   (decimal)d           nl
+kc (d 6)k  dc                  at-x   (hexadecimal)d       nl
+kc (d r)k  dc ((with prefix))c at-x   (arbitrary radix from 2\30536)d  nl
+4 downby
+kc (d f)k  dc (Fixed-point display )d                     nl
+kc (d n)k  dc (Floating-point )d ((normal))c ( display)d  nl
+kc (d s)k  dc (Scientific notation )d                     nl
+kc (d e)k  dc (Engineering notation )d                    nl
+4 downby
+kc (d l)k  dc (Line numbers on/off )d ((useful before copy/kill))c nl
+kc (d o)k  dc (Fraction display. Enter one or two characters)d nl
+           dc (One char \(e.g. )c (:)k (\) for improper fraction display: )c (51:8)k nl
+           dc (Two chars \(e.g. )c (+/)k (\) for mixed-fraction display: )c  (6+3/8)k nl
+
+% ================
+(Stack Trail)h
+kc (t i)k  dc (Go into trail)d                                  nl
+kc (t o)k  dc (Go out of trail)d                                 nl
+kc (t d)k  dc (Toggle trail display)d                            nl
+        pa (n = 0)d  pd (turn trail display off)d                  nl
+        pa (n = 1)d  pd (turn it on)d                              nl
+4 downby
+kc (t p)k  dc (Move to previous trail entry)d                    nl
+kc (t n)k  dc (Move to next trail entry)d                        nl
+kc (t y)k  dc (Yank current trail entry to stack)d               nl
+kc (t [)k  dc (Move to first trail entry)d                       nl
+kc (t ])k  dc (Move to last trail entry)d                        nl
+kc (t b)k  dc (Move back one screen)d                            nl
+kc (t f)k  dc (Move forward one screen)d                         nl
+kc (t h)k  dc (Move trail pointer HERE to cursor position)d      nl
 4 downby 
-(t m) (Mark \306 enter a string to be used as a label) command
-(t s) (Search forward in trail) command
-(t r) (Search backward in trail) command
-(t k) (Kill the current trail line) command
+kc (t m)k  dc (Mark \306 enter a string to be used as a label)d  nl
+kc (t s)k  dc (Search forward in trail)d                         nl
+kc (t r)k  dc (Search backward in trail)d                        nl
+kc (t k)k  dc (Kill the current trail line)d                     nl
 
 % ================
-(Killing, Copying, Yanking) heading
-(C-k) (kill stack item at cursor) command
-(M-k) (copy stack item at cursor to kill ring) command
-(C-w) (kill stack items between mark & point) command
-(M-w) (copy stack items between mark & point) command
-    (> 0) (copy/kill n lines starting at the current stack position) prefix
-    (< 0) (copy/kill n lines above the current stack position) prefix
-(C-y) (yank from kill ring) command
-(C-x * g) (parse region in current buffer, into vector of values) command
-    (= 0) (grabs current line) prefix
-    (> 0) (grabs from point to n lines forward) prefix
-(C-x * r) (parses region in current buffer as (matrix) rectangle of values) command
-    () (matrix will have only 1 column) prefix
-(C-x * :) (grab a rectangle of numbers in columns, sum them) command
-(C-x * _) (grab a rectangle of numbers in rows, sum them) command
-( y) (copies top of stack into most-recently-used buffer) command
-(C-x * y) (copies top of stack HERE) command
+(Percentages)h
+kc (M-%)k    dc (Converts )d (x)v ( to percentage: 8 \325 8%)d        nl
+kc (c %)k    dc (Converts decimal to percent: 0.08 \325 8%)d      nl
+kc (M-% *)k  dc (Calculate )d (x)v (% of )d (y)v                  nl
+kc (/ c %)k  dc (Calculates what percent )d (x)v ( is of )d (y)v  nl
+kc (b %)k    dc (Percent change from )d (y)v ( to )d (x)v         nl
 
 % ================
-(Percentages) heading
-(M-%) (Converts ST(1) to percentage: 8 \325 8%) command
-(c %) (Converts decimal to percent: 0.08 \325 8%) command
-(M-% *) (Calculate ) command (x) var (% of ) text (y) var
-(/ c %) (Calculates what percent ) command (x) var ( is of ) text (y) var
-(b %) (Percent change from ) command (y) var ( to ) text (x) var
+(Binary)h
+kc (b c)k  dc (\302Clip\304 to current word size)d                         nl
+        pa (n)d pd (word size )d ((default: 32))c                          nl
+kc (b a)k  dc (Bitwise AND)d                                               nl
+kc (b o)k  dc (Bitwise OR)d                                                nl
+kc (b x)k  dc (Bitwise XOR)d                                               nl
+kc (b n)k  dc (Bitwise NOT)d                                               nl
+kc (b u)k  dc (Unpack binary number into vector of bit position numbers)d  nl
+kc (b p)k  dc (Pack such a vector into a binary number)d                   nl
+kc (there are also a ton of shift & rotate operations)c                    nl
 
 % ================
-(Binary) heading
-(b c) () command /quotedblleft gsh (Clip) show /quotedblright gsh ( to current word size) show
-        () (word size ) prefix ((default: 32)) comment
-(b a) (Bitwise AND) command
-(b o) (Bitwise OR) command
-(b x) (Bitwise XOR) command
-(b n) (Bitwise NOT) command
-(b u) (Unpack binary number into vector of bit position numbers) command
-(b p) (Pack such a vector into a binary number) command
-newline
-key-seq-moveto (there are also a ton of shift & rotate operations) comment
+(Killing, Copying, Yanking)h
+kc (C-k)k      dc (kill stack item at cursor)d                                        nl
+kc (M-k)k      dc (copy stack item at cursor to kill ring)d                           nl
+kc (C-w)k      dc (kill stack items between mark & point)d                            nl
+kc (M-w)k      dc (copy stack items between mark & point)d                            nl
+    pa (n > 0)d    pd (copy/kill )d (n)v ( lines starting at the current stack position)d       nl
+    pa (n < 0)d    pd (copy/kill )d (n)v ( lines above the current stack position)d             nl
+kc (C-y)k      dc (yank from kill ring)d                                              nl
+kc (C-x * g)k  dc (parse region in current buffer, into vector of values)d            nl
+    pa (n = 0)d    pd (grabs current line)d                                             nl
+    pa (n > 0)d    pd (grabs from point to )d (n)v ( lines forward)d                            nl
+kc (C-x * r)k  dc (parses region in current buffer as (matrix) rectangle of values)d  nl
+    pd (matrix will have only 1 column)d           pa (with arg)c                             nl
+kc (C-x * :)k  dc (grab a rectangle of numbers in columns, sum them)d                 nl
+kc (C-x * _)k  dc (grab a rectangle of numbers in rows, sum them)d                    nl
+kc (y)k       dc (copies top of stack into most-recently-used buffer)d               nl
+kc (C-x * y)k  dc (copies top of stack HERE)d                                         nl
 
 % ================
-(General operations) heading
-( L) (Natural logarithm) command
-( E) (e) command   (x) superscript
-(I L) (also e) command  (x) superscript
-(H L) (Common logarithm) command
+(General math)h
+kc (Q)k      dc (Square root)d         nl
+kc (&)k      dc (Inverse: 1/)d (x)v    nl
+kc (L)k      dc (Natural logarithm)d   nl
+kc (E)k      dc (e)d   (x) supscr      nl
+kc (I L)k    dc (also e)d  (x) supscr  nl
+kc (H L)k    dc (Common logarithm)d    nl
 2 downby
-(I H L) (10) command   (x) superscript
-( B)  (log) command    (x) subscript   (\() text (y) var (\)) text
-( =)  (Evaluate ) command ((formula, variable, etc.)) comment
-() (predefined variables: ) command (e)     comment (, ) text
-                                    (pi)    comment (, ) text
-                                    (i)     comment (, ) text
-                                    (phi)   comment (, ) text
-                                    (gamma) comment (, ) text
-                                    (inf)   comment (, ) text
-                                    (nan)   comment
-(  ^) (Power: ) command (y) var (x) superscript
-(I ^) (Root: ) command (y) var (1\340x) superscript
-( \\) (Integer division) command
-( :)  (Fraction division) command
-( %)  (Modulo) command
+kc (I H L)k  dc (10)d   (x) supscr                         nl
+kc (B)k      dc (log)d    (x) subscr   (\()d (y)v (\))d    nl
+kc (=)k      dc (Evaluate )d ((formula, variable, etc.))c  nl
+             dc (predefined variables: )d (e)c (, )d
+                                    (pi)c (, )d
+                                    (i)c (, )d
+                                    (phi)c (, )d
+                                    (gamma)c (, )d
+                                    (inf)c (, )d
+                                    (nan)c                 nl
+kc (^)k    dc (Power: )d (y)v (x) supscr      nl
+kc (I ^)k  dc (Root: )d (y)v (1\340x) supscr  nl
+kc (\\)k   dc (Integer division)d          nl
+kc (:)k    dc (Fraction division)d         nl
+kc (%)k    dc (Modulo)d                    nl
 4 downby
-( A)  (|) command (x) var (| \306 absolute value (or complex magnitude)) text
-(  R) (Round to nearest integer) command
-(I R) (Truncate to integer (round towards zero)) command
-(1 %) (Fractional part of ) command (x) var
+kc (A)k     dc (|)d (x)v (| \306 absolute value (or complex magnitude))d  nl
+eoc (General math, cont'd)h
+kc (f s)k    dc (Sign operator, returns \3411, 0, or 1)d                        nl
+kc (f h)k    dc (Hypotenuse operation: sqrt\()d (x)v (\322 + )d (y)v (\322\))d  nl
+kc (f n)k    dc (Minimum of )d (x)v ( and )d (y)v                               nl
+kc (f x)k    dc (Maximum of )d (x)v ( and )d (y)v                               nl
+kc (f [)k    dc (Decrement )d (x)v                                              nl
+kc (f ])k    dc (Increment )d (x)v                                              nl
 4 downby
-(f s) (Sign operator, returns \3411, 0, or 1) command
-(f h) (Hypotenuse operation: sqrt\() command (x) var (\322 + ) text (y) var (\322\)) text
-(f n) (Minimum of ) command (x) var ( and ) text (y) var
-(f x) (Maximum of ) command (x) var ( and ) text (y) var
-(f [) (Decrement ) command (x) var
-(f ]) (Increment ) command (x) var
-4 downby
-(k g) (GCD of two integers or fractions) command
-(k l) (LCM of two integers or fractions) command
-( !)  (Factorial or gamma) command
-(k c) (Combinations: ) command (y) var (-choose-) text (x) var
+kc (k g)k    dc (GCD of two integers or fractions)d      nl
+kc (k l)k    dc (LCM of two integers or fractions)d      nl
+kc (!)k     dc (Factorial or gamma)d                    nl
+kc (k c)k    dc (Combinations: )d (y)v (-choose-)d (x)v  nl
+kc (H k c)k dc (Permutations: )d (y)v (-permute-)d (x)v nl
+kc (k f)k   dc (Calculate prime factors of )d (x)v nl
+kc (k p)k   dc (Check whether top-of-stack number is prime)d nl
+kc (k n)k   dc (Calculate next prime number larger than)d (x)v nl
+kc (I k n)k   dc (Calculate prime number smaller than)d (x)v nl
 
 % ================
-(Date/Time operations) heading
-(t N) (Push current date/time onto stack) command
-(t U) (Convert date to/from Unix epoch seconds) command
-(t D) (Convert date to/from julian number) command
-(v p) (Pack stack elements into a date or time:) command
-        (=  \3413) (Make a time (HMS) from top three stack elements) prefix
-        (= \34114) (Make a date (YMD) from top three stack elements) prefix
-        (= \34115) (Make a date/time from top six stack elements) prefix
-
+(Date/Time operations)h
+kc (t N)k  dc (Push current date/time onto stack)d                             nl
+kc (t N F)k dc (Current date only)d nl
+kc (t U)k  dc (Convert date to/from Unix epoch seconds)d                       nl
+kc (t D)k  dc (Convert date to/from julian number)d                            nl
+kc (t P)k  dc (Extract date/time component:)d nl
+        pa (n = 1,2,3)d pd (  year, month, or day)d nl
+        pa (n = 4,5,6)d pd (  hour, minute, or second)d nl
+        pa (n = 7)d pd (  weekday : 0=Sunday \325 6=Saturday)d nl
+        pa (n = 8)d pd (  day-of-year)d nl
+        pa (n = 9)d pd (  time, as HMS form)d nl
+kc (v p)k  dc (Pack stack elements into a date or time:)d                      nl
+        pa (n =  \3413)d  pd (Make a time (HMS) from top three stack elements)d  nl
+        pa (n = \34114)d  pd (Make a date (YMD) from top three stack elements)d  nl
+        pa (n = \34115)d  pd (Make a date/time from top six stack elements)d     nl
+kc (I R)k  dc (Truncate date )d ((remove time portion))c nl
+kc (t M)k  dc (Change day-of-month. With no arg, becomes 1st day of month)d nl
+        pa (n = 0)d pd (last day of month)d nl
+        pa (n)d     pd (nth day of month)d nl
+kc (t Y)k  dc (Change day-of-year. With no arg, becomes 1st day of year)d nl
+        pa (n = 0)d pd (last day of year)d nl
+        pa (n < 0)d pd (1st day of nth month)d nl
+        pa (n > 0)d pd (nth day of the year)d nl
+kc (t W)k dc (Change day of week. With no arg, Sunday on or before )d (x)v nl
+        pa (n)d pd (specified day-of-week on or before top-of-stack)d nl
+kc (t I)k dc (Add 1 month to date)d nl
+        pa (n)d pd (add n months to date)d nl
+kc (f [)k dc (Decrement date by 1 day, or datetime by 1 sec)d nl
+kc (f ])k dc (Increment date by 1 day, or datetime by 1 sec)d nl
+kc (t +)k dc (Add business days)d nl
+kc (t -)k dc (Subtract business days)d nl
+kc (s H)k dc (Edit business holidays)d nl
 
 % ================
-% NEW STYLE MARKUP
-(Data Entry) heading
-kc (n)v ( : )k (d)v
-dc (Fraction: )d (n)v ( is numerator, )d (d)v ( is denominator.)d  nl
+(Trigonometry)h
+2 downby
+kc (Note: )c (I)k ( prefix for inverse; )c (H)k ( prefix for hyperbolic)c nl
+kc (S)k dc (Sine)d nl
+kc (C)k dc (Cosine)d nl
+kc (T)k dc (Tangent)d nl
+kc (f T)k dc (Two-argument arctangent\()d (y)v (/)d (x)v (\))d nl
 
-kc (\()k (real )v (,)k ( imag)v (\))k
-dc (Complex (rectangular))d nl
+% ================
+(Complex numbers)h
+kc (J)k dc (Conjugate)d nl
+kc (G)k dc (Argument (angle))d nl
+kc (f r)k dc (Real portion)d nl
+kc (f i)k dc (Imaginary portion)d nl
+kc (d c)k dc (Display as )d (\()k (real)v (,)k (imag)v (\))k ( (default))c nl
+kc (d i)k dc (Display as )d (real)v (+)k (imag)v (i)k nl
+kc (c p)k dc (Convert rectangular \336 polar)d nl
+kc (m p)k dc (Toggle between polar and rect display preference)d nl
 
-kc (\()k (r )v (;)k ( \316)v  (\))k
-dc (Complex (polar))d  nl
+% ================
+(Conversions)h
+kc (c f)k dc (Convert to floating-point)d nl
+kc (c F)k dc (Convert to fraction approximation)d nl
+kc (c d)k dc (Convert to degrees (from radians))d nl
+kc (c r)k dc (Convert to radians (from degrees))d nl
+kc (c h)k dc (Convert angle to HMS form)d nl
 
-kc (C-w)k  dc (kill stack items between mark & point)d  nl
-kc (M-w)k  dc (copy stack items between mark & point)d  nl
-    arg (> 0)d argdesc(copy/kill n lines starting at the current stack position)d nl
-    arg (< 0)d argdesc(copy/kill n lines above the current stack position)d  nl
+% ================
+(Programming)h
+kc (Z D)k dc (Define\306 bind a calc command to a )d (z)k (-key)d nl
+kc (z ?)k dc (List bound )d (z)k (-key sequences)d nl
+kc (Z P)k dc (Binds sequence and makes it permanent )d ((via calc.el))c nl
+4 downby
+kc (C-x \()k dc (Start recording keyboard macro)d nl
+kc (C-x \))k dc (Stop recording)d nl
+kc (X)k dc (Execute macro \(or use )d (C-x e)k (\))d nl
+kc (Z K)k dc (Bind keyboard macro to a )d (z)k (-key)d nl
+kc (Z E)k dc (Edit keyboard macro bound to a )d (z)k (-key.)d (C-c C-c)k ( to end)d nl
+4 downby
+kc (Z [)k dc (If: pops )d (x)v (, then:)d nl
+        pa (x \343 0)d pd (keep executing)d nl
+        pa (x = 0)d pd (skip to )d (Z ])k ( or )d (Z :)k nl
+kc (cond)v ( Z :)k dc (Else: )d (cond)v ( Z[ )k (\300)d ( Z: )k (\300)d ( Z])k nl
+kc (cond)v ( Z |)k dc (Elsif: )d (cond)v ( Z[ )k (\300)d ( )k (cond)v ( Z| )k (\300)d ( )k (cond)v ( Z| )k (\300)d ( Z: )k (\300)d ( Z])k nl
+kc (Z ])k dc (End-if)d nl
+4 downby
+kc (num)v ( Z <)k dc (Counted loop. Loops for )d (x)v ( times \()d (x)v ( > 0\))d nl
+kc (Z >)k dc (End counted-loop)d nl
+kc (Z /)k dc (Break: pops )d (x)v (; if )d (x)v ( \343 0, break out of )d (Z<)k ( \300 )d (Z>)k ( loop)d nl
+4 downby
+kc (i f)v ( Z \()k dc (For-loop. )d (x)v ( is final value, )d (y)v ( is initial value)d nl
+kc (s)v ( Z \))k dc (End for-loop. )d (x)v ( is the step value)d nl
+        dc (Loop counter is pushed onto the stack each iteration)c nl
+4 downby
+kc (str)v ( Z #)k dc (Prompt for an algebraic expression from user)d nl
 
-kc (TAB)k dc (Swap )d (x)v ( & )d (y)v nl
-    arg(> 0)d argdesc(move )d (ST(1))v ( to position )d (n)v (, rotate items downward)d nl
-    arg(< 0)d argdesc(rotate entire stack downward n times)d nl
-    arg(= 0)d argdesc(reverse entires stack)d nl
 
-kc (I H L)k dc (10)d  (x) sup nl
-dc ( B)k    dc (log)d (x) sub (\()d (y)v (\))d nl
 
-    
-sp
+eoc sp
