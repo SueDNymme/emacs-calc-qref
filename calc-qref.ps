@@ -1,953 +1,1458 @@
-%!PS-Adobe-3.0
-%%Pages: 8
-%%BoundingBox: 36 18  576 774
-%%Creator: Eric J. Roode
-%%CreationDate: 19 MAR 2013 13:29 EDT
-%%Orientation: Portrait
-%%Title: Eric's GNU Emacs Calc Quick Reference
-%%LanguageLevel: 2
-%%Requirements: duplex
-%%Version: 0.00 01
+%!PS
 
-%%BeginDefaults
-%%PageBoundingBox: 36 18  576 774
-%%PageOrientation: Portrait
-%%PageResources: font Arial Palatino-Bold Palatino-Roman Palatino-Italic Univers-MediumItalic Courier-Bold
-%%EndDefaults
+% Rewrite from scratch.
+% EJR 11/25/2014
 
-%%BeginProlog
-%%BeginResource: Debug 50 50
-/sp
+%%% Setup
+% (../error.ps) run
+(../basic.ps) run
+(../array.ps) run
+(../cond.ps) run
+(../position.ps) run
+(../ejr-show.ps) run
+(../ISO-Latin-1.ps) run
+(../radical.ps) run
+(../geom.ps) run
+(../sort.ps) run
+
+%%% ---------------------------------------------------------------------------------
+%%% Configuration
+/ejr? true def
+/color false def
+
+/doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
+/doc-date     (2015 JAN 15) def
+/doc-version  (1.00.00) def
+
+/lm 0.75 in def
+/rm 0.75 in def
+/tm 0.75 in def
+/bm 0.75 in def
+/Nup 4 def
+/Duplex? true def
+
+% Load needed font files
+(ucrb8a.pfa)  run    % Nimbus Mono L Bold
+(uhvro8a.pfa) run    % Nimbus Sans L Regular Italic
+(uhvr8v.pfa)  run    % Vn Nimbus Sans L
+(utmr8a.pfa)  run    % Nimbus Roman No9 L Regular
+(utmri8a.pfa) run    % Nimbus Roman No9 L Regular Italic
+
+% Re-encode fonts as needed:
+/Typeface-for-Keystrokes     /NimbusMonL-Bold           def
+/Typeface-for-Text           /NimbusRomNo9L-Regu        def
+/Typeface-for-Text-Italic    /NimbusRomNo9L-ReguItal    def
+/Typeface-for-Greek          /Symbol                    def
+/Typeface-for-Prefix-Args    /NimbusSanL-ReguItal       def
+/Typeface-for-Math           /Symbol                    def
+/Typeface-for-Headings       /Helvetica-Bold            def
+/Typeface-for-Page-Headings  /VnNimbusSansL             def
+/Typeface-for-Front-Cover    /VnNimbusSansL             def
+
+%%% ---------------------------------------------------------------------------------
+
+(../page-init.ps) run
+
+
+% /sws{stringwidth pop}bd
+% /rs{dup sws neg 0 RM s}bd
+% /cs{dup sws -2 div 0 RM s}bd
+% /CX{C pop}bd
+% /CY{C exch pop}bd
+% /x={C exch pop M}bd
+% /x+{C CAB add exch M}bd
+% /y={C pop exch M}bd
+% /y+{C BCA add M}bd
+% /y-{C BCA sub M}bd
+% /x=y-{C exch pop exch sub M}bd
+
+% Font setup
+/punc-chars  [[(´) /quoteright]    % &''
+              [(`) /quoteleft]     % backtick
+              [(«) /quotedblleft]  % &<<
+              [(») /quotedblright] % &>>
+              [(-) /hyphen]        % hyphen
+              [(­) /minus]         % &--
+              [(¬) /endash]        % &NO
+              [(¯) /emdash]        % &'m
+              [(Þ) /pi]            % &TH
+              [(¨) /ellipsis]      % &':
+              [(Ø) /notequal]      % &O/
+              [(Î) /fi]            % &I>
+              [(Ê) /fl]            % &E>
+] def
+/math-chars  [[(­) /minus]         % &--
+              [(*) /multiply]
+              [(/) /divide]
+              [(Ø) /notequal]      % &O/
+              [(«) /arrowdblleft]  % &<<
+              [(») /arrowdblright] % &>>
+              [(æ) /infinity]      % &ae
+              [([) /arrowleft]
+              [(]) /arrowright]
+] def
+/kbd-chars   [[(`)    /quoteleft]
+              [(´)    /quoteright]    % &''
+              [(')    /quotesingle]
+] def
+/greek-chars [[(p)    /pi]
+              [(r)    /rho]
+              [(ø)    /phi]      % &o/
+              [(s)    /sigma]
+              [(t)    /theta]
+              [(O)    /Omega]
+] def
+
+
+% Font sizes and other spacing
+/fsT  12 def  % size for most text
+/fsC   9 def  % size for comments
+/fsP  10 def  % prefix-arg doco
+/fsH  14 def  % headings
+/fsN  12 def  % page numbers
+/fsF  24 def  % front cover title
+/body-small-vs   fsT 2 div def    % A small vertical spacing in between body text lines
+/begin-sect-vs   fsT 6 div def    % Vert space after heading, before body text
+/end-sect-vs     fsH def         % Vertical spacing at the end of a section
+
+
+% Load, encode, scale, and store fonts for the document
+
+% FONT CONSIDERATIONS:
+%
+% The following categories of text are used by this document,
+% and they have these font requirements:
+%
+% HEADING  (/FH)
+%     Should be sans-serif (I think), and boldface.
+%     No other particular requirements.
+%
+% KEYSTROKE (/FK, /FKC)
+%     Should be monospace.
+%     Zero should not be slashed or dotted; should be distinct from O.
+%     Backtick and apostrophe should be distinct and symmetric.
+%     Should also have straight-quote and straight-double-quote (' and ").
+%     Capital/lower pairs (Zz, Ss, Xx) should be distinguishable.
+%     The following characters are used, and should look good: [] () <> ^ % & | # _
+%
+% TEXT (/FT, /FPT)
+%     Should be upright serif typeface (I think).
+%     Must include the following: endash, emdash, quoteright, quoteleft, quotedblleft, quotedblright,
+%                                 hyphen, ellipsis.
+%     Should come in a boldface (/FB) and an italic (/FI) version.
+%     Ligatures might be nice (fl, fi, Fl, Fi).
+%     Would be nice if we could find one with left-arrow, right-arrow, both-arrow.
+%
+% VARIABLES (/FV, /FVC)
+%     Should be an italic serif typeface.
+%     Must include the following: endash, emdash, quotedblleft, quotedblright, hyphen, ellipsis,
+%                                 multiply, divide.
+%     Ligatures might be nice (fl, fi, Fl, Fi).
+%
+% PREFIX-ARGS (/FPA)
+%     Should be oblique sans-serif.
+%     Must include the following: minus, notequal
+%
+% PREFIX-ARG DESCRIPTIVE TEXT (/FPT)
+%     Should be italic serif typeface.
+%     Pretty much the same requirements as regular text.
+%
+% MATH SYMBOLS (/FM)
+%     Must include the following: pi, sigma, theta, Omega, plusminus, notequal, infinity, minus
+%
+% COMMENTS (/FC)
+%     Should be a smaller, italic version of TEXT (/FT).
+
+% %%%--->  /Font-varname size  /Font-internalname  [overrides]  (filename)  /FontName   setupfont  --
+% /setupfont
+% {
+%     2 index CAB EncodeFont
+%     findfont exch scalefont def
+% } def
+
+
+% Re-encode fonts as needed:
+/Typeface-for-Keystrokes      kbd-chars    Typeface-for-Keystrokes     EncodeFont
+/Typeface-for-Text            punc-chars   Typeface-for-Text           EncodeFont
+/Typeface-for-Text-Italic     punc-chars   Typeface-for-Text-Italic    EncodeFont
+/Typeface-for-Greek           greek-chars  Typeface-for-Greek          EncodeFont
+/Typeface-for-Prefix-Args     punc-chars   Typeface-for-Prefix-Args    EncodeFont
+/Typeface-for-Math            math-chars   Typeface-for-Math           EncodeFont
+/Typeface-for-Headings        punc-chars   Typeface-for-Headings       EncodeFont
+/Typeface-for-Page-Headings   punc-chars   Typeface-for-Page-Headings  EncodeFont
+/Typeface-for-Front-Cover     punc-chars   Typeface-for-Front-Cover    EncodeFont
+
+/SF {findfont exch scalefont def}def
+/FK  fsT  /Typeface-for-Keystrokes     SF
+/FT  fsT  /Typeface-for-Text           SF
+/FI  fsT  /Typeface-for-Text-Italic    SF
+/FV  fsT  /Typeface-for-Text-Italic    SF
+/FG  fsT  /Typeface-for-Greek          SF
+/FC  fsT  /Typeface-for-Text-Italic    SF
+/FPA fsP  /Typeface-for-Prefix-Args    SF
+/FPT fsP  /Typeface-for-Text           SF
+/FM  fsT  /Typeface-for-Math           SF
+/FH  fsH  /Typeface-for-Headings       SF
+/FPN fsN  /Typeface-for-Page-Headings  SF
+/FF  fsF  /Typeface-for-Front-Cover    SF
+
+
+% Superscript/subscript fonts.
+% FTS: Text superscript font. For numeric exponents.
+% Use this only when numeric superscripts are not available in the base font,
+% because these don't look as good. Most fonts have at least ² and ³.
+/FTS   FT  [0.6 0 0 0.6   0  fsT 0.3 mul] makefont def
+% FVS: Superscript font for (lowercase) variables, e.g. x and y.
+/FVS   FV  [0.6 0 0 0.6   1  fsT 0.4 mul] makefont def
+% FVs: Subscript font for (lowercase) variables, e.g. x and y.
+/FVs   FV  [0.6 0 0 0.6   0  fsT -0.2 mul] makefont def
+
+% Horizontal positions
+FK setfont
+/xp   lx (I H) s-width add def     % Start of letter prefix
+/xk   xp /space s-width add def    % start of command keystroke
+/xt   lx (C-x * G    ) s-width add def   % start of text
+FPA setfont
+/xpa  xt 27 add def                     % Prefix arg
+% prefix operator position: centered on equals sign
+/xpo  xpa (n )    stringwidth pop add (=) stringwidth pop 2 div add def
+/xpv  xpa (n = )  stringwidth pop add def   % prefix value
+/xpvr xpv (4,5,6) stringwidth pop add def   % prefix value (right-justified)
+/xpt  xpvr 9 add def                        % prefix text description
+/ts   {1 x+} def    % "tiny space" for fake-kerning
+
+
+% Starting a new line (and similar)
+/nl   {lx  fsT  x=y-} def
+/nlh  {lx  fsH  x=y-  FH setfont} def   % header
+/nlc  {lx  fsC  x=y-  FC setfont} def   % comment (left-margin)
+/nlct {xt  fsC  x=y-  FC setfont} def   % comment (text column)
+/nlp  {xpa fsP  x=y-  FPA setfont} def
+/small-vs {body-small-vs y-} def
+/sect-vs  {end-sect-vs y-} def               % vertical space after a section
+/nl* {nl Hline} def   % temp for debugging
+
+
+% Show a heading
+/head
 {
-    EOP
-    count 0 ne
-    {
-        gsave
-          newpath
-          0 740 moveto
-          612 740 lineto
-          612 760 lineto
-          0 760 lineto
-          closepath
-          1.0  0.9  0.9  setrgbcolor fill
+    % record index entry -- add to front of existing array
+    /index-entries
+    [
+        [ 3 index  page-label ]
+        index-entries aload pop
+    ] def
+    
+    nlh show
+    begin-sect-vs y-
+} def
 
-          /Times-Roman 16 selectfont
-          1.0  0.0  0.0  setrgbcolor
-          40 745 moveto
-          (Stack not empty at page-end: )show
-          count 10 string cvs show
-          count 1 eq
-          {( entry remains.)}
-          {( entries remain.)}ifelse
-          show
-        grestore
+% Show text in comment style
+/com
+{
+    2 dict begin
+    /com-save-m matrix currentmatrix def
+    /com-save-f currentfont def
+    FI setfont
+
+    fsC fsT div dup scale
+    s-show
+
+    com-save-f setfont
+    com-save-m setmatrix
+    end
+} def
+
+% Show text in prefix-documentation style
+/pdoc
+{
+    2 dict begin
+    /com-save-m matrix currentmatrix def
+    /com-save-f currentfont def
+    FT setfont
+
+    fsP fsT div dup scale
+    s-show
+
+    com-save-f setfont
+    com-save-m setmatrix
+    end
+} def
+
+% Show a prefix key sequence on the current line.
+/pk {FK setfont xp x= s-rshow} def
+
+% Show a prefix chord on the current line
+/pc {FK setfont xk x= s-rshow} def
+
+% Show a command key sequence on the current line.
+% Note: positions point, and sets font, for subsequent text documentation.
+/k  {FK setfont xk x= s-show  xt x= FT setfont}def
+
+% Show a data-entry expression, then position for text description
+/data-ent
+{
+    FK setfont
+    lx x=   s-show
+    xt x=
+    FT setfont
+} def
+
+% Describe numeric prefix options
+/pfx
+{
+    FPA  setfont
+    xpa  x= (n) show
+    xpv  x=     s-show
+    FM   setfont
+    xpo  x=     s-cshow
+    xpt  x=
+    FPT  setfont
+} def
+/pfx-x
+{
+    FPA  setfont
+    xpa  x= (x) show
+    xpv  x=     s-show
+    FM   setfont
+    xpo  x=     s-cshow
+    xpt  x=
+    FPT  setfont
+} def
+/pfx-r
+{
+    FPA  setfont
+    xpa  x= (n) show
+    xpvr x=     s-rshow
+    FM   setfont
+    xpo  x=     s-cshow
+    xpt  x=
+    FPT  setfont
+} def
+/pfx-any
+{
+    FPA  setfont
+    xpa  x= (any arg) show
+    xpt  x=
+    FPT  setfont
+} def
+
+% Calc command meant to be used from other buffers
+/buf-cmd
+{
+    FK setfont
+    lx x= s-show
+    xt x=
+    FT setfont
+} def
+
+% Page numbers and page headings
+/end-of-page
+{
+    page-label () ne
+    {
+        FPN setfont
+        rx ty  moveto   fsN y-
+        [(Page ) page-label] s-rshow
     }if
+
+    % Temp for development: outline each page (within margins)
+    % 0 setlinewidth
+    % lx by moveto rx ty rectto stroke
+} def
+
+% Misc shortcuts
+/vx [FV(x)] def    % variable "x"
+/vy [FV(y)] def    % variable "y"
+/vz [FV(z)] def    % variable "z"
+/vn [FV(n)] def    % variable "n"
+/vnth [FV(nth)] def    % variable "nth"
+/ss /s-show load def
+
+% Experiment to show a fraction a/b
+% assumes args are lowercase letters
+/a-over-b
+{
+    0   fsT 5 div  rmoveto
+    exch s-show
+
+    0    fsT -5 div  rmoveto
+    (/) show
+
+    fsT  -8 div  fsT -5 div  rmoveto
+    s-show
+    0  fsT  5 div   rmoveto
+} def
+
+% Storage for temporary x-positions
+/tx1 0 def
+/tx2 0 def
+/tx3 0 def
+/tx4 0 def
+
+% Index entries
+/index-entries [] def
+
+%%%-------------------------------------------------------------------------------------
+% The reference materials are stored in blocks; this makes it easier
+% to rearrange (to make them fit on the pages, for example).
+
+/data-entry
+{
+    (Data Entry) head
+
+    % This section needs a bit more space in the left column
+    2 dict begin
+    % This one seems to be the longest data-entry expression:
+    /complex-rect  [FK (\() [FV( real )] (,) [FV( imag )] (\)  )]  def
+    % Redefine text-x position for this section:
+    /xt  lx  complex-rect s-width add   def
+
+    nl  [(_) FV(digits)] data-ent
+                ((underscore))com  ( Negative sign in data entry)ss
+    nl  [[FV(n )] (:) [FV( d)]] data-ent
+                [(Fraction: ) vn ( is numerator, ) [FV(d)] ( is denominator)]ss
+    nl  complex-rect data-ent
+                (Complex (rectangular form))ss
+    nl  [(\() [FV( r )] (;) [FG( t )] (\)  )]data-ent
+                (Complex (polar form))ss
+    nl  [([) [FV( a )] (,) [FV( b )] (,)   [FV( ¨ )] (])] data-ent  (Vector. Nest vectors to make a matrix.)ss
+    nl  [(") [FV(hello)] (")] data-ent     (String: vector of ASCII codes)ss
+    nl  [[FV(16){ts}](h) [FV( 40){ts}](m)  [FV( 20){ts}](s)]data-ent
+                [(HMS form (hour, minute, second))]ss
+    nl  [[FV(16){ts}](@) [FV( 40){ts}](')  [FV( 20){ts}](")]data-ent
+                [(HMS form (degree, minute, second))]ss
+    nl  [[FV(16){ts}](o) [FV( 40){ts}](')  [FV( 20){ts}](")]data-ent
+                [(HMS form \() [FK(o)] ( represents «degree»\))]ss
+    nl  [(´<) [FV(date)] (>)]data-ent
+                [(Date form \(rather Êexible\))]ss
+    nl  [[FV(base )] (#) [FV( number)]]data-ent
+                [(Use arbitrary radix. Example: ) FK(16#09AB)]ss
+    nl  [[FV(mean )] (p) [FG( s )]]data-ent
+                [(Error form: ) FV(mean ) FM /plusminus FV( std dev)]ss
+    nl  [[FV(num )] (M) [FV( modulus)]]data-ent
+                [(Modulo form.)]ss
+    nl  [([)  [FV( num )] (..) [FV( num )]  (])]data-ent   (Closed interval)ss
+    nl  [(\() [FV( num )] (..) [FV( num )] (\))]data-ent   (Open interval  )ss
+            [(\(Mixed-intervals ¯ ) [FK(\(..])] ( or ) [FK([..\))] ( ¯ are also allowed)]com
+    nl  (´)data-ent        ((apostrophe))com [{/tx1 CX store}( Enter expression in algebraic mode)]ss
+    nl  (`)data-ent        ((backtick))com   [{tx1 x=}       ( Edit top of stack. ) [FK(C-c C-c)] ( to return)]ss
+
+    end
+    sect-vs
+} def
+
+/stack-ops
+{
+    (Stack Operations) head
+
+    nl      (RET)k     [(Duplicate ) vx]ss
+    nlp  (=) (0) pfx   (duplicate entire stack)pdoc
+    nlp  (>) (0) pfx   [(duplicate ) vn ( stack items)]pdoc
+    nlp  (<) (0) pfx   [(copy the ) vnth ( stack item)]pdoc
+
+    nl  (C-)pc (j)k    [(Duplicate ) vy]ss
+    nlp  (=) (0) pfx   (duplicate entire stack)pdoc
+                       % [{lx x=} FC (or ) FKC(LFD)]ss
+    nlp  (>) (0) pfx   [(duplicate ) vn ( stack items)]pdoc
+    nlp  (<) (0) pfx   [(copy the ) vnth ( stack item)]pdoc
+
+    nl       (DEL)k    [(Delete (pop) ) vx]ss
+    nlp  (=) (0) pfx   (clear entire stack)pdoc
+    nlp  (>) (0) pfx   [(delete ) vn ( stack items)]pdoc
+    nlp  (<) (0) pfx   [(delete ) vnth ( stack item)]pdoc
+
+    nl       (TAB)k    [(Swap ) vx ( & ) vy]ss
+    nlp  (=) (0) pfx   (reverse entire stack)pdoc
+    nlp  (>) (0) pfx   [(move ) vx ( to position ) vn (, rotate items downward)]pdoc
+    nlp  (<) (0) pfx   [(rotate entire stack downward ) vn ( times)]pdoc
+
+    nl (M-)pc (TAB)k   [(Same as ) [FK(TAB)] (, but rotates upward)]ss
+    small-vs
+
+    nl         (d [)k  [(Move stack pointer up)   {(down)s-width x+} {[(¯ «) {/tx1 CX store} (freezes» part of the stack)]com}]ss
+    nl         (d ])k  [(Move stack pointer down)                    {[{tx1 x=} (as a place to hold values)]com}]ss
+    small-vs
+
+    nl (M-3)pk (m g)k  [(Current stack size)]ss
+    nl         (~)k    [(Pop top-of-stack, and use it as preÎx for the next command)]ss
+    nl         (K)k    (Perform next operation, but keep arguments on stack)ss
+    nl (M-)pc  (RET)k  (Push arguments to last operation back onto stack)ss
+    sect-vs
+} def
+
+/meta-ops
+{
+    (Meta operations) head
+
+    nl        (U)k    (Undo)ss
+    nl        (D)k    (Redo)ss
+    nl (M-)pc (RET)k  (Recall last operation's arguments)ss
+    nl        (`)k    ((backtick))com [( Edit top of stack. ) [FK(C-c C-c)] ( to return)]ss
+    nl        (w)k    (Display recent error messages)ss
+    nl (C-)pc (g)k    (Abort command in progress)ss
+    nl (C-x * 0)buf-cmd ((zero))com [( Reset calculator to initial state)]ss
+    sect-vs
+} def
+
+/display-modes
+{
+    (Display Modes) head
+
+    nl         (I)k    [(Note: ) [FK(I)] ( preÎx before any display mode affects only the top-of-stack,)]com
+    nlct               [(and only temporarily. Handy for base conversions, and prior to ) [FK(C-k)] ( copying.)]com
+    nl         (P)k    (Precision)ss
+    nl         (m r)k  (Radians)ss
+    nl         (m d)k  (Degrees )ss ((default))com
+
+    nl         (d 2)k  [(Display in ) {/tx1 CX store} (binary)]ss
+    nl         (d 8)k  [{tx1 x=} (octal)]ss
+    nl         (d 0)k  [{tx1 x=} (decimal)]ss
+    nl         (d 6)k  [{tx1 x=} (hexadecimal)]ss
+    nl         (d r)k  [(\(with preÎx\))]com [{tx1 x=} (arbitrary radix from 2¬36)]ss
+
+    small-vs
+    nl         (d f)k  (Fixed-point display)ss
+    nl         (d n)k  [(Floating-point ) {((normal))com} ( display)]ss
+    nl         (d s)k  [(ScientiÎc notation)]ss
+    nl         (d e)k  (Engineering notation)ss
+    small-vs
+    nl         (d l)k  [(Line numbers on/off ) {((useful before copy/kill))com}]ss
+    nl         (d o)k  (Fraction display. Enter one or two characters)ss
+    nlct               [FT (One char \(e.g. )  [FK(:)]  (\) for improper fraction display: ) [FK(51:8)]]com
+    nlct               [FT (Two chars \(e.g. ) [FK(+/)] (\) for mixed-fraction display: )    [FK(6+3/8)]]com
+    small-vs
+    nl         (m a)k  (Toggle algebraic/normal data entry mode)ss
+    nl         (d B)k  («Big» display mode, for viewing algebraic formulas)ss
+    nl         (d N)k  (Normal display mode)ss
+    sect-vs
+} def
+
+/killing-etc
+{
+    (Killing, Copying, Yanking) head
+
+    nl (C-)pc  (k)k     (Kill stack item at cursor)ss
+    nl (M-)pc  (k)k     (Copy stack item at cursor to kill ring)ss
+    nl (C-)pc  (w)k     (Kill stack item between mark & point)ss
+    nl (M-)pc  (w)k     (Copy stack item between mark & point)ss
+    nlp (>) (0) pfx     [(copy/kill ) vn ( lines starting at the current stack position)]pdoc
+    nlp (<) (0) pfx     [(copy/kill ) vn ( lines above the current stack position)]pdoc
+    nl (C-)pc  (y)k     (Yank from kill ring)ss
+    nl         (y)k     (Copies top of stack into most-recently-used buffer)ss
+    small-vs
+
+    nlc (Note: the following commands are to be used in Emacs buffers other than the Calc buffer.)com
+    nl (C-x * g)buf-cmd (Parse region in current buffer, into a vector of values)ss
+    nlp (=) (0) pfx     [(grabs current line)]pdoc
+    nlp (>) (0) pfx     [(grabs from point to ) vn ( lines forward)]pdoc
+    nl (C-x * r)buf-cmd (Parse region in current buffer as a rectangle (matrix) of values)ss
+    nlp pfx-any         (matrix will have only 1 column)pdoc
+    nl (C-x * :)buf-cmd (Grab a rectangle of numbers in columns, sum them)ss
+    nl (C-x * _)buf-cmd (Grab a rectangle of numbers in rows, sum them)ss
+    small-vs
+    nl (C-x * y)buf-cmd [(Copies top of stack HERE ) {((in some other buffer))com}]ss
+    sect-vs
+} def
+
+/rounding
+{
+    (Rounding) head
+
+    nl         (R)k    (Round to nearest integer)ss
+    nl  (I)pk  (R)k    [(Truncate to integer (round towards zero) ) {((also truncates dates))com}]ss
+    ejr? {
+    nl  (z)pk (r)k     [(Round to ) [FV(preÎx)] ( decimal places ) {[(\(negative preÎx means round to left of decimal\))]com}]ss
+    }{
+    nl [(´)FT(round\($,)vn(\))]ss     [{xt x=} (Round to ) [FV(pfx)] ( decimal places ) {((negative n means round to left of decimal))com}]ss
+    } ifelse
+    nl        (F)k     [(Floor; truncate toward )  [FM(­æ)] ( ) {((also truncates dates))com}]ss
+    nl  (I)pk (F)k     [(Ceiling; truncate toward ) [FM(+æ)]]ss
+    nl  (1)pk (%)k     [(Fractional part of ) vx]ss
+    sect-vs
+} def
+
+/general-math
+{
+    (General arithmetic) head
+
+    nl         (&)k    [(Inverse: 1/) FV(x)]ss
+    nl         (\\)k   (Integer division)ss
+    nl         (:)k    (Fraction division)ss
+    nl         (%)k    (Modulo)ss
+    nl         (A)k    [(|)vx {ts}(| ¯ absolute value, or complex magnitude)]ss
+    nl         (f s)k  (Sign operator, returns ­1, 0, or 1)ss
+    nl         (f n)k  [(Minimum of )vx( and )vy]ss
+    nl         (f x)k  [(Maximum of )vx( and )vy]ss
+    nl         (f [)k  [(Decrement )vx]ss
+    nl         (f ])k  [(Increment )vy]ss
+    small-vs
+    nl         (=)k    [(Evaluate ) {((formula, variable, etc.))com}]ss
+    nlct               [[FT(some predeÎned variables: )] (e, pi, i, phi, gamma, inf, nan)]com
+    sect-vs
+} def
+
+/algebraic-ops
+{
+    (Algebraic operations) head
+
+    nl         (Q)k    (Square root)ss
+    nl (I)pk   (Q)k    [vx(²)]ss
+    nl         (L)k    [(Natural logarithm: ln\()vx(\))]ss
+    nl         (E)k    [(e) FVS(x)]ss
+    nl (I)pk   (L)k    [(Also e) FVS(x)]ss
+    nl (H)pk   (L)k    [(Common logarithm ) {((base 10))com}]ss
+    nl (I H)pk (L)k    [(10)FVS(x)]ss
+    nl         (B)k    [(log)[FVs(x)] (\()vy(\)) ]ss
+    nl         (^)k    [(General exponent: y)FVS(x)]ss
+    nl (I)pk   (^)k    [(General root: ) {vy vx radical}]ss
+    nl         (f h)k  [(Hypotenuse operation: ) {[vx(² + )vy(²)] root}]ss
+    sect-vs
+} def
+
+/trigonometry
+{
+    (Trigonometry) head
+
+    nlc [(    Note: ) [FK(I)] ( preÎx for inverse; ) [FK(H)] ( preÎx for hyperbolic)]com
+    nl         (S)k    (Sine)ss
+    nl         (C)k    (Cosine)ss
+    nl         (T)k    (Tangent)ss
+  % nl         (f T)k  [(Two-argument arctangent: \() [FV(y/x)] (\))]ss
+    nl         (f T)k  [(Two-argument arctangent: \() {vy vx a-over-b} (\))]ss
+    nl         (P)k    [(Push ) [FG(p)] ( onto the stack)]ss
+    sect-vs
+} def
+
+/complex-numbers
+{
+    (Complex numbers) head
+
+    nl         (J)k    (Conjugate)ss
+    nl         (A)k    (Magnitude (absolute value))ss
+    nl         (G)k    (Argument (angle))ss
+    nl         (f r)k  (Real portion)ss
+    nl         (f i)k  (Imaginary portion)ss
+    nl         (d c)k  [(Display as \() [FV(real)] (,) [FV(imag)] (\)  ) {((default))com}]ss
+    nl         (d i)k  [(Display as )   [FV(real)] (+) [FV(imag)] ( i)]ss
+    nl         (c p)k  [(Convert rectangular ) [FM([) {-2 x+} (])] ( polar)]ss
+    nl         (m p)k  (Toggle between polar and rect display preference)ss
+    sect-vs
+} def
+
+/percentages
+{
+    (Percentages) head
+
+    % arbitrarily line up arrows, might look nicer that way:
+    1 dict begin
+    /conv-str (Convert a decimal to a percent: 0.085 ) def 
+    nl   (M-)pc (%)k    [(Convert )vx( to percentage:) {xt x= conv-str s-width x+ (8.5 )s-rshow}  [FM(])] ( 8.5%)]ss
+    nl          (c %)k  [conv-str [FM(])] ( 8.5%)]ss
+    end
+    nl  (M-)pc  (% *)k  [(Compute ) vx {ts} (% of ) vy]ss
+    nl (/ &)pk  (c %)k  [(Compute what percent ) vx ( is of ) vy]ss
+    nl          (b %)k  [(Compute percent change from ) vy ( to ) vx]ss
+    sect-vs
+} def
+
+/combinatorics
+{
+    (Combinatorics) head
+
+    nl         (k g)k    (GCD of two integers or fractions)ss
+    nl         (k l)k    (LCM of two integers or fractions)ss
+    nl         (k E)k    [(Extended GCD: returns vector )[FK([)] [FV(g, a, b)] [FK(])] (, where ) [FV(g)] ( is the GCD, and ) [FV(g)][FM( = )][FV(ax)][FM( + )][FV(by)](.)]ss
+    nl         (!)k      (Factorial function)ss
+    nl         (k g)k    (Euler gamma function)ss
+    nl         (k d)k    (Double factorial)ss
+    small-vs
+    nl         (k c)k    [(Combinations: \() vy ( choose ) vx (\))]ss
+    nl  (H)pk  (k c)k    [(Permutations: \() vy ( permute ) vx (\))]ss
+    nl         (k f)k    [(Compute prime factors of ) vx]ss
+    nl         (k p)k    [(Test whether )vx( is prime)]ss
+    nl         (k n)k    [(Compute next prime larger than )vx]ss
+    nl  (I)pk  (k n)k    [(Compute next prime smaller than )vx]ss
+    nl         (k t)k    [(Euler´s totient function ) [FG(ø)] (\()vn(\))]ss
+    sect-vs
+} def
+
+/random-numbers
+{
+    (Random Numbers) head
+
+    nl    (k r)k     [(Random number in the interval ) [FK([)] (0 , ) vx [FK(\))]]ss
+    nlct             [(Result will be integer or Êoat, depending on x's type)]com
+    nlp   pfx-any    (Use argument instead of top-of-stack)pdoc
+    nl    (k a)k     (Random-again: make another with the same parameters)ss
+    small-vs
+
+    nl    (k h)k     [(ShufÊe: Pick )vx( elements from )vy(, without duplicates)]ss
+    nlct             [vy ( may be a vector )[FT((set))] (, interval, or error form)]com
+    nlct             [(If )vy( is an integer or Êoat, values are drawn from the interval ) [FK([)] (0 , ) vy [FK(\))]]com
+    nlp  (>) ( 0)pfx [(Draw )vn( elements from )vx( ) {[(\(instead of )vy(\))]com}] pdoc
+    nlp  (=) (­1)pfx [(ShufÊe elements of vector )]pdoc
+    sect-vs
+}def
+
+/conversions
+{
+    (Conversions) head
+
+    nl   (c f)k  [(Convert to Êoating-point)]ss
+    nl   (c F)k  (Convert to fraction approximation)ss
+    nl   (c d)k  (Convert to degrees (from radians))ss
+    nl   (c r)k  (Convert to radians (from degrees))ss
+    nl   (c h)k  (convert angle to HMS form)ss
+    sect-vs
+}def
+
+/binary
+{
+    (Binary) head
+
+    nl   (b c)k      («Clip» to current word size)ss
+    nlp  (>) (0)pfx  (word size (default: 32))pdoc
+    nl   (b w)k      (Set word size, in bits)ss
+    nl   (b a)k      (Bitwise AND)ss
+    nl   (b o)k      (Bitwise OR)ss
+    nl   (b x)k      (Bitwise XOR)ss
+    nl   (b n)k      (Bitwise NOT)ss
+    nl   (b u)k      (Unpack binary number into a vector of bit position indices)ss
+    nl   (b p)k      (Pack such a vector into a binary number)ss
+    small-vs
+    nlc  (There are also a ton of shift & rotate operations not listed here)com
+    sect-vs
+}def
+
+/logical
+{
+    (Logical operations) head
+    nlc (Note: 0 represents «false»; 1 (or any nonzero value) represents «true»)com
+
+    nl    (a =)k    [(Does )vy( equal )vx(?)]ss
+    nl    (a #)k    [(Is )vy( not equal to )vx(?)]ss
+    nl    (a <)k    [(Is )vy( less than )vx(?)]ss
+    nl    (a [)k    [(Is )vy( less than or equal to )vx(?)]ss
+    nl    (a >)k    [(Is )vy( greater than )vx(?)]ss
+    nl    (a ])k    [(Is )vy( greater than or equal to )vx(?)]ss
+    nl    (a {)k    [(Is )vy( in the interval or set )vx(?)]ss
+    small-vs
+
+    nl    (a &)k    [(AND: )vx( and )vy( both true?)]ss
+    nl    (a |)k    [(OR: Either )vx( or )vy( true?)]ss
+    nl    (a !)k    [(NOT: Invert truth of )vx]ss
+    nl    (a :)k    [(Decision: If )vz( is true, then )vy(; else )vx]ss
+    small-vs
+
+    nl    
+    sect-vs
+}def
+
+/date-time
+{
+    (Date-Time operations) head
+
+    nl        (t N)k    (Push current date/time onto stack)ss
+    nl        (t N F)k  (Current date only)ss
+    nl        (x time)k (Current time only)ss
+    nl        (t U)k    (Convert date to/from Unix epoch seconds)ss
+    nl        (t D)k    (Convert date to/from julian number)ss
+    nl        (t C)k    (Convert time between time zones)ss
+    nl   (I)pk  (R)k    [(Truncate date ) {((remove time portion))com}]ss
+    ejr?
+    {
+        small-vs
+        nl       (z s)k    (Convert time to/from seconds since midnight )ss ( (also converts date to HMS form))com
+        nl (H)pk (z s)k    (Convert seconds without making the result a modulo form)ss
+        nl (I)pk (z s)k    (Convert HMS form or seconds since midnight to a fraction)ss
+    } if
+    small-vs
+    nl        (t P)k    (Extract date/time components:)ss
+    nlp  (=) (1,2,3) pfx-r  (year, month, or day)pdoc
+    nlp  (=) (4,5,6) pfx-r  (hour, minute, or second)pdoc
+    nlp  (=)     (7) pfx-r  [(weekday: 0=Sunday ) [FM /arrowright] ( 6=Saturday)]pdoc
+    nlp  (=)     (8) pfx-r  (day of year)pdoc
+    nlp  (=)     (9) pfx-r  (time, as HMS form)pdoc
+
+    nl        (v P)k    (Pack stack elements into a date or time:)ss
+    nlp  (=)    (­3) pfx-r  [(Make a time (HMS) from top three stack elements \() [FV(hour ) [FK(z)] (, minute )[FK(y)] (, second )[FK(x)] (\))]]pdoc
+    nlp  (=)   (­14) pfx-r  [(Make a date (YMD) from top three stack elements \() [FV(year ) [FK(z)] (, month ) [FK(y)] (, day )   [FK(x)] (\))]]pdoc
+    nlp  (=)   (­15) pfx-r  [(Make a date/time from top six stack elements)]pdoc
+    small-vs
+
+    nl          (t M)k  [(Change day-of-month.  With no preÎx arg, becomes Îrst day of month)]ss
+    nlp  (=) (0)pfx     (last day of month)pdoc
+    nlp  (>) (0)pfx     [(change day to ) FV(n)]pdoc
+
+    nl          (t Y)k  [(Change day-of-year.  With no preÎx arg, becomes Îrst day of year)]ss
+    nlp  (=) (0)pfx     (last day of year)pdoc
+    nlp  (<) (0)pfx     [/fi(rst day of ) vnth ( month)]pdoc
+    nlp  (>) (0)pfx     [(change day-of-year to ) FV(n)]pdoc
+
+    nl          (t W)k  [(Change day-of-week  With no preÎx arg, becomes Sunday on or before ) vx]ss
+    nlp  (>) (0)pfx     [(speciÎed day-of-week on or before ) FV(x)]pdoc
+
+    small-vs
+    nl          (t I)k  [(Increment month \(add 1 month to ) vx (\))]ss
+    nlp  pfx-any        [(add ) vn ( months to date)]pdoc
+    
+    nl          (f [)k  [(Decrement date by 1 day, or date/time by 1 second)]ss
+    nl          (f ])k  [(Increment date by 1 day, or date/time by 1 second)]ss
+    small-vs
+    nl          (t +)k  (Add business days)ss
+    nl          (t -)k  (Subtract business days)ss
+    nl          (s H)k  (Edit business holidays)ss
+
+    sect-vs
+} def
+
+/units
+{
+    (Units) head
+    nlc (Note: enter units expressions in algebraic mode)com
+
+    nl    (u c)k    (Convert units)ss
+    nl    (u s)k    (Simplify units-expression)ss
+    nl    (u t)k    [(Convert temperature units ) FV(degF ) [FM([) {-2 x+} (])] ( degC)]ss
+    nl    (u r)k    (Strip units from expression at top of stack)ss
+    nl    (u v)k    (Display units table)ss
+    nl    (u g)k    [(Explain a speciÎed unit's description)]ss
+    nl    (u e)k    (Explain (in words) the units on the top of the stack)ss
+    nl    (u d)k    (Create a new unit from the expression on top of stack)ss
+    nl    (u p)k    [(Store user-deÎned units permanently ) {((in calc.el))com}]ss
+    small-vs
+
+    /tx1 lx store
+    /tx2 lx 30 add store
+    /tx3 tx2 [FT (composite)] s-width add store
+    nlc  tx1 x=  [FT (Common units)]com
+    nlc  tx2 x=  [FT (length)]com      tx3 x=  (m, in, ft, yd, mi, lyr, nmi, point)com
+    nlc  tx2 x=  [FT (volume)]com      tx3 x=  (l, gal, qt, pt, cup, ozfl)com
+    nlc  tx2 x=  [FT (time)]com        tx3 x=  (s, min, hr, day, wk, yr, Hz)com
+    nlc  tx2 x=  [FT (mass)]com        tx3 x=  (g, lb, oz, ton, t)com
+    nlc  tx2 x=  [FT (speed)]com       tx3 x=  (kph, mph, knot, c)com
+    nlc  tx2 x=  [FT (temp)]com        tx3 x=  (degF, degC, degK, dF, dC, dK)com
+    nlc  tx2 x=  [FT (composite)]com   tx3 x=  (mfi, vol, hms)com
+    nlc  tx2 x=  [FT (electrical)]com  tx3 x= [(J, W, A, V, ohm, ) [FM(O)]]com
+    nlc  tx2 x=  [FT (misc)]com        tx3 x=  (ga, N, dyn, bar, atm, psi, mol)com
+
+    sect-vs
+} def
+
+/storing-recalling
+{
+    (Storing/recalling) head
+
+    nl        (s s)k   [(Store )vx ( ) {((prompts for variable name))com}]ss
+    nl        (s t)k   [(Store )vx ( and pop it from stack)]ss
+    nl        (s x)k   (Exchange variable with top-of-stack)ss
+    nl        (s u)k   [(UndeÎne a variable)]ss
+    nl        (s e)k   (Edit a variable)ss
+    small-vs
+    nl        (s +)k   [(Pop )vx ( and add:) {50 x+ /tx1 CX store} FV (var ) [FM([)] ( var ) [FM(+)] ( x)]ss
+    nl        (s *)k   [(Pop )vx ( and multiply:) {tx1 x=} FV (var ) [FM([)] ( var ) [FM(*)] ( x)]ss
+    nl        (s -)k   [(Pop )vx ( and subtract:) {tx1 x=} FV (var ) [FM([)] ( var ) [FM(­)] ( x)]ss
+    nl (I)pk  (s -)k   [(Pop )vx ( and subtract:) {tx1 x=} FV (var ) [FM([)] ( x )   [FM(­)] ( var)]ss
+    nl        (s /)k   [(Pop )vx ( and divide:)   {tx1 x=} FV (var ) [FM([)] ( var ) [FM(/)] ( x)]ss
+    nl (I)pk  (s /)k   [(Pop )vx ( and divide:)   {tx1 x=} FV (var ) [FM([)] ( x )   [FM(/)] ( var)]ss
+
+    small-vs
+    nl        (s n)k   (Negate the value of a variable)ss
+    nl        (s &)k   (Invert the value of a variable)ss
+    nl        (s [)k   (Decrement the value of a variable)ss
+    nl        (s ])k   (Increment the value of a variable)ss
+    
+    sect-vs
+} def
+
+/stack-trail
+{
+    (Stack Trail) head
+
+    nl        (t d)k  (Toggle trail display)ss
+    nlp  (=) (0) pfx  (turn trail display off)pdoc
+    nlp  (=) (1) pfx  (turn it on)pdoc
+    nl        (t i)k  (Go into the trail window)ss
+    nl        (t o)k  (Go out of the trail window)ss
+    nl        (t [)k  [(Move to the Îrst trail entry)]ss
+    nl        (t ])k  (Move to the last trail entry)ss
+    nl        (t p)k  (Move to the previous trail entry)ss
+    nl        (t n)k  (Move to the next trail entry)ss
+    nl        (t b)k  (Move back one screen)ss
+    nl        (t f)k  (Move forward one screen)ss
+    nl        (t h)k  (Move trail pointer HERE (to the cursor point))ss
+    small-vs
+    nl        (t y)k  (Yank current trail entry to stack)ss
+    nl        (t k)k  (Kill the current trail line)ss
+    small-vs
+    nl        (t m)k  [(Mark; enter a string to be used as a label ) {((e.g. for searching))com}]ss
+    nl        (t s)k  (Search forward in trail)ss
+    nl        (t r)k  (Search backward in trail)ss
+    sect-vs
+}def
+
+/programming
+{
+    (Programming) head
+
+    nlc (Note: the letter Z in this section is uppercase, except where noted.)com
+    nl  (C-)pc  (x \()k  (Start recording keyboard macro)ss
+    nl  (C-)pc  (x \))k  (Stop recording)ss
+    nl          (X)k     [(Execute macro \(or use ) [FK(C-x e)] (\))]ss
+    small-vs
+    nl          (Z D)k   [(DeÎne: bind an existing calc command to a ) [FK(z)] (-key)]ss
+    nl [(z ) FV(key)]k   [[{((lowercase z))com}] ( Invoke ) [FK(z)] (-key binding)]ss
+    nl          (z ?)k   [[{((lowercase z))com}] ( List bound ) [FK(z)] (-keys ) {((while prompting to invoke one))com}]ss
+    nl          (Z F)k   (Store formula (algebraic expression) at top of stack)ss
+    nl          (Z G)k   (Retrieve stored formula)ss
+    nl          (Z K)k   [(Bind a keyboard macro to a ) [FK(z)] (-key)]ss
+    nl          (Z E)k   [(Edit keyboard macro, or formula, bound to a ) [FK(z)] (-key. ) [FK(C-c C-c)] ( to end)]ss
+    nl          (Z U)k   [(Forget a ) [FK(z)] (-key binding)]ss
+    nl          (Z P)k   [(Make a ) [FK(z)] (-key binding permanent ) {[(\(via config Île calc.el\))]com}]ss
+    sect-vs
+} def
+
+/flow-control
+{
+    (Flow control in keyboard macros) head
+    nlc [(Note: ) [FK(Z[)] (, ) [FK(Z:)] (, and ) [FK(Z|)] ( expect (and consume) a boolean value from the stack.)]com
+
+    nl [{xt x=}  FV (bool ) [FK(Z[)] ( ¨ ) [FK(Z])] ]ss 
+    nl [{xt x=}  FV (bool ) [FK(Z[)] ( ¨ ) [FK(Z:)] ( ¨ ) [FK(Z])] ]ss 
+    nl [{xt x=}  FV (bool ) [FK(Z[)] ( ¨ ) [FK(Z:)] ( bool ) [FK(Z|)] ( ¨ ) [FK(Z:)] ( bool ) [FK(Z|)] ( ¨ ) [FK(Z:)] ( ¨ ) [FK(Z])] ]ss
+    small-vs
+
+    nl          (Z [)k   [(IF ¯ pops )vx (, then if:)]ss
+    nlp (=) (0)pfx-x     [(skip to ) [FK(Z:)] ( or ) [FK(Z])]]pdoc
+    nlp /notequal (0)pfx-x     [(keep executing until ) [FK(Z:)] ( or ) [FK(Z])]]pdoc
+    nl          (Z :)k   (ELSE)ss
+    % nl [FK(Z: ) [FV(bool)] ( Z|)]ss  [FT {xt x=} (ELSE IF)]ss
+    nl (Z :)pk  (Z |)k   [(ELSE IF¯ pops )vx(, then if )vx [FM( Ø )] (0, keeps executing here, else skips to next ) [FK(Z:)] ( or )[FK(Z])]]ss
+    nl          (Z ])k   (END IF)ss
+    small-vs
+
+    nl          (Z <)k   [(Counted loop.  Pops )vx (, then loops for )vx ( times \()vx ( > 0\))]ss
+    nl          (Z >)k   (End counted loop)ss
+    % nl [FV(bool)]pk (Z |)k   [(Conditional break; pops )vx (, then if )vx [FM( Ø )] (0, breaks out of ) [FK(Z<) [FV( ¨ )] (Z>)] ( loop)]ss
+    nl          (Z |)k   [(Conditional break; pops )vx (, then if )vx [FM( Ø )] (0, breaks out of ) [FK(Z<) [FV( ¨ )] (Z>)] ( loop)]ss
+    small-vs
+
+    nl          (Z \()k  [(For loop: )vy ( is initial value, )vx ( is Înal value. ) {(Loop counter is pushed onto stack each iteration.)com}]ss
+    nl [FV(step)]pk (Z \))k  [(End for-loop. )vx ( is the step value, and is required.)]ss
+    small-vs
+
+    nl [FV(prompt)]pk  (Z #)k   [(Pause execution, prompt user to enter an algebraic expression. )vx ( is user prompt ) {((string))com}]ss
+    nl          (Z /)k   [(Break out of the innermost loop construct.)]ss
+    
+    sect-vs
+}def
+
+
+/vector-building
+{
+    (Vectors (building)) head
+
+    nl         (v x)k    [(Build vector of integers from 1 to ) FV(preÎx)]ss
+    nl (C-u)pk (v x)k    [(Build vector of ) vz ( elements, starting at ) vy ( and incrementing ) vx ( each time)]ss
+    nl         (v b)k    [(Build vector of ) [FV(preÎx)] ( copies of ) vx]ss
+    nl         (v i)k    [(Build an identity matrix of order ) [FV(preÎx)]]ss
+    nl         (v d)k    [(Create a diagonal square matrix \(of order ) [FV(preÎx)] (\) from ) vx]ss
+    small-vs
+
+    nl         (|)k      (Append (concatenate) two scalar or vector values)ss
+    nl (I)pk   (|)k      [(Prepend values \(in reverse order as ) [FK(|)] (\))]ss
+
+    sect-vs
+} def
+
+/vector-extraction
+{
+    (Vectors (extracting)) head
+
+    nl         (v h)k    [(Return head ) {[(\(Îrst element\))]com} ( of vector)]ss
+    nl (I)pk   (v h)k    (Return vector with head removed)ss
+    nl (I H)pk (v h)k    (Return last element of vector)ss
+    nl (H)pk   (v h)k    (Return vector with last element removed)ss
+    small-vs
+
+    nl         (v r)k    [(Extract ) vnth ( row/element of matrix/vector )]ss ((n is 1-based!))com
+    nlp (<) (0)pfx [(Return matrix/vector with ) vnth ( element removed)]pdoc
+    nlp (=) (0)pfx [(Extract diagonal values ) {((of a matrix))com}]pdoc
+    nl (C-u)pk (v r)k    [(Use ) vx ( as preÎx. May be an integer, vector, or interval.)]ss
+    nl         (v c)k    [(Like ) [FK(v r)] (, but acts column-wise instead of row-wise)]ss
+
+    sect-vs
+} def
+
+/vector-ops
+{
+    (Vector operations) head
+
+    nl         (v l)k    (Length of vector)ss
+    nl  (H)pk  (v l)k    (Dimensions of vector, matrix, etc)ss
+    nl         (v t)k    (Transpose matrix)ss
+    nl         (v v)k    (Reverse vector)ss
+    nl         (v a)k    [(Rearrange matrix to have ) [FV(preÎx)] ( columns)]ss
+    small-vs
+
+    nl         (V S)k    (Sort vector elements)ss
+    nl  (I)pk  (V S)k    (Sort, descending order)ss
+    nl         (V G)k    (Grade: produce sorting-index vector)ss
+    nl  (I)pk  (V G)k    (Grade, descending order)ss
+    nl         (v f)k    [(Find ) {((1-based))com} ( index of value )vx ( in vector )vy]ss
+    nl         (V H)k    [(Histogram; ) [FV(preÎx)] ( is number of bins)]ss
+    small-vs
+
+    nl         (V C)k    (Cross-product of two 1x3 vectors)ss
+    nl         (*)k      (Dot-product of two vectors, or matrix multiplication)ss
+    nl         (V T)k    [(Matrix trace ) {((diagonal elements))com}]ss
+    small-vs
+    nl         (&)k      (Matrix inverse)ss
+    nl         (V D)k    (Determinant of (square) matrix)ss
+    nl         (V J)k    (Complex conjugate transposition of matrix)ss
+    nl         (A)k      (Matrix norm (Frobenius norm))ss
+
+    sect-vs
+} def
+
+/linear-algebra
+{
+    (Linear algebra) head
+
+    nl         (&)k      (Matrix inverse)ss
+    nl         (V D)k    (Determinant of (square) matrix)ss
+    nl         (A)k      (Matrix norm (Frobenius norm))ss
+    nl         (v n)k    [(InÎnity-norm of vector, or row-norm of matrix)]ss
+    nl         (V N)k    (One-norm of vector, or column-norm of matrix)ss
+    nl         (V L)k    (LU-decomposition of matrix)ss
+    nl         (V K)k    (Kronecker product of two matrices)ss
+    sect-vs
+}def
+
+/vectors-as-sets
+{
+    (Vectors as sets) head
+
+    nl         (V #)k    (Count number of integers in a set)ss
+    nl         (V +)k    (Remove dups )ss   ((usually unnecessary; implicit in other set operations))com
+    nl         (V V)k    (Set union)ss
+    nl         (V ^)k    (Set intersection)ss
+    nl         (V -)k    (Set difference)ss
+    nl         (V X)k    (XOR two sets)ss
+    nl         (V ~)k    (Complement set )ss ((wrt real numbers))com
+    nl         (V F)k    (Convert set to integers)ss
+    nl         (V E)k    (Enumerate set; expand intervals )ss ((integer sets only))com
+    nl         (V :)k    (Convert set into an interval form that spans it)ss
+
+    nl         (a {)k    [(Boolean: Is )vy( in the set )vx(? )]ss [(\(also works if )vx( is an interval\))]com
+    sect-vs
+} def
+
+/mapping
+{
+    (Vector mapping/reduction) head
+
+    nl         (V M)k    (Map a function across one or more vectors )ss ((one for each function argument))com
+    nl         (V M :)k  (Map by columns )ss ((of a matrix))com
+    nl         (V M _)k  (Map by rows )ss ((of a matrix))com
+    small-vs
+
+    nl         (V R)k    (Reduce a vector, by applying a binary function repeatedly)ss
+    nl  (I)pk  (V R)k    (Reduce, applying function from right-to-left)ss
+    nl         (V R :)k  (Reduce by columns )ss ((of a matrix))com
+    nl         (V R _)k  (Reduce by rows )ss ((of a matrix))com
+    nl         (V U)k    (Reduce, accumulating intermediate values)ss
+    nl  (I)pk  (V U)k    (Reduce, right-to-left, accumulating values)ss
+    small-vs
+
+    nl         (V O)k    (Generalized outer product )ss [(\(two vectors, one function )  [FM(»)] ( matrix\))]com
+    nl         (V I)k    (Generalized inner product )ss [(\(two vectors, two functions ) [FM(»)] ( vector\))]com
+    small-vs
+
+    nl         (V A)k    [(Apply a function to a vector¯use the vector elements as function arguments)]ss
+    sect-vs
+} def
+
+
+%%%-------------------------------------------------------------------------------------
+% Page definitions
+
+/font-test-page
+{
+    lx ty M
+    font-test-section
     showpage
 } def
-%%EndResource
-%%BeginResource: EJRlib-procs 700 700
-/in   {72 mul} def
 
-%--->    /glyphname  glyphwidth  int
-% Returns the width of the specified character
-% in the current font and graphics state.
-/glyphwidth
+/front-cover
 {
-    matrix currentmatrix
-    gsave
-      nulldevice
-      setmatrix
-      0 0 moveto
-      glyphshow
-      currentpoint pop
-    grestore
+    /page-label () def
+    cx cy moveto
+    FF setfont
+    doc-title s-cshow
+
+    % 306 396 moveto
+    % /Times-Roman 24 selectfont
+    % (HEY PRINT THIS!) show
+
+    FPN setfont
+    rx by moveto
+    [{/tx1 CX store}   (Last updated: ) doc-date] s-rshow
+    tx1 x=  fsN y+  [(Version: ) doc-version] s-show
+
+    % % Registration marks for final booklet cutting:
+    % 1 dict begin
+    % /d 11 def
+    % newpath
+
+    % lx by M
+    % 0 d neg RM
+    % d neg 0 RL
+    % stroke
+
+    % lx ty M
+    % 0 d RM
+    % d neg 0 RL
+    % stroke
+
+    % rx ty M
+    % 0 d RM
+    % d 0 RL
+    % 0 d neg RL
+    % stroke
+
+    % rx by M
+    % 0 d neg RM
+    % d 0 RL
+    % 0 d RL
+    % stroke
+    % end
+
+    showpage
+
+}def
+
+/page1
+{
+    /page-label (1) def
+    lx ty M
+    data-entry
+    stack-ops
+    meta-ops
+    showpage
 } def
 
-%--->     (text)   c-show   --
-% Shows (text) such that the text baseline is at the current Y position
-% and the text is centered about the current X position.
-/c-show
+/page2
 {
-    dup s-len              % get string length
-    -2 div  0  rmoveto     % move relatively
-    s
+    /page-label (2) def
+    lx ty moveto
+    display-modes
+    killing-etc
+    rounding
+    showpage
 } def
 
-%--->     (text)   r-show   --
-% Shows (text) such that the text baseline is at the current Y position
-% and the text is right-justified to the current X position.
-/r-show
+/page3
 {
-    dup s-len             % get string length
-    neg  0  rmoveto       % move to starting position
-    gsave s grestore
+    /page-label (3) def
+    lx ty moveto
+    general-math
+    algebraic-ops
+    trigonometry
+    complex-numbers
+    showpage
 } def
 
-/MyEncodingVector   [ ISOLatin1Encoding aload pop ]  def
-%    MyEncodingVector    % start with this
-%    (¡)         0 get   % replace this character
-%    /radical      put   % with this glyph
-    MyEncodingVector
-    (¯)         0 get
-    /minus        put
-
-%--->     /new_name  /font_name    LatinEncode   --
-/LatinEncode
+/page4
 {
-    findfont              % Look up the old font
-    dup maxlength dict    % Make new font dictionary (same size as old one)
-    exch  % forall key/value pairs in old font
+    /page-label (4) def
+    lx ty moveto
+    percentages
+    combinatorics
+    random-numbers
+    conversions
+    binary
+    showpage
+} def
+
+/page5
+{
+    /page-label (5) def
+    lx ty moveto
+    date-time
+    units
+    showpage
+} def
+
+/page6
+{
+    /page-label (6) def
+    lx ty moveto
+    storing-recalling
+    stack-trail
+    showpage
+} def
+
+/page7
+{
+    /page-label (7) def
+    lx ty moveto
+
+    vector-building
+    vector-extraction
+    vectors-as-sets
+    showpage
+} def
+
+/page8
+{
+    /page-label (8) def
+    lx ty moveto
+
+    vector-ops
+    mapping
+    ejr? not {linear-algebra} if
+    showpage
+} def
+
+/page9
+{
+    /page-label (9) def
+    lx ty moveto
+
+    programming
+    logical
+    flow-control
+    showpage
+} def
+
+/page10
+{
+    /page-label () def
+    lx ty moveto
+
+    showpage
+} def
+
+/blank-page
+{
+    /page-label () def
+    showpage
+}def
+
+% Display one index entry at vertical position <y>
+%--->    [(label)  (pgnum)]   <one-ix>   --
+/one-ix
+{
+    fsH y-       % drop down
+
+    % draw dots
+    tx1 x=
     {
-	1 index  /FID eq     % Don't copy the /FID entry
-	{
-	    pop pop
-	}
-	% else
-	{
-	    1 index /Encoding eq   % replace the encoding vector
-	    {
-		pop MyEncodingVector
-	    } if
+        CX tx2 ge {exit} if
+        (. ) show
+    } loop
 
-	    2 index 3 1 roll put     % put it in the new dictionary
-	} ifelse
+    aload pop    % (section name)   (page num)
+    tx3 x= s-rshow   % show page num
 
+    % show section name
+    lx x=
+    dup s-bounds gsave 1 setgray rect fill grestore
+    s-show
+}def
+
+/index-page
+{
+    /page-label () def
+    lx ty moveto
+    % Display a heading, but don't add it to the index
+    1 dict begin    (Index) head    end
+
+    % Find longest, shortest strings
+    FT setfont
+    /tx1 999 store
+    /tx2   0 store
+    index-entries
+    {
+        0 get s-width
+        dup tx1 lt {/tx1 1 index store} if
+        dup tx2 gt {/tx2 1 index store} if
+        pop
     } forall
 
-    dup /FontName 2 index put   % Give the font its name
-    definefont pop
+    % convert to x-positions
+    % tx1 = left side of section name
+    % tx2 = end of dots
+    % tx3 = right side of page number
+    /tx1 tx1 lx add store
+    /tx2 tx2 lx add 60 add store
+    /tx3 tx2 (99) stringwidth pop add store
+
+    % Sort the list
+    /index-entries  index-entries {index-cmp} bubble-sort  store
+
+    4 dict begin
+    /cnt  index-entries length def
+    /c1   cnt 1 add 2 idiv def
+    /c2   cnt c1 sub def
+    /ty1  CY def
+    % Display the first half in one column
+    index-entries  0 c1 getinterval
+    {one-ix} forall
+    % Display the second half in a second column
+    gsave
+    ty1 y=
+    cx 0 translate
+    index-entries  c1 c2 getinterval
+    {one-ix} forall
+    grestore
+
+    % % Registration marks for final booklet cutting:
+    % 1 dict begin
+    % /d 11 def
+    % newpath
+
+    % lx by M
+    % 0 d neg RM
+    % d neg 0 RL
+    % 0 d RL
+    % stroke
+
+    % lx ty M
+    % d neg 0 RM
+    % 0 d RL
+    % d 0 RL
+    % stroke
+
+    % rx ty M
+    % 0 d RM
+    % d 0 RL
+    % stroke
+
+    % rx by M
+    % 0 d neg RM
+    % d 0 RL
+    % stroke
+    % end
+    
+    showpage
+} def
+/index-cmp
+{
+    1 index 0 get
+    1 index 0 get
+    2 copy lt
+    {
+        4 {pop} repeat
+        true
+    }
+    {
+        eq
+        {
+            1 get exch 1 get exch
+            lt
+        }
+        {pop pop false}
+        ifelse
+    }
+    ifelse
 } def
 
-%--->    string   s  --
-%--->    /glyph   s  --
-%--->    [array]  s  --
-%--->    font     s  --
-% Complex "show".
-/s
+
+%%%-------------------------------------------------------------------------------------
+% Output
+
+/eopp-backside?  false def
+
+/end-of-physical-page
 {
-                                % --->  thing
-    dup type                    % --->  thing  /thingtype
-    dup /nametype eq
+    Nup 4 eq
     {
-        pop dup                 % --->  /thing /thing
-        s-dict exch known not   % One of our special symbols?
-        {                       % Nope. Assume it's a glyph
-            /glyph              % --->  /thing /glyph
-        }if
+        eopp-backside?
+        {
+            <<
+                /xdiv   PPW 2 div
+                /ydiv   PPH 6 div
+            >> begin
+            0 setlinewidth
+    
+            % % Test of clipping region (??)
+            % 0.9 setgray
+            % newpath
+            % -600 -800 moveto
+            % 1200 -800 lineto
+            % 1200 1600 lineto
+            % -600 1600 lineto
+            % closepath fill
+    
+            % Staple marks
+            newpath
+            xdiv  ydiv        M  0  -36  RL
+            xdiv  ydiv 2 mul  M  0   36  RL
+            xdiv  ydiv 4 mul  M  0  -36  RL
+            xdiv  ydiv 5 mul  M  0   36  RL
+            stroke
+    
+            % Additional vertical registration marks
+            xdiv  0    M    0   20  RL
+            xdiv  PPH  M    0  -20  RL
+            stroke
+    
+            % Horizontal "cut here" line
+            PPW  PPH 2 div dup 0 exch M L stroke
+            end
+        } if
     } if
 
-    dup s-dict exch known not
-    {pop /unknown}if
+    /eopp-backside? eopp-backside? not def
+} def
 
-    s-dict exch get
-    exec
-}def
-/s-dict
-<<
-    /TAB-POS        0           % Internal variable
-    /settab                     % Store current x-position
+% booklet style!
+Nup
+[
+
+    1
     {
-        s-dict /TAB-POS currentpoint pop put
+        pop
+        front-cover
+        page1
+        page2
+        page3
+        page4
+        page5
+        page6
+        page7
+        page8
+        page9
+        page10
+        index-page
     }
 
-    /tab                        % Move to stored x-position
+    2
     {
-        s-dict /TAB-POS get currentpoint exch pop moveto
+        pop
+        page5 page6
+        page7 page4
+
+        page3 page8
+        page9 page2
+
+        page1 page10
+        index-page front-cover
     }
-
-    /glyph                      % A symbol (character-name) to be displayed
+    4
     {
-        currentfont /CharStrings get
-        1 index known not
-        {pop /.notdef}if
-        glyphshow
+        pop
+        page3 page8
+        page5 page6
+        page9 page2
+        page7 page4
+
+        page1 page10
+        blank-page blank-page
+        index-page front-cover
+        blank-page blank-page
     }
-
-    /stringtype                 % Ordinary string
-    {
-        show
-    }
-
-    /arraytype                  % An array. Recurse into it.
-    {
-        gsave
-        {s} forall
-        currentpoint grestore moveto
-    }
-
-    /dicttype                   % A dictionary
-    {
-        % Is it a font dictionary?
-        dup /FID known
-        {
-            % It is!  Change the font (persistently).
-            setfont
-        }
-        {
-            % Don't know what to do with any other kind of dictionary
-            /unknown s
-        }ifelse
-    }
-
-    /unknown
-    {
-        % Unsupported argument!
-        errordict /typecheck get exec
-    }
->>
-def
-
-% Like the above, but only returns the length of the resultant string
-/s-len
-{
-    matrix currentmatrix
-    gsave
-      nulldevice setmatrix
-      0 0 moveto
-      s
-      currentpoint pop
-    grestore
-} def
-
-%--->    x y   rectto   --
-% Draw a rectangle.
-% One corner is at currentpoint; the opposite is at X, Y.
-% Does not stroke or fill the rectangle.
-/rectto
-{
-    % draw rectange
-    currentpoint
-    newpath
-    2 copy moveto
-    3 index exch lineto
-    3 -1 roll   2 index lineto
-    exch lineto
-    closepath
-} def
-%%EndResource
-
-%%BeginResource: ECQR-fonts 16000 16000
-/SerifBold    /Times-Bold           LatinEncode
-/Serif        /Times-Roman          LatinEncode
-/SerifItalic  /Times-Italic         LatinEncode
-/SansItalic   /Univers-MediumItalic LatinEncode
-/MonoBold     /Courier-Bold         LatinEncode
-/head-fs     16 def
-/head-before 12 def
-/head-after   4 def
-/text-fs     14 def
-/comment-fs  12 def
-/arg-fs      12 def
-% Faces:
-/k    {/MonoBold    findfont line-h         scalefont} def
-/t    {/Serif       findfont line-h         scalefont} def
-/v    {/SerifItalic findfont line-h         scalefont} def
-/c    {/SerifItalic findfont line-h 0.8 mul scalefont} def
-/supr {/SerifItalic findfont [line-h 0.7 mul  0 0   line-h 0.7 mul  1  line-h  0.4 mul] makefont} def
-/subs {/SerifItalic findfont [line-h 0.7 mul  0 0   line-h 0.7 mul  0  line-h -0.2 mul] makefont} def
-
-/vn{[v(n)]}def
-/vx{[v(x)]}def
-/vy{[v(y)]}def
-%%EndResource
-
-%%BeginResource: ECQR-procs 2300 2300
-/xl  36 def
-/xr 576 def
-/xc xr xl add 2 div def
-/yt 756 def
-/cur-y yt def
-/yb  54 def
-/yc yt yb add 2 div def
-/tab-def-wide  130 def
-/tab-def-med   115 def
-/tab-def-nar    95 def
-/tab-def       tab-def-med def
-/page-hdr-fs   10  def
-/page-hdr-f    /Arial findfont    page-hdr-fs scalefont  def
-/page-hdr-y  yt 8 add  def
-/page-ftr-y   18  def
-/page-hdr-title  (Eric's Gnu Emacs Calc Quick Reference) def
-/page-ftr-title  (Last updated: 03 APR 2013  09:00 EDT) def
-
-% ================
-% help with spacing
-/SPACE-Y yt def
-/TOS
-{
-    /SPACE-Y cur-y def
-} def
-/EOS
-{
-    gsave
-    xl 8 sub  cur-y SPACE-Y add 2 div  moveto
-%    /Arial 10 selectfont
-%    SPACE-Y cur-y sub 0.5 add cvi  5 string cvs  r-show
-    /SPACE-Y cur-y def
-    grestore
-} def
-/EOP
-{
-    EOS
-    /cur-y  cur-y    % prepare to restore
-    /cur-y  yb def  % temp
-    EOS
-    def              % restore
-} def
-% ================
-
-/page-header
-{
-    gsave
-    page-hdr-f setfont
-    xl page-hdr-y  moveto
-    page-hdr-title show
-    grestore
-} def
-/page-footer
-{
-    gsave
-    page-hdr-f setfont
-    xr page-ftr-y moveto
-    cur-page 10 string cvs r-show
-    (Page ) r-show
-
-    xl page-ftr-y moveto
-    page-ftr-title show
-    grestore
-} def
-
-/page-start
-{
-    /cur-page exch def
-    /cur-y yt def
-    /line-h 12 def
-    /top-header true def
-    page-header
-    page-footer
-    extra-at-page-start
-} def
-/extra-at-page-start            % Mostly for debugging
-{
-    % gsave
-    %   0 setlinewidth
-    %   xl yb moveto  xr yt rectto stroke
-    % grestore
-} def
-/lh
-{
-    /line-h exch def
-} def
-
-/nl
-{
-    /cur-y cur-y line-h sub def
-    xl cur-y moveto
-} def
-/*nl
-{
-    /cur-y exch cur-y exch sub def
-    xl cur-y moveto
-} def
-/setx { cur-y moveto } def
-
-/section
-{
-    top-header not {EOS head-before *nl} if % add'l space unless at top
-    TOS
-    /top-header false def
-
-    head-fs     *nl
-    /SerifBold head-fs selectfont show
-    head-after  *nl
-    text-fs lh
-} def
-/wide    {/tab-def tab-def-wide def } def
-/normal  {/tab-def tab-def-med  def } def
-/narrow  {/tab-def tab-def-nar  def } def
-/tab     {tab-def setx} def
-% argument description positions
-gsave
-/SansItalic arg-fs selectfont
-/*temp-n  (n) stringwidth pop def
-/*temp-sp ( ) stringwidth pop def
-/*temp-eq (=) stringwidth pop def
-grestore
-/tab-op  160 def
-/tab-arg tab-op   *temp-eq 2 div *temp-sp add *temp-n add   sub def
-/tab-val tab-op   *temp-eq 2 div *temp-sp add               add def
-/tab-argdef  tab-val 40 add def
-
-/arg      %  (op) (val) val-width (text) (var) arg
-{
-    /SansItalic arg-fs selectfont
-    tab-arg setx  s    % var
-
-    tab-op setx
-    4 -1 roll c-show   % op
-
-    3 1 roll   % (desc-text) (arg-val) val-width
-
-    % Value must be right-justified at arg-val-slot + val-width.
-    % If val-width is a string, use its width.
-    % If it's zero, use (val) as width.
-    % Otherwise, treat it as a width to be added to arg-val-slot.
-    dup type /stringtype eq
-    {
-        stringwidth pop}
-    {
-        dup 0 eq {pop dup stringwidth pop} if
-    } ifelse
-
-    tab-val  add setx
-    r-show        % val
-
-    /Serif arg-fs selectfont
-    tab-argdef setx s
-} def
-
-/argn {(n) arg} def
-/argx {(x) arg} def
-
-
-/SQRT-LW 0.25 def
-/draw-radical
-{
-    1000 div exch  1 index
-    gsave
-    currentpoint translate
-    dup scale
-
-    0 setlinecap
-    0 setlinejoin
-    60 setlinewidth
-
-     11 428  moveto
-    158 499  lineto
-    364  29  lineto  stroke
-
-    124 483  moveto
-    354 -37  lineto
-    496 895  lineto
-    1 index div 100 add  0 rlineto stroke
-    grestore
-
-    600 mul  0 rmoveto
-} def
-/show-in-radical
-{
-    dup s-len line-h draw-radical s
-    % % get the extent of the radical glyph, relative to currentpoint
-    % t setfont
-    % 0 -2 rmoveto  % not sure why, but radical looks "too high"
-    % gsave
-    %   currentpoint newpath moveto
-    %   (¡) false charpath pathbbox    % puts  lx by  rx ty    onto the stack
-    %   4 2 roll pop pop               % we only want rx ty
-    % grestore
-    % /radical glyphshow
-    % 0 2 rmoveto  % see above
-
-    % 3 -1 roll  s    % get the string, and display it.
-
-    % % now draw the overbar
-    % gsave
-    %   SQRT-LW setlinewidth
-    %   currentpoint pop           % current x
-    %   1 index                    % radical top-y
-    %   moveto lineto stroke
-    % grestore
-} def
-%%EndResource
-%%EndProlog
-
-%%BeginSetup
-%%IncludeResource: font  Arial Palatino-Bold Palatino-Roman Palatino-Italic Univers-MediumItalic Courier-Bold
-<<
-    /Duplex true
-    /BeginPage
-    {
-        dup 8 mod 0 eq
-        {
-            % Display fold/cut guide borders on one side only
-          gsave
-            0 setlinewidth 0 setgray
-            306 396 moveto
-            306 792 lineto
-              0 396 moveto
-            612 396 lineto
-            stroke
-
-            % Also display corner registration marks on one side only
-             18  36 moveto   18  18 lineto   36  18 lineto stroke
-             18 756 moveto   18 774 lineto   36 774 lineto stroke
-            576 774 moveto  594 774 lineto  594 756 lineto stroke
-            594  36 moveto  594  18 lineto  576  18 lineto stroke
-          grestore
-        } if
-
-        4 mod
-        dup 2 mod 0 eq {18}{306} ifelse
-        exch 2 lt {396}{18} ifelse
-        translate
-
-        612 36 sub 2 612 mul div   792 36 sub 2 792 mul div  scale
-
-        % gsave
-        % 0.9 setgray
-        % newpath
-        % 0 0 moveto  612 0 lineto
-        % 612 792 lineto  0 792 lineto
-        % closepath fill
-        % grestore
-    }
-    /EndPage
-    {
-        pop 4 mod 3 eq
-    }
->> setpagedevice
-%%EndSetup
-
-%%Page: 5 1
-5 page-start
-
-% ================
-(Date/Time operations)narrow section
-nl [k(t N)]s  tab [t(Push current date/time onto stack)]s
-nl [k(t N F)]s tab [t(Current date only)]s
-nl [k(t U)]s  tab [t(Convert date to/from Unix epoch seconds)]s
-nl [k(t D)]s  tab [t(Convert date to/from julian number)]s
-nl [k(t P)]s  tab [t(Extract date/time component:)]s
-arg-fs lh
-nl         (=) (1,2,3) (4,5,6) (year, month, or day) argn
-nl         (=) (4,5,6) (4,5,6) (hour, minute, or second) argn
-nl         (=) (7)     (4,5,6) [(weekday : 0=Sunday ) /arrowright ( 6=Saturday)] argn
-nl         (=) (8)     (4,5,6) (day-of-year) argn
-nl         (=) (9)     (4,5,6) (time, as HMS form) argn
-text-fs lh
-nl [k(v p)]s  tab [t(Pack stack elements into a date or time:)]s
-arg-fs lh
-nl         (=) (¯3)  (¯15) (Make a time (HMS) from top three stack elements) argn
-nl         (=) (¯14) (¯15) (Make a date (YMD) from top three stack elements) argn
-nl         (=) (¯15) (¯15) (Make a date/time from top six stack elements) argn
-text-fs lh
-nl [k(I R)]s  tab [t(Truncate date ) c((remove time portion))]s
-nl [k(t M)]s  tab [t(Change day-of-month. With no arg, becomes 1st day of month)]s
-arg-fs lh
-nl         (=) (0) 0 (last day of month) argn
-nl         ()  () () [v(nth) t( day of month)] argn
-text-fs lh
-nl [k(t Y)]s  tab [t(Change day-of-year. With no arg, becomes 1st day of year)]s
-arg-fs lh
-nl         (=) (0) 0 (last day of year) argn
-nl         (<) (0) 0 [(1st day of ) v(nth) t( month)] argn
-nl         (>) (0) 0 [v(nth) t( day of the year)] argn
-text-fs lh
-nl [k(t W)]s tab [t(Change day of week. With no arg, Sunday on or before ) vx]s
-arg-fs lh
-nl         () () () [(specified day-of-week on or before ) vx] argn
-text-fs lh
-nl [k(t I)]s tab [t(Add 1 month to date)]s
-arg-fs lh
-nl         () () () [(add ) vn t( months to date)] argn
-text-fs lh
-nl [k(f [)]s tab [t(Decrement date by 1 day, or datetime by 1 sec)]s
-nl [k(f ])]s tab [t(Increment date by 1 day, or datetime by 1 sec)]s
-nl [k(t +)]s tab [t(Add business days)]s
-nl [k(t -)]s tab [t(Subtract business days)]s
-nl [k(s H)]s tab [t(Edit business holidays)]s
-
-% ================
-(Units)narrow section   tab [c(Note: enter units expressions in algebraic mode)]s
-nl [k(u c)]s         tab [t(Convert units)]s
-nl [k(u s)]s         tab [t(Simplify units-expressions)]s
-nl [k(u t)]s         tab [t(Convert temperature units ) c(degF ) /arrowlongboth (degC)]s
-nl [k(u r)]s         tab [t(Remove units from expression at top of stack)]s
-nl [k(u v)]s         tab [t(Display units table)]s
-nl [k(u g)]s         tab [t(Fetch a specified unit) /quoteright (s description)]s
-nl [k(u e)]s         tab [t(Explain (in words) the units on the top of the stack)]s
-nl [k(u d)]s         tab [t(Create a new unit from the units-expression on top of stack)]s
-nl [k(u p)]s         tab [t(Store user-defined units permanently ) c((in calc.el))]s
-normal
-arg-fs lh
-nl [t(Common units:)]s
-nl [t(    length)]s      tab [v(m, in, ft, yd, mi, lyr, nmi, point)]s
-nl [t(    volume)]s      tab [v(l, gal, qt, pt, cup, ozfl)]s
-nl [t(    time)]s        tab [v(s, min, hr, day, wk, yr, Hz)]s
-nl [t(    mass)]s        tab [v(g, lb, oz, ton, t)]s
-nl [t(    speed)]s       tab [v(mph, kph, knot, c)]s
-nl [t(    temp)]s        tab [v(degF, degC, degK, dF, dC, dK)]s
-nl [t(    composite)]s   tab [v(mfi, vol, hms)]s
-nl [t(    electrical)]s  tab [v(J, W, A, V, ohm, ) /Omega]s
-nl [t(    misc)]s        tab [v(ga, N, dyn, bar, atm, psi, mol)]s
-
-sp
-%%Page: 2 2
-2 page-start
-
-% ================
-(Display Modes)narrow section
-nl [k(I)]s
-comment-fs lh   tab [c(Note: ) k(I) c( prefix before any display mode affects only the top-of-stack, and only)]s
-nl              tab [c(temporarily. Handy for base conversions, and prior to ) k(C-k) c( copying.)]s
-text-fs lh
-nl [k(p)]s      tab [t(Precision)]s
-nl [k(m r)]s    tab [t(Radians)]s
-nl [k(m d)]s    tab [t(Degrees )   c((default))]s
-4 *nl
-nl [k(d 2)]s    tab [t(Display in ) /settab   t(binary)]s
-nl [k(d 8)                             /tab   t(octal)]s
-nl [k(d 0)                             /tab   t(decimal)]s
-nl [k(d 6)                             /tab   t(hexadecimal)]s
-nl [k(d r)]s    tab [c((with prefix))  /tab   t(arbitrary radix from 2) /endash (36)]s
-4 *nl
-nl [k(d f)]s    tab [t(Fixed-point display )]s
-nl [k(d n)]s    tab [t(Floating-point ) c((normal)) t( display)]s
-nl [k(d s)]s    tab [t(Scientific notation )]s
-nl [k(d e)]s    tab [t(Engineering notation )]s
-4 *nl
-nl [k(d l)]s    tab [t(Line numbers on/off ) c((useful before copy/kill))]s
-nl [k(d o)]s    tab [t(Fraction display. Enter one or two characters)]s
-nl              tab [c(One char \(e.g. ) k(:) c(\) for improper fraction display: ) k(51:8)]s
-nl              tab [c(Two chars \(e.g. ) k(+/) c(\) for mixed-fraction display: )  k(6+3/8)]s
-4 *nl
-nl [k(m a)]s    tab [t(Toggle algebraic/normal data entry mode)]s
-nl [k(d B)]s    tab [t /quotedblleft (Big) /quotedblright ( display mode, for algebraic formulas.)]s
-nl [k(d N)]s    tab [t(Normal display mode)]s
-
-% ================
-(Killing, Copying, Yanking)normal section
-nl [k(C-k)]s      tab [t(kill stack item at cursor)]s
-nl [k(M-k)]s      tab [t(copy stack item at cursor to kill ring)]s
-nl [k(C-w)]s      tab [t(kill stack items between mark & point)]s
-nl [k(M-w)]s      tab [t(copy stack items between mark & point)]s
-arg-fs lh
-nl     (>) (0) 0 [(copy/kill ) vn t( lines starting at the current stack position)] argn
-nl     (<) (0) 0 [(copy/kill ) vn t( lines above the current stack position)] argn
-text-fs lh
-nl [k(C-y)]s      tab [t(yank from kill ring)]s
-nl [k(C-x * g)]s  tab [t(parse region in current buffer, into vector of values)]s
-arg-fs lh
-nl     (=) (0) 0 (grabs current line) argn
-nl     (>) (0) 0 [(grabs from point to )  vn t( lines forward)] argn
-text-fs lh
-nl [k(C-x * r)]s  tab [t(parses region in current buffer as (matrix) rectangle of values)]s
-arg-fs lh
-nl    () () 0   (matrix will have only 1 column) (any arg) arg
-text-fs lh
-nl [k(C-x * :)]s  tab [t(grab a rectangle of numbers in columns, sum them)]s
-nl [k(C-x * _)]s  tab [t(grab a rectangle of numbers in rows, sum them)]s
-nl [k(y)]s       tab [t(copies top of stack into most-recently-used buffer)]s
-nl [k(C-x * y)]s  tab [t(copies top of stack HERE ) c((in some other buffer))]s
-
-sp
-%%Page: 1 3
-1 page-start
-(Data Entry)wide section
-nl [v( n) k( : ) v(d)]s                           tab [t(Fraction: ) vn  t( is numerator, ) v(d) t( is denominator.)]s
-nl [k(\() v(real ) k(,) v( imag)   k(\))]s        tab [t(Complex (rectangular))]s
-nl [k(\() v(r ) k(;) v( ) /theta   k(\))]s        tab [t(Complex (polar))]s
-nl [k([) v(a ) k(,) v( b ) k(,) v( ) /ellipsis ( ) k(])]s  tab [t(Vector)]s
-nl [k(") v(hello) k(")]s                          tab [t(String ) /emdash ( vector of ASCII codes)]s
-nl [v(16 ) k(h) v( 40 ) k(m) v( 20 ) k(s)]s       tab [t(HMS form (hour, minute, second))]s
-nl [v(16 ) k(@) v( 40 ) k(') v( 20 ) k(")]s       tab [t(HMS form (degree, minute, second))]s
-nl [v(16 ) k(o) v( 40 ) k(') v( 20 ) k(")]s       tab [t(HMS form \(o ) /arrowdblright ( degree\))]s
-nl [k('<) v( date ) k(>)]s                        tab [t(Date form)]s
-nl [v(base ) k(#) v( number)]s                    tab [t(Enter number in arbitrary radix; e.g. ) k(16#09AB) t(.)]s
-nl [v(mean) k( p ) v /sigma]s                     tab [t(Error form: ) v(mean ) t(±) v( std.dev)]s
-nl [k(_)v(digits)]s                               tab [c((underscore)) t( Negative sign in data entry)]s
-nl [k(')]s                                        tab [c((apostrophe)) t( Enter expression in algebraic mode)]s
-nl [k(`)]s                                        tab [c((backtick)) t( Edit top of stack. ) k(C-c C-c) t( to return)]s
-
-% ================
-(Stack Operations)normal section
-nl [k(RET)]s      tab [t(Duplicate ) vx]s
-arg-fs lh
-nl     (=) (0) 0 (duplicate entire stack) argn
-nl     (>) (0) 0 [(duplicate ) v(n)   t( stack items)] argn
-nl     (<) (0) 0 [(copy the )  v(nth) t( stack item)]  argn
-text-fs lh
-nl [k(C-j)]s      tab [t(Duplicate ) vy]s
-arg-fs lh
-nl [c( or   )k(LFD)]s     (=) (0) 0 (duplicate entire stack) argn
-nl     (>) (0) 0 [(copy the )  v(nth) t( stack item)]  argn
-nl     (<) (0) 0 [(duplicate ) v(n)   t( stack items)] argn
-text-fs lh
-nl [k(DEL)]s      tab [t(Delete (pop) ) vx]s
-arg-fs lh
-nl     (=) (0) 0 (clear entire stack) argn
-nl     (>) (0) 0 [(delete )  vn     t( stack items)] argn
-nl     (<) (0) 0 [(delete )  v(nth) t( stack item)]  argn
-text-fs lh
-nl [k(TAB)]s      tab [t(Swap ) vx t( & ) vy]s
-arg-fs lh
-nl     (=) (0) 0 (reverse entires stack) argn
-nl     (>) (0) 0 [(move ) vx t( to position ) vn t(, rotate items downward)] argn
-nl     (<) (0) 0 [(rotate entire stack downward ) vn t( times)] argn
-text-fs lh
-nl [k(M-TAB)]s    tab [t(Same as ) k(TAB) t(, but rotates UPWARD)]s
-5 *nl
-
-nl [k(d [)]s      tab [t(Move stack pointer up)]s
-         18 0 rmoveto [t (  ) /emdash ( ) /settab c /quotedblleft (freezes) /quotedblright ( part of the stack)]s
-nl [k(d ])]s      tab [t(Move stack pointer down) /tab c(as a place to hold values)]s
-
-nl [k(M-3 m g)]s  tab [t(Current stack size)]s
-nl [k(~)]s        tab [t(Pop top-of-stack, and use it as a prefix for next command)]s
-nl [k(K)]s        tab [t(Peform next operation, but keep arguments on stack)]s
-nl [k(M-RET)]s    tab [t(Push arguments to last operation back onto stack)]s
-
-% ================
-(Meta operations)normal section
-nl [k(U)]s      tab [t(Undo)]s
-nl [k(D)]s      tab [t(Redo)]s
-nl [k(M-RET)]s  tab [t(Recall last operation) /quoteright (s arguments)]s
-nl [k(`)]s      tab [c((backtick)) t( Edit top of stack. ) k(C-c C-c) t( to return)]s
-nl [k(w)]s      tab [t(Display recent error messages)]s
-nl [k(C-g)]s     tab [t(Abort command in progress)]s
-nl [k(C-x * 0)]s tab [c ((zero)) t( Reset calculator to initial state)]s
-
-sp
-%%Page: 6 4
-6 page-start
-
-% ================
-(Storing/recalling)narrow section
-nl [k(s s)]s tab [t(Store ) vx c( (prompts for name))]s
-nl [k(s t)]s tab [t(Store ) vx ( and pop from stack)]s
-nl [k(s r)]s tab [t(Recall variable onto stack)]s
-nl [k(s x)]s tab [t(Exchange variable with top-of-stack)]s
-nl [k(s u)]s tab [t(Undefine a variable)]s
-nl [k(s e)]s tab [t(Edit a variable)]s
-4 *nl
-nl [k(s +)]s   tab [t(Pop ) vx t( and add: )  35 0 rmoveto /settab  v(var) t( ) /arrowleft ( ) v(var) t( + )    vx]s
-nl [k(s -)]s   tab [t(Pop ) vx t( and subtract: )             /tab  v(var) t( ) /arrowleft ( ) v(var) t( ) /minus ( ) vx]s
-nl [k(s *)]s   tab [t(Pop ) vx t( and multiply: )             /tab  v(var) t( ) /arrowleft ( ) v(var) t( ) /multiply ( ) vx]s
-nl [k(s /)]s   tab [t(Pop ) vx t( and divide: )               /tab  v(var) t( ) /arrowleft ( ) v(var) t( ) /divide ( ) vx]s
-nl [k(I s -)]s tab [t(Pop ) vx t( and subtract: )             /tab  v(var) t( ) /arrowleft ( ) vx     t( ) /minus ( ) v(var)]s
-nl [k(I s /)]s tab [t(Pop ) vx t( and divide: )               /tab  v(var) t( ) /arrowleft ( ) vx     t( ) /divide ( ) v(var)]s
-4 *nl
-nl [k(s n)]s tab [t(Negate the value of a variable)]s
-nl [k(s &)]s tab [t(Invert the value of a variable)]s
-nl [k(s [)]s tab [t(Decrement the value of a variable)]s
-nl [k(s ])]s tab [t(Increment the value of a variable)]s
-
-% ================
-(Stack Trail)narrow section
-nl [k(t i)]s  tab [t(Go into trail)]s
-nl [k(t o)]s  tab [t(Go out of trail)]s
-nl [k(t d)]s  tab [t(Toggle trail display)]s
-arg-fs lh
-nl      (=) (0) (0) ((turn trail display off)) argn
-nl      (=) (1) (0) ((turn it on)) argn
-text-fs lh
-4 *nl
-nl [k(t p)]s  tab [t(Move to previous trail entry)]s
-nl [k(t n)]s  tab [t(Move to next trail entry)]s
-nl [k(t y)]s  tab [t(Yank current trail entry to stack)]s
-nl [k(t [)]s  tab [t(Move to first trail entry)]s
-nl [k(t ])]s  tab [t(Move to last trail entry)]s
-nl [k(t b)]s  tab [t(Move back one screen)]s
-nl [k(t f)]s  tab [t(Move forward one screen)]s
-nl [k(t h)]s  tab [t(Move trail pointer HERE to cursor position)]s
-4 *nl
-nl [k(t m)]s  tab [t(Mark ) /emdash ( enter a string to be used as a label)]s
-nl [k(t s)]s  tab [t(Search forward in trail)]s
-nl [k(t r)]s  tab [t(Search backward in trail)]s
-nl [k(t k)]s  tab [t(Kill the current trail line)]s
-
-sp
-%%Page: 3 5
-3 page-start
-
-% ================
-(General math)normal section
-nl [k(&)]s      tab [t(Inverse: 1/) vx]s
-nl [k(=)]s      tab [t(Evaluate ) c((formula, variable, etc.))]s
-arg-fs lh
-nl tab [t(predefined variables: ) c(e) t(, )
-                                    c(pi) t(, )
-                                    c(i) t(, )
-                                    c(phi) t(, )
-                                    c(gamma) t(, )
-                                    c(inf) t(, )
-                                    c(nan)]s
-text-fs lh
-nl [k(\\)]s   tab [t(Integer division)]s
-nl [k(:)]s    tab [t(Fraction division)]s
-nl [k(%)]s    tab [t(Modulo)]s
-nl [k(A)]s     tab [t(|) vx t(| ) /emdash ( absolute value (or complex magnitude))]s
-nl [k(f s)]s    tab [t(Sign operator, returns ) /minus (1, 0, or 1)]s
-nl [k(f n)]s    tab [t(Minimum of ) vx t( and ) vy]s
-nl [k(f x)]s    tab [t(Maximum of ) vx t( and ) vy]s
-nl [k(f [)]s    tab [t(Decrement ) vx]s
-nl [k(f ])]s    tab [t(Increment ) vx]s
-
-
-% ================
-(Algebraic operations)narrow section
-nl [k(Q)]s      tab vx show-in-radical
-nl [k(I Q)]s      tab [vx t(²)]s
-nl [k(L)]s      tab [t(Natural logarithm ln\() vx t(\))]s
-nl [k(E)]s      tab [t(e)   supr(x)]s
-nl [k(I L)]s    tab [t(also e)  supr(x)]s
-nl [k(H L)]s    tab [t(Common logarithm ) c((base 10))]s
-2 *nl
-nl [k(I H L)]s  tab [t(10)   supr(x)]s
-nl [k(B)]s      tab [t(log)  subs(x)  t(\() vy t(\))]s
-nl [k(^)]s    tab [t(General exponent ) vy supr(x)]s
-2 *nl
-nl [k(I ^)]s  tab [t(General root ) /settab supr(x) /tab] s  vy show-in-radical
-2 *nl
-nl [k(f h)]s    tab [t(Hypotenuse operation: )]s  [vx t(² + ) vy t(²)] show-in-radical
-
-
-% ================
-(Trigonometry)narrow section
-nl [c(Note: ) k(I) c( prefix for inverse; ) k(H) c( prefix for hyperbolic)]s
-nl [k(S)]s    tab [t(Sine)]s
-nl [k(C)]s    tab [t(Cosine)]s
-nl [k(T)]s    tab [t(Tangent)]s
-nl [k(f T)]s  tab [t(Two-argument arctangent\() vy t(/) vx t(\))]s
-nl [k(P)]s    tab [t(Push ) [v /pi] ( onto stack)]s
-
-% ================
-(Complex numbers)narrow section
-nl [k(J)]s    tab [t(Conjugate)]s
-nl [k(A)]s    tab [t(Magnitude (absolute value))]s
-nl [k(G)]s    tab [t(Argument (angle))]s
-nl [k(f r)]s  tab [t(Real portion)]s
-nl [k(f i)]s  tab [t(Imaginary portion)]s
-nl [k(d c)]s  tab [t(Display as \() v(real) t(,) v(imag) t(\) ) c((default))]s
-nl [k(d i)]s  tab [t(Display as )   v(real) t(+) v(imag ) t(i)]s
-nl [k(c p)]s  tab [t(Convert rectangular ) /arrowlongboth ( polar)]s
-nl [k(m p)]s  tab [t(Toggle between polar and rect display preference)]s
-
-sp
-%%Page: 4 6
-4 page-start
-
-% ================
-(Percentages)narrow section
-nl [k(M-%)]s    tab [t(Converts ) vx t( to percentage: 8 ) /arrowright ( 8%)]s
-nl [k(c %)]s    tab [t(Converts decimal to percent: 0.08 ) /arrowright ( 8%)]s
-nl [k(M-% *)]s  tab [t(Calculate ) vx t(% of ) vy]s
-nl [k(/ c %)]s  tab [t(Calculates what percent ) vx t( is of ) vy]s
-nl [k(b %)]s    tab [t(Percent change from ) vy t( to ) vx]s
-
-% ================
-(Combinatorics)narrow section
-nl [k(k g)]s    tab [t(GCD of two integers or fractions)]s
-nl [k(k l)]s    tab [t(LCM of two integers or fractions)]s
-nl [k(!)]s     tab [t(Factorial or gamma)]s
-nl [k(k c)]s    tab [t(Combinations: ) vy t(-choose-) vx]s
-nl [k(H k c)]s tab [t(Permutations: ) vy t(-permute-) vx]s
-nl [k(k f)]s   tab [t(Calculate prime factors of ) vx]s
-nl [k(k p)]s   tab [t(Test whether top-of-stack number is prime)]s
-nl [k(k n)]s   tab [t(Calculate next prime number larger than ) vx]s
-nl [k(I k n)]s   tab [t(Calculate prime number smaller than ) vx]s
-
-% ================
-(Random numbers)narrow section
-nl [k(k r)]s tab [t(Random number between 0 and ) vx]s
-nl           tab [c(Result will be integer or float depending on ) vx c /quoteright (s type)]s
-arg-fs lh
-nl   tab () () 0 [(Use argument instead of top-of-stack)] (arg) arg
-text-fs lh
-nl [k(k a)]s tab [t(Random-again: make another with same parameters)]s
-
-% ================
-(Conversions)narrow section
-nl [k(c f)]s  tab [t(Convert to floating-point)]s
-nl [k(c F)]s  tab [t(Convert to fraction approximation)]s
-nl [k(c d)]s  tab [t(Convert to degrees (from radians))]s
-nl [k(c r)]s  tab [t(Convert to radians (from degrees))]s
-nl [k(c h)]s  tab [t(Convert angle to HMS form)]s
-
-% ================
-(Rounding)wide section
-nl [k(R)]s    tab [t(Round to nearest integer)]s
-nl [k(I R)]s  tab [t(Truncate to integer (round towards zero) )     c((also truncates dates))]s
-nl [k(')t(round\($,)vn t(\))]s  tab [t(Round to ) vn ( decimal places. ) c( (negative n means round to left of decimal))]s
-nl [k(F)]s    tab [t(Floor: truncate toward ) /minus /infinity ( )  c((also truncates dates))]s
-nl [k(1 %)]s  tab [t(Fractional part of ) vx]s
-
-% ================
-(Binary)narrow section
-nl [k(b c)]s  tab [t /quotedblleft (Clip) /quotedblright ( to current word size)]s
-arg-fs lh
-nl      c setfont () () () [(word size (default: 32))] (arg) arg
-text-fs lh
-nl [k(b w)]s  tab [t(Set word size, in bits)]s
-nl [k(b a)]s  tab [t(Bitwise AND)]s
-nl [k(b o)]s  tab [t(Bitwise OR)]s
-nl [k(b x)]s  tab [t(Bitwise XOR)]s
-nl [k(b n)]s  tab [t(Bitwise NOT)]s
-nl [k(b u)]s  tab [t(Unpack binary number into vector of bit position numbers)]s
-nl [k(b p)]s  tab [t(Pack such a vector into a binary number)]s
-nl [c(there are also a ton of shift & rotate operations)]s
-
-sp
-%%Page: 7 7
-7 page-start
-
-% ================
-(Programming)normal section
-nl [k(Z D)]s                  tab [t(Define: bind an existing calc command to a ) k(z) t(-key)]s
-nl [k(z ?)]s                  tab [t(List bound ) k(z) t(-key sequences)]s
-nl [k(Z P)]s                  tab [t(Binds ) k(z) t(-key and makes it permanent ) c((via config file calc.el))]s
-
-8 *nl
-nl [k(C-x \()]s               tab [t(Start recording keyboard macro)]s
-nl [k(C-x \))]s               tab [t(Stop recording)]s
-nl [k(X)]s                    tab [t(Execute macro \(or use ) k(C-x e) t(\))]s
-nl [k(Z K)]s                  tab [t(Bind a keyboard macro to a ) k(z) t(-key)]s
-nl [k(Z E)]s                  tab [t(Edit keyboard macro bound to a ) k(z) t(-key. ) k(C-c C-c) t( to end)]s
-
-8 *nl
-nl [k(Z [)]s                  tab [t(If: pops ) vx t(, then:)]s
-arg-fs lh
-nl                (=)       (0) 0  [(skip to ) k(Z]) t(, ) k(Z:) t(, or ) k(Z|)] argx
-nl                /notequal (0) 0   (keep executing) argx
-text-fs lh
-nl [v(cond ) /settab k(Z:)]s  tab [t(Else: )  v(cond) k( Z[ ) t /ellipsis k( Z: ) t /ellipsis k( Z])]s
-nl [v(cond )         k(Z|)]s  tab [t(Else-if: )  v(cond) k( Z[ ) t /ellipsis ( ) v(cond) k( Z| ) t /ellipsis ( ) v(cond) k( Z| ) t /ellipsis k( Z: ) t /ellipsis k( Z])]s
-nl [         /tab    k(Z])]s  tab [t(End-if)]s
-
-8 *nl
-nl [v(num )  /settab k(Z<)]s  tab [t(Counted loop. Loops for ) vx t( times \() vx t( > 0\))]s
-nl [         /tab    k(Z>)]s  tab [t(End counted loop)]s
-nl [v(cond ) k(Z|)]s          tab [t(Break: pops ) vx t(; if ) vx t( ) /notequal ( 0, break out of ) k(Z<) t /ellipsis k(Z>) t( loop)]s
-
-8 *nl
-nl [v(from to ) k(Z\()]s      tab [t(For-loop. ) vy t( is initial value, ) vx t( is final value)]s
-nl [v(step )    k(Z\))]s      tab [t(End for-loop. ) vx t( is the step value. ) c(Loop counter is pushed onto stack each iteration)]s
-
-8 *nl
-nl [v(str ) k(Z #)]s          tab [t(Pause execution and prompt user to enter an algebraic expression)]s
-nl [k(Z /)]s                  tab [t(Break out of innermost loop construct)]s
-
-8 *nl
-nl [k(Z F ) v(key)]s          tab [t(Store formula (algebraic expression) at top of stack)]s
-nl [k(z )   v(key)]s          tab [t(Invoke stored formula. Expression vars will be taken from stack.)]s
-nl [k(Z G ) v(key)]s          tab [t(Retrieve formula associated with ) v(key)]s
-nl [k(Z E ) v(key)]s          tab [t(Edit formula associated with ) v(key)]s
-nl [k(Z P ) v(key)]s          tab [t(Store formula permanently ) c((in calc.el))]s
-nl [k(Z U ) v(key)]s          tab [t(Forget formula definition)]s
-
-sp
-%%Page: Cover 8
-/Arial 24 selectfont
-xc yc moveto
-0 -10 rmoveto
-page-hdr-title c-show
-
-% Display staple marks
-0 setlinewidth
-0 160 moveto 0 240 lineto stroke
-0 560 moveto 0 640 lineto stroke
-
-sp
-
-%%Trailer
-%%EOF
+]cond
