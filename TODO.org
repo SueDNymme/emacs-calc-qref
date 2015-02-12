@@ -1,0 +1,6 @@
+#+STARTUP: showall
+* TO DO LIST
+For Emacs Calc Quick-Reference booklet
+** [2015-02-12 Thu] — Use composite fonts instead of so much font-switching.
+** [2015-02-12 Thu] — Rewrite to be DSC-compliant.
+/Or maybe not— that might screw up my custom booklet layout./
