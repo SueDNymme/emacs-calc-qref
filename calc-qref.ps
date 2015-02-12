@@ -102,12 +102,11 @@
     8#333  /fl
     8#334  /ffi
     8#335  /ffl
-    8#336  /arrowlongboth
 
     8#340  /fraction
     8#341  /minus
-    8#342  /radical
-    8#343  /notequal
+    8#342  /sigma
+    8#343  /plusminus
 ] def
 
 /TB  calc-codes /Palatino-Bold   ReEncodeFont
@@ -152,12 +151,12 @@ landscape
 
 /eoc        % end of column
 {
-    % gsave 1 setlinewidth newpath
-    % left-x bot-y moveto
-    % right-x bot-y lineto
-    % right-x top-y lineto
-    % left-x top-y lineto closepath stroke
-    % grestore
+    gsave 1 setlinewidth newpath
+    left-x bot-y moveto
+    right-x bot-y lineto
+    right-x top-y lineto
+    left-x top-y lineto closepath stroke
+    grestore
     
     /cur-col cur-col 1 add def        % increment column number
     cur-col num-cols ge { eop } if    % go to next page?
@@ -418,13 +417,17 @@ end
 } def
 
 
+/vx { (x)v } bind def
+/vy { (y)v } bind def
+/vn { (n)v } bind def
+
 
 % ----------------------------------------------------------------
 % Here we go
 
 % ================
 (Data Entry)h
-kc ( n )v (:)k ( d)v                           dc (Fraction: )d (n)v  ( is numerator, )d (d)v ( is denominator.)d  nl
+kc vn ( : )k ( d)v                           dc (Fraction: )d vn  ( is numerator, )d (d)v ( is denominator.)d  nl
 kc (\()k (real )v (,)k ( imag)v (\))k          dc (Complex (rectangular))d                                         nl
 kc (\()k (r )v (;)k ( \316)v   (\))k           dc (Complex (polar))d                                               nl
 kc ([)k (a )v (,)k ( b )v (,)k ( \300 )v (])k  dc (Vector)d                                                        nl
@@ -443,17 +446,17 @@ locales /dc get  dup /xp get 27 sub /xp exch put
 
 % ================
 (Stack Operations)h
-kc (RET)k      dc (Duplicate )d (x)v                                                nl
-    pa (n > 0)d  pd (duplicate )d (n)v ( stack items)d                              nl
+kc (RET)k      dc (Duplicate )d vx                                                nl
+    pa (n > 0)d  pd (duplicate )d vn ( stack items)d                              nl
     pa (n < 0)d  pd (copy the )d (nth)v ( stack item)d                              nl
     pa (n = 0)d  pd (duplicate entire stack)d                                       nl
-kc (DEL)k      dc (Delete (pop) )d (x)v                                             nl
-    pa (n > 0)d  pd (delete )d (n)v ( stack items)d                                 nl
+kc (DEL)k      dc (Delete (pop) )d vx                                             nl
+    pa (n > 0)d  pd (delete )d vn ( stack items)d                                 nl
     pa (n < 0)d  pd (delete )d (nth)v ( stack item)d                                nl
     pa (n = 0)d  pd (clear entire stack)d                                           nl
-kc (TAB)k      dc (Swap )d (x)v ( & )d (y)v                                         nl
-    pa (n > 0)d  pd (move )d (x)v ( to position )d (n)v (, rotate items downward)d  nl
-    pa (n < 0)d  pd (rotate entire stack downward )d (n)v ( times)d                 nl
+kc (TAB)k      dc (Swap )d vx ( & )d vy                                         nl
+    pa (n > 0)d  pd (move )d vx ( to position )d vn (, rotate items downward)d  nl
+    pa (n < 0)d  pd (rotate entire stack downward )d vn ( times)d                 nl
     pa (n = 0)d  pd (reverse entires stack)d                                        nl
 kc (M-TAB)k    dc (Same as )d (TAB)k (, but rotates UPWARD)d                        nl
 
@@ -473,13 +476,13 @@ kc (M-RET)k    dc (Push arguments to last operation back onto stack)d           
 kc (R)k    dc (Round to nearest integer)d                                nl
 kc (I R)k  dc (Truncate to integer (round towards zero) )d ((Also truncates dates))c                nl
 kc (F)k    dc (Floor: truncate toward \341\315)d nl
-kc (1 %)k  dc (Fractional part of )d (x)v                                nl
+kc (1 %)k  dc (Fractional part of )d vx                                nl
 
 
 % ================
 (Random numbers)h
-kc (k r)k dc (Random number between 0 and )d (x)v nl
-          dc (Result will be integer or float depending on )c (x)v (\303s type)c nl
+kc (k r)k dc (Random number between 0 and )d vx nl
+          dc (Result will be integer or float depending on )c vx (\303s type)c nl
         pa (with arg)c pd (Use argument instead of top-of-stack)d nl
 kc (k a)k dc (Random-again: make another with same parameters)d nl
 
@@ -533,11 +536,11 @@ kc (t k)k  dc (Kill the current trail line)d                     nl
 
 % ================
 (Percentages)h
-kc (M-%)k    dc (Converts )d (x)v ( to percentage: 8 \325 8%)d        nl
+kc (M-%)k    dc (Converts )d vx ( to percentage: 8 \325 8%)d        nl
 kc (c %)k    dc (Converts decimal to percent: 0.08 \325 8%)d      nl
-kc (M-% *)k  dc (Calculate )d (x)v (% of )d (y)v                  nl
-kc (/ c %)k  dc (Calculates what percent )d (x)v ( is of )d (y)v  nl
-kc (b %)k    dc (Percent change from )d (y)v ( to )d (x)v         nl
+kc (M-% *)k  dc (Calculate )d vx (% of )d vy                  nl
+kc (/ c %)k  dc (Calculates what percent )d vx ( is of )d vy  nl
+kc (b %)k    dc (Percent change from )d vy ( to )d vx         nl
 
 % ================
 (Binary)h
@@ -557,12 +560,12 @@ kc (C-k)k      dc (kill stack item at cursor)d                                  
 kc (M-k)k      dc (copy stack item at cursor to kill ring)d                           nl
 kc (C-w)k      dc (kill stack items between mark & point)d                            nl
 kc (M-w)k      dc (copy stack items between mark & point)d                            nl
-    pa (n > 0)d    pd (copy/kill )d (n)v ( lines starting at the current stack position)d       nl
-    pa (n < 0)d    pd (copy/kill )d (n)v ( lines above the current stack position)d             nl
+    pa (n > 0)d    pd (copy/kill )d vn ( lines starting at the current stack position)d       nl
+    pa (n < 0)d    pd (copy/kill )d vn ( lines above the current stack position)d             nl
 kc (C-y)k      dc (yank from kill ring)d                                              nl
 kc (C-x * g)k  dc (parse region in current buffer, into vector of values)d            nl
     pa (n = 0)d    pd (grabs current line)d                                             nl
-    pa (n > 0)d    pd (grabs from point to )d (n)v ( lines forward)d                            nl
+    pa (n > 0)d    pd (grabs from point to )d vn ( lines forward)d                            nl
 kc (C-x * r)k  dc (parses region in current buffer as (matrix) rectangle of values)d  nl
     pd (matrix will have only 1 column)d           pa (with arg)c                             nl
 kc (C-x * :)k  dc (grab a rectangle of numbers in columns, sum them)d                 nl
@@ -573,14 +576,14 @@ kc (C-x * y)k  dc (copies top of stack HERE)d                                   
 % ================
 (General math)h
 kc (Q)k      dc (Square root)d         nl
-kc (&)k      dc (Inverse: 1/)d (x)v    nl
+kc (&)k      dc (Inverse: 1/)d vx    nl
 kc (L)k      dc (Natural logarithm)d   nl
 kc (E)k      dc (e)d   (x) supscr      nl
 kc (I L)k    dc (also e)d  (x) supscr  nl
 kc (H L)k    dc (Common logarithm)d    nl
 2 downby
 kc (I H L)k  dc (10)d   (x) supscr                         nl
-kc (B)k      dc (log)d    (x) subscr   (\()d (y)v (\))d    nl
+kc (B)k      dc (log)d    (x) subscr   (\()d vy (\))d    nl
 kc (=)k      dc (Evaluate )d ((formula, variable, etc.))c  nl
              dc (predefined variables: )d (e)c (, )d
                                     (pi)c (, )d
@@ -589,30 +592,30 @@ kc (=)k      dc (Evaluate )d ((formula, variable, etc.))c  nl
                                     (gamma)c (, )d
                                     (inf)c (, )d
                                     (nan)c                 nl
-kc (^)k    dc (Power: )d (y)v (x) supscr      nl
-kc (I ^)k  dc (Root: )d (y)v (1\340x) supscr  nl
+kc (^)k    dc (Power: )d vy (x) supscr      nl
+kc (I ^)k  dc (Root: )d vy (1\340x) supscr  nl
 kc (\\)k   dc (Integer division)d          nl
 kc (:)k    dc (Fraction division)d         nl
 kc (%)k    dc (Modulo)d                    nl
 4 downby
-kc (A)k     dc (|)d (x)v (| \306 absolute value (or complex magnitude))d  nl
+kc (A)k     dc (|)d vx (| \306 absolute value (or complex magnitude))d  nl
 eoc (General math, cont'd)h
 kc (f s)k    dc (Sign operator, returns \3411, 0, or 1)d                        nl
-kc (f h)k    dc (Hypotenuse operation: sqrt\()d (x)v (\322 + )d (y)v (\322\))d  nl
-kc (f n)k    dc (Minimum of )d (x)v ( and )d (y)v                               nl
-kc (f x)k    dc (Maximum of )d (x)v ( and )d (y)v                               nl
-kc (f [)k    dc (Decrement )d (x)v                                              nl
-kc (f ])k    dc (Increment )d (x)v                                              nl
+kc (f h)k    dc (Hypotenuse operation: sqrt\()d vx (\322 + )d vy (\322\))d  nl
+kc (f n)k    dc (Minimum of )d vx ( and )d vy                               nl
+kc (f x)k    dc (Maximum of )d vx ( and )d vy                               nl
+kc (f [)k    dc (Decrement )d vx                                              nl
+kc (f ])k    dc (Increment )d vx                                              nl
 4 downby
 kc (k g)k    dc (GCD of two integers or fractions)d      nl
 kc (k l)k    dc (LCM of two integers or fractions)d      nl
 kc (!)k     dc (Factorial or gamma)d                    nl
-kc (k c)k    dc (Combinations: )d (y)v (-choose-)d (x)v  nl
-kc (H k c)k dc (Permutations: )d (y)v (-permute-)d (x)v nl
-kc (k f)k   dc (Calculate prime factors of )d (x)v nl
+kc (k c)k    dc (Combinations: )d vy (-choose-)d vx  nl
+kc (H k c)k dc (Permutations: )d vy (-permute-)d vx nl
+kc (k f)k   dc (Calculate prime factors of )d vx nl
 kc (k p)k   dc (Check whether top-of-stack number is prime)d nl
-kc (k n)k   dc (Calculate next prime number larger than)d (x)v nl
-kc (I k n)k   dc (Calculate prime number smaller than)d (x)v nl
+kc (k n)k   dc (Calculate next prime number larger than)d vx nl
+kc (I k n)k   dc (Calculate prime number smaller than)d vx nl
 
 % ================
 (Date/Time operations)h
@@ -638,7 +641,7 @@ kc (t Y)k  dc (Change day-of-year. With no arg, becomes 1st day of year)d nl
         pa (n = 0)d pd (last day of year)d nl
         pa (n < 0)d pd (1st day of nth month)d nl
         pa (n > 0)d pd (nth day of the year)d nl
-kc (t W)k dc (Change day of week. With no arg, Sunday on or before )d (x)v nl
+kc (t W)k dc (Change day of week. With no arg, Sunday on or before )d vx nl
         pa (n)d pd (specified day-of-week on or before top-of-stack)d nl
 kc (t I)k dc (Add 1 month to date)d nl
         pa (n)d pd (add n months to date)d nl
@@ -650,60 +653,31 @@ kc (s H)k dc (Edit business holidays)d nl
 
 % ================
 (Trigonometry)h
-2 downby
 kc (Note: )c (I)k ( prefix for inverse; )c (H)k ( prefix for hyperbolic)c nl
 kc (S)k dc (Sine)d nl
 kc (C)k dc (Cosine)d nl
 kc (T)k dc (Tangent)d nl
-kc (f T)k dc (Two-argument arctangent\()d (y)v (/)d (x)v (\))d nl
+kc (f T)k dc (Two-argument arctangent\()d vy (/)d vx (\))d nl
 
 % ================
-(Complex numbers)h
-kc (J)k dc (Conjugate)d nl
-kc (G)k dc (Argument (angle))d nl
-kc (f r)k dc (Real portion)d nl
-kc (f i)k dc (Imaginary portion)d nl
-kc (d c)k dc (Display as )d (\()k (real)v (,)k (imag)v (\))k ( (default))c nl
-kc (d i)k dc (Display as )d (real)v (+)k (imag)v (i)k nl
-kc (c p)k dc (Convert rectangular \336 polar)d nl
-kc (m p)k dc (Toggle between polar and rect display preference)d nl
-
-% ================
-(Conversions)h
-kc (c f)k dc (Convert to floating-point)d nl
-kc (c F)k dc (Convert to fraction approximation)d nl
-kc (c d)k dc (Convert to degrees (from radians))d nl
-kc (c r)k dc (Convert to radians (from degrees))d nl
-kc (c h)k dc (Convert angle to HMS form)d nl
-
-% ================
-(Programming)h
-kc (Z D)k dc (Define\306 bind a calc command to a )d (z)k (-key)d nl
-kc (z ?)k dc (List bound )d (z)k (-key sequences)d nl
-kc (Z P)k dc (Binds sequence and makes it permanent )d ((via calc.el))c nl
+(Storing/recalling)h
+kc (s s)k dc (Store )d vx ( (prompts for name))c nl
+kc (s t)k dc (Store )d vx ( and pop from stack) nl
+kc (s r)k dc (Recall variable onto stack)d nl
+kc (s x)k dc (Exchange variable with top-of-stack)d nl
+kc (s u)k dc (Undefine a variable)d nl
 4 downby
-kc (C-x \()k dc (Start recording keyboard macro)d nl
-kc (C-x \))k dc (Stop recording)d nl
-kc (X)k dc (Execute macro \(or use )d (C-x e)k (\))d nl
-kc (Z K)k dc (Bind keyboard macro to a )d (z)k (-key)d nl
-kc (Z E)k dc (Edit keyboard macro bound to a )d (z)k (-key.)d (C-c C-c)k ( to end)d nl
+kc (s +)k dc (Pop )d vx ( and add: )d      (var)v ( \324 )d (var)v ( + )d    vx   nl
+kc (s -)k dc (Pop )d vx ( and subtract: )d (var)v ( \324 )d (var)v ( \341 )d vx   nl
+kc (s *)k dc (Pop )d vx ( and multiply: )d (var)v ( \324 )d (var)v ( \311 )d vx   nl
+kc (s /)k dc (Pop )d vx ( and divide: )d   (var)v ( \324 )d (var)v ( \310 )d vx   nl
+kc (I s -)k dc (Pop )d vx ( and subtract: )d (var)v ( \324 )d vx ( \341 )d (var)v   nl
+kc (I s /)k dc (Pop )d vx ( and divide: )d   (var)v ( \324 )d vx ( \310 )d (var)v   nl
 4 downby
-kc (Z [)k dc (If: pops )d (x)v (, then:)d nl
-        pa (x \343 0)d pd (keep executing)d nl
-        pa (x = 0)d pd (skip to )d (Z ])k ( or )d (Z :)k nl
-kc (cond)v ( Z :)k dc (Else: )d (cond)v ( Z[ )k (\300)d ( Z: )k (\300)d ( Z])k nl
-kc (cond)v ( Z |)k dc (Elsif: )d (cond)v ( Z[ )k (\300)d ( )k (cond)v ( Z| )k (\300)d ( )k (cond)v ( Z| )k (\300)d ( Z: )k (\300)d ( Z])k nl
-kc (Z ])k dc (End-if)d nl
-4 downby
-kc (num)v ( Z <)k dc (Counted loop. Loops for )d (x)v ( times \()d (x)v ( > 0\))d nl
-kc (Z >)k dc (End counted-loop)d nl
-kc (Z /)k dc (Break: pops )d (x)v (; if )d (x)v ( \343 0, break out of )d (Z<)k ( \300 )d (Z>)k ( loop)d nl
-4 downby
-kc (i f)v ( Z \()k dc (For-loop. )d (x)v ( is final value, )d (y)v ( is initial value)d nl
-kc (s)v ( Z \))k dc (End for-loop. )d (x)v ( is the step value)d nl
-        dc (Loop counter is pushed onto the stack each iteration)c nl
-4 downby
-kc (str)v ( Z #)k dc (Prompt for an algebraic expression from user)d nl
+kc (s n)k dc (Negate the value of a variable)d nl
+kc (s &)k dc (Invert the value of a variable)d nl
+kc (s [)k dc (Decrement the value of a variable)d nl
+kc (s ])k dc (Increment the value of a variable)d nl
 
 
 
