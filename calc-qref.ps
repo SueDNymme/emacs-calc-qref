@@ -21,8 +21,8 @@
 /color false def
 
 /doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
-/doc-date     (2015 APR 17) def
-/doc-version  (1.00.00-dev) def
+/doc-date     (2015 APR 20) def
+/doc-version  (1.01.00) def
 
 /lm 0.75 in def
 /rm 0.75 in def
@@ -1070,7 +1070,7 @@ FPA setfont
     nlp (=)  (­9)pfx-r  [(Interval form:)        {tx1 x=} [FK(\()] vy ( .. ) vx [FK(\))] ]pdoc
     nlp (=) (­10)pfx-r  [(Fraction:)             {tx1 x=} {vy vx a-over-b}] pdoc
     nlp (=) (­11)pfx-r  [(Floating-point exponential:) {tx1 x=} vy FM( * 10)FVS(x) ]pdoc
-    nlp (=) (­12)pfx-r  (same as ­11, but mantissa is floating-point)com
+    nlp (=) (­12)pfx-r  (same as ­11, but mantissa is Êoating-point)com
     nlp (=) (­13)pfx-r  [(Real number converted to/from date form)]pdoc
     nlp (=) (­14)pfx-r  [(Date form:)            {tx1 x=} vz ( years ) vy ( month ) vx ( day)]pdoc
     nlp (=) (­15)pfx-r  [(Six values to date/time: year, month, day, hour, minute, second)]pdoc
@@ -1111,13 +1111,13 @@ FPA setfont
     nlc[(Edit algebraic expressions with ) [FK(`)] ( (backtick).)]com
     nlc(Enter systems of related equations as vectors of equations.)com
     
-    nl         (a S)k  (Solve equation/inequality/system for specified variable)ss
+    nl         (a S)k  (Solve equation/inequality/system for speciÎed variable)ss
     nl  (H)pk  (a S)k  (Solve, reporting general family of solutions)ss
     nlct               [[FV(s1)] (, ) [FV(s2)] (, etc. represent signs)]com
     nlct               [[FV(n1)] (, ) [FV(n2)] (, etc. represent integers)]com
     small-vs
-    nl         (a l)k  [(Evaluate expression, first setting a variable temporarily)]ss
-    nl         (a c)k  [(Collect terms involving a specified variable)]ss
+    nl         (a l)k  [(Evaluate expression, Îrst setting a variable temporarily)]ss
+    nl         (a c)k  [(Collect terms involving a speciÎed variable)]ss
     nl         (a x)k  (Expand expression )ss ((by applying distributive law))com
     nl         (a n)k  (Arrange formula into quotient of polynomials)ss
     nl         (a a)k  (Expand rational polynomial by partial fractions)ss
@@ -1151,8 +1151,8 @@ FPA setfont
 
     nl         (a d)k  (Compute derivative of expression)ss
     nl  (H)pk  (a d)k  (Ditto; does not assume other variables are constant)ss
-    nl         (a i)k  (Indefinite integral)ss
-    nl (C-u)pk (a i)k  (Definite integral; prompts for bounds)ss
+    nl         (a i)k  (IndeÎnite integral)ss
+    nl (C-u)pk (a i)k  (DeÎnite integral; prompts for bounds)ss
     nl         (a I)k  (Numeric integration)ss
 
     sect-vs
