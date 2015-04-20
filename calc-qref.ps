@@ -5,15 +5,15 @@
 
 %%% Setup
 % (../error.ps) run
-(../basic.ps) run
-(../array.ps) run
-(../cond.ps) run
-(../position.ps) run
-(../ejr-show.ps) run
-(../ISO-Latin-1.ps) run
-(../radical.ps) run
-(../geom.ps) run
-(../sort.ps) run
+(../postscript-utils/basic.ps) run
+(../postscript-utils/array.ps) run
+(../postscript-utils/cond.ps) run
+(../postscript-utils/position.ps) run
+(../postscript-utils/ejr-show.ps) run
+(../postscript-utils/ISO-Latin-1.ps) run
+(../postscript-utils/radical.ps) run
+(../postscript-utils/geom.ps) run
+(../postscript-utils/sort.ps) run
 
 %%% ---------------------------------------------------------------------------------
 %%% Configuration
@@ -21,8 +21,8 @@
 /color false def
 
 /doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
-/doc-date     (2015 JAN 15) def
-/doc-version  (1.00.00) def
+/doc-date     (2015 APR 17) def
+/doc-version  (1.00.00-dev) def
 
 /lm 0.75 in def
 /rm 0.75 in def
@@ -32,11 +32,11 @@
 /Duplex? true def
 
 % Load needed font files
-(ucrb8a.pfa)  run    % Nimbus Mono L Bold
-(uhvro8a.pfa) run    % Nimbus Sans L Regular Italic
-(uhvr8v.pfa)  run    % Vn Nimbus Sans L
-(utmr8a.pfa)  run    % Nimbus Roman No9 L Regular
-(utmri8a.pfa) run    % Nimbus Roman No9 L Regular Italic
+(fonts/ucrb8a.pfa)  run    % Nimbus Mono L Bold
+(fonts/uhvro8a.pfa) run    % Nimbus Sans L Regular Italic
+(fonts/uhvr8v.pfa)  run    % Vn Nimbus Sans L
+(fonts/utmr8a.pfa)  run    % Nimbus Roman No9 L Regular
+(fonts/utmri8a.pfa) run    % Nimbus Roman No9 L Regular Italic
 
 % Re-encode fonts as needed:
 /Typeface-for-Keystrokes     /NimbusMonL-Bold           def
@@ -51,7 +51,7 @@
 
 %%% ---------------------------------------------------------------------------------
 
-(../page-init.ps) run
+(../postscript-utils/page-init.ps) run
 
 
 % /sws{stringwidth pop}bd
@@ -218,6 +218,7 @@ FPA setfont
 /xpo  xpa (n )    stringwidth pop add (=) stringwidth pop 2 div add def
 /xpv  xpa (n = )  stringwidth pop add def   % prefix value
 /xpvr xpv (4,5,6) stringwidth pop add def   % prefix value (right-justified)
+/xpvR xpv (­00)   stringwidth pop add def   % prefix value (alt right-justified)
 /xpt  xpvr 9 add def                        % prefix text description
 /ts   {1 x+} def    % "tiny space" for fake-kerning
 
@@ -1049,6 +1050,35 @@ FPA setfont
     sect-vs
 } def
 
+/vector-packing
+{
+    (Vector packing/unpacking) head
+    1 dict begin
+    /xpvr xpvR def   % adjust spacing on right-justified numbers
+
+    nl         (V p)k   [(Pack vector from stack elements)]ss
+    nl         (V u)k   [(Unpack vector into stack elements)]ss
+    nlp (>)   (0)pfx-r  [(Pack ) vn ( stack elements into a vector of length ) vn]pdoc
+    nlp (=)  (­1)pfx-r  [(Rectangular complex number: ) {/tx1 CX store} vy ( + ) vx [FK(i)]]pdoc
+    nlp (=)  (­2)pfx-r  [(Polar complex number:) {tx1 x=} [FV(r = y)] (, ) [FG(t)] ( = ) vx]pdoc
+    nlp (=)  (­3)pfx-r  [(HMS time form:)        {tx1 x=} vz ( hours, ) vy ( minutes, ) vx ( seconds)]pdoc
+    nlp (=)  (­4)pfx-r  [(Error form: )          {tx1 x=} vy ( ) [FM /plusminus] ( ) vx]pdoc
+    nlp (=)  (­5)pfx-r  [(Modulo form:)          {tx1 x=} vy ( mod ) vx]pdoc
+    nlp (=)  (­6)pfx-r  [(Interval form:)        {tx1 x=} [FK([) ] vy ( .. ) vx [FK(]) ] ]pdoc
+    nlp (=)  (­7)pfx-r  [(Interval form:)        {tx1 x=} [FK([) ] vy ( .. ) vx [FK(\))] ]pdoc
+    nlp (=)  (­8)pfx-r  [(Interval form:)        {tx1 x=} [FK(\()] vy ( .. ) vx [FK(]) ] ]pdoc
+    nlp (=)  (­9)pfx-r  [(Interval form:)        {tx1 x=} [FK(\()] vy ( .. ) vx [FK(\))] ]pdoc
+    nlp (=) (­10)pfx-r  [(Fraction:)             {tx1 x=} {vy vx a-over-b}] pdoc
+    nlp (=) (­11)pfx-r  [(Floating-point exponential:) {tx1 x=} vy FM( * 10)FVS(x) ]pdoc
+    nlp (=) (­12)pfx-r  (same as ­11, but mantissa is floating-point)com
+    nlp (=) (­13)pfx-r  [(Real number converted to/from date form)]pdoc
+    nlp (=) (­14)pfx-r  [(Date form:)            {tx1 x=} vz ( years ) vy ( month ) vx ( day)]pdoc
+    nlp (=) (­15)pfx-r  [(Six values to date/time: year, month, day, hour, minute, second)]pdoc
+
+    end
+    sect-vs
+} def
+
 /mapping
 {
     (Vector mapping/reduction) head
@@ -1074,6 +1104,59 @@ FPA setfont
     sect-vs
 } def
 
+/symbolic-algebra
+{
+    (Algebraic (symbolic) manipulation) head
+    nlc[(Notes: Enter algebraic expressions with ) [FK(')] ( (apostrophe).)]com
+    nlc[(Edit algebraic expressions with ) [FK(`)] ( (backtick).)]com
+    nlc(Enter systems of related equations as vectors of equations.)com
+    
+    nl         (a S)k  (Solve equation/inequality/system for specified variable)ss
+    nl  (H)pk  (a S)k  (Solve, reporting general family of solutions)ss
+    nlct               [[FV(s1)] (, ) [FV(s2)] (, etc. represent signs)]com
+    nlct               [[FV(n1)] (, ) [FV(n2)] (, etc. represent integers)]com
+    small-vs
+    nl         (a l)k  [(Evaluate expression, first setting a variable temporarily)]ss
+    nl         (a c)k  [(Collect terms involving a specified variable)]ss
+    nl         (a x)k  (Expand expression )ss ((by applying distributive law))com
+    nl         (a n)k  (Arrange formula into quotient of polynomials)ss
+    nl         (a a)k  (Expand rational polynomial by partial fractions)ss
+    small-vs
+    nl         (a R)k  [(Find root of equation in )vy (; ) vx( is initial guess)]ss
+    nl         [{xt x=} (Returns ) FV ([root, error])]ss
+    small-vs
+    nl         (a N)k  [(Find local minimum of equation in )vy (; ) vx( is initial guess)]ss
+    nl         (a X)k  [(Find local maximum of equation in )vy (; ) vx( is initial guess)]ss
+    nl         [{xt x=} (Returns ) FV ([root, min/max value])]ss
+    small-vs
+
+    sect-vs
+} def
+
+/summations
+{
+    (Summations) head
+
+    nl         (a +)k  [(Sum formula \(in ) vx (\), prompting for index bounds)]ss
+    nl         (a ­)k  (Same, but alternating sum)ss
+    nl         (a *)k  [(Product formula in ) vx]ss
+    nl         (a T)k  (Evaluate formula over range of inputs, returning vector of results)ss
+
+    sect-vs
+} def
+
+/calculus
+{
+    (Calculus) head
+
+    nl         (a d)k  (Compute derivative of expression)ss
+    nl  (H)pk  (a d)k  (Ditto; does not assume other variables are constant)ss
+    nl         (a i)k  (Indefinite integral)ss
+    nl (C-u)pk (a i)k  (Definite integral; prompts for bounds)ss
+    nl         (a I)k  (Numeric integration)ss
+
+    sect-vs
+} def
 
 %%%-------------------------------------------------------------------------------------
 % Page definitions
@@ -1202,6 +1285,7 @@ FPA setfont
     vector-building
     vector-extraction
     vectors-as-sets
+    vector-packing
     showpage
 } def
 
@@ -1221,17 +1305,20 @@ FPA setfont
     /page-label (9) def
     lx ty moveto
 
-    programming
-    logical
-    flow-control
+    symbolic-algebra
+    summations
+    calculus
     showpage
 } def
 
 /page10
 {
-    /page-label () def
+    /page-label (10) def
     lx ty moveto
 
+    programming
+    logical
+    flow-control
     showpage
 } def
 
