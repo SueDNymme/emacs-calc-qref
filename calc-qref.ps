@@ -19,10 +19,11 @@
 %%% Configuration
 /ejr? true def
 /color false def
+/large-print? true def
 
 /doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
 /doc-date     (2015 APR 20) def
-/doc-version  (1.01.00) def
+/doc-version  large-print? {(1.01.00-LP)} {(1.01.00)} ifelse def
 
 /lm 0.75 in def
 /rm 0.75 in def
@@ -105,15 +106,29 @@
 
 
 % Font sizes and other spacing
-/fsT  12 def  % size for most text
-/fsC   9 def  % size for comments
-/fsP  10 def  % prefix-arg doco
-/fsH  14 def  % headings
-/fsN  12 def  % page numbers
-/fsF  24 def  % front cover title
-/body-small-vs   fsT 2 div def    % A small vertical spacing in between body text lines
-/begin-sect-vs   fsT 6 div def    % Vert space after heading, before body text
-/end-sect-vs     fsH def         % Vertical spacing at the end of a section
+large-print?
+{
+    /fsT  13 def  % size for most text
+    /fsC  11 def  % size for comments
+    /fsP  12 def  % prefix-arg doco
+    /fsH  15 def  % headings
+    /fsN  13 def  % page numbers
+    /fsF  24 def  % front cover title
+    /body-small-vs   fsT 2 div def    % A small vertical spacing in between body text lines
+    /begin-sect-vs   fsT 6 div def    % Vert space after heading, before body text
+    /end-sect-vs     fsH def          % Vertical spacing at the end of a section
+}
+{
+    /fsT  12 def  % size for most text
+    /fsC   9 def  % size for comments
+    /fsP  10 def  % prefix-arg doco
+    /fsH  14 def  % headings
+    /fsN  12 def  % page numbers
+    /fsF  24 def  % front cover title
+    /body-small-vs   fsT 2 div def    % A small vertical spacing in between body text lines
+    /begin-sect-vs   fsT 6 div def    % Vert space after heading, before body text
+    /end-sect-vs     fsH def          % Vertical spacing at the end of a section
+} ifelse
 
 
 % Load, encode, scale, and store fonts for the document
@@ -586,7 +601,7 @@ FPA setfont
     nl         (f n)k  [(Minimum of )vx( and )vy]ss
     nl         (f x)k  [(Maximum of )vx( and )vy]ss
     nl         (f [)k  [(Decrement )vx]ss
-    nl         (f ])k  [(Increment )vy]ss
+    nl         (f ])k  [(Increment )vx]ss
     small-vs
     nl         (=)k    [(Evaluate ) {((formula, variable, etc.))com}]ss
     nlct               [[FT(some predeÎned variables: )] (e, pi, i, phi, gamma, inf, nan)]com
@@ -777,8 +792,8 @@ FPA setfont
     nlp  (=)     (9) pfx-r  (time, as HMS form)pdoc
 
     nl        (v P)k    (Pack stack elements into a date or time:)ss
-    nlp  (=)    (­3) pfx-r  [(Make a time (HMS) from top three stack elements \() [FV(hour ) [FK(z)] (, minute )[FK(y)] (, second )[FK(x)] (\))]]pdoc
-    nlp  (=)   (­14) pfx-r  [(Make a date (YMD) from top three stack elements \() [FV(year ) [FK(z)] (, month ) [FK(y)] (, day )   [FK(x)] (\))]]pdoc
+    nlp  (=)    (­3) pfx-r  [(Make a time (HMS) from top 3 stack el'ts \() [FV(hr ) [FK(z)] (, min ) [FK(y)] (, sec ) [FK(x)] (\))]]pdoc
+    nlp  (=)   (­14) pfx-r  [(Make a date (YMD) from top 3 stack el'ts \() [FV(yr ) [FK(z)] (, mon ) [FK(y)] (, day ) [FK(x)] (\))]]pdoc
     nlp  (=)   (­15) pfx-r  [(Make a date/time from top six stack elements)]pdoc
     small-vs
 
@@ -939,11 +954,11 @@ FPA setfont
     nl          (Z |)k   [(Conditional break; pops )vx (, then if )vx [FM( Ø )] (0, breaks out of ) [FK(Z<) [FV( ¨ )] (Z>)] ( loop)]ss
     small-vs
 
-    nl          (Z \()k  [(For loop: )vy ( is initial value, )vx ( is Înal value. ) {(Loop counter is pushed onto stack each iteration.)com}]ss
+    nl          (Z \()k  [(For loop: )vy ( is initial value, )vx ( is Înal value. ) {(Loop counter pushed onto stack each iter.)com}]ss
     nl [FV(step)]pk (Z \))k  [(End for-loop. )vx ( is the step value, and is required.)]ss
     small-vs
 
-    nl [FV(prompt)]pk  (Z #)k   [(Pause execution, prompt user to enter an algebraic expression. )vx ( is user prompt ) {((string))com}]ss
+    nl [FV(prompt)]pk  (Z #)k   [(Pause prompt user to enter an algebraic expr )vx ( is user prompt ) {((string))com}]ss
     nl          (Z /)k   [(Break out of the innermost loop construct.)]ss
     
     sect-vs
@@ -1374,7 +1389,7 @@ FPA setfont
     % tx2 = end of dots
     % tx3 = right side of page number
     /tx1 tx1 lx add store
-    /tx2 tx2 lx add 60 add store
+    /tx2 tx2 lx add 30 add store
     /tx3 tx2 (99) stringwidth pop add store
 
     % Sort the list
@@ -1391,7 +1406,7 @@ FPA setfont
     % Display the second half in a second column
     gsave
     ty1 y=
-    cx 0 translate
+    cx lx sub 0 translate
     index-entries  c1 c2 getinterval
     {one-ix} forall
     grestore
