@@ -3,7 +3,7 @@ Project "emacs-calc-qref" - A quick-reference guide for Emacs Calc.
 This is a PostScript document that lists many useful Calc commands.
 
 Releases:
-    (none yet!)
+    v1.00  05/08/2015 - First version
 
 -------------------------------------------------------------------------------------
 This file, project-readme.txt, contains a high-level description of the project
@@ -15,6 +15,9 @@ This file, project-readme.txt, contains a high-level description of the project
 
 01/17/2013    "initial"
     Initial version of the document.
+
+05/08/2015    "composite-fonts"
+    Use composite fonts, instead of one font for each face.
 
 
 -------------------------------------------------------------------------------------
