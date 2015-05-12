@@ -19,7 +19,7 @@
 
 %%% ---------------------------------------------------------------------------------
 %%% Page Setup
-/ejr? true def                  % Prints stuff specific to my configuration
+/ejr? false def                 % Prints stuff specific to my configuration
 /color false def                % This does nothing yet
 /large-print? true def          % Makes fonts slightly larger
 /Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
@@ -322,6 +322,7 @@ definefont fsT scalefont def
 /f=c {FC  setfont}bd    % Set comment/note font
 /f=a {FPA setfont}bd    % Set prefix argument font
 /f=p {FPT setfont}bd    % Set prefix documentation font
+/f=d {debug-font setfont}bd
 
 % And for setting the font and showing a string
 /s=t {f=t s-show}bd    % Set text font and show
@@ -1321,6 +1322,81 @@ debug-font setfont
     sect-vs
 } def
 
+/j-show
+{
+    1 index stringwidth pop 450 exch sub exch div
+    0 32 2 index 0 6 -1 roll awidthshow
+
+    % currentpoint pop   % x
+    % gsave
+    % rx CY moveto  10 0 rmoveto
+    % f=d 20 string cvs s-rshow
+    % grestore
+} def
+
+/note-num
+{
+    xn  fsH  x=y-
+    s-rshow
+    xt x=
+} def
+/note-nl
+{
+    xt fsT x=y-
+} def
+
+/user-notes
+{
+    % Display a heading, but don't add it to the index
+    1 dict begin    (Notes) head    end
+
+    f=t
+    4 dict begin
+    /xn  lx (19.) stringwidth pop add  def
+    /xt  xn ( )   stringwidth pop add  def
+
+    nlc (For everbody:)show
+%   f=d (    textleft = ) show  xt 20 string cvs show
+    f=t
+    (1.) note-num
+    (The term §I«pfx»§0 or §I«preÎx»§0 means the Emacs prefix argument. This guide sometimes)91 j-show
+    note-nl
+    (refers to it as §In§0 or §Inth§0.)show
+    (2.) note-num
+    (The top of the stack is called §Vx§0. The second stack position is §Vy§0; the third is §Vz§0. Algebraic)109 j-show
+    note-nl
+    (formulas can refer to these as §V$, $$, $$$§0 (etc), or §V$1, $2, $3§0 (etc).)show
+
+    small-vs
+    small-vs
+
+    nlc (For Emacs newbies:)show
+    f=t
+    (1.) note-num
+    (Most keys in this guide are typed as you see them: §Kj§0 means to type a lowercase j.)show
+    (2.) note-num
+    (Most calc commands require multiple keystrokes. Type the keys sequentially, with)90 j-show
+    note-nl
+    (no spaces in between.)show
+    (3.) note-num
+    (The notation «§KC-§0» means to press the Ctrl key with another key; e.g., §KC-j§0 means)93 j-show
+    note-nl
+    («control j».)show
+    (4.) note-num
+    (The notation «§KM-§0» means to press the Meta key with another key. Most modern key-)94 j-show
+    note-nl
+    (boards do not have a Meta key, but you can generally use the Alt key.)show
+    (5.) note-num
+    (§KRET§0 means the «return» or «enter» key; §KDEL§0 means the delete key; §KTAB§0 means the)92 j-show
+    note-nl
+    (tab key.)show
+    (6.) note-num
+    (§ICopy§0 is §KM-k§0; §Icut§0 is §KC-k§0; §Ipaste§0 is §KC-y§0. They just are.)show
+
+    sect-vs
+    end
+} def
+
 
 %%%-------------------------------------------------------------------------------------
 %%% Page definitions
@@ -1514,13 +1590,11 @@ debug-font setfont
     s-show
 }def
 
-/index-page
+/index-section
 {
-    /page-label () def
-    lx ty moveto
     % Display a heading, but don't add it to the index
     1 dict begin    (Index) head    end
-
+    
     % Find longest, shortest strings
     FT setfont
     /tx1 999 store
@@ -1559,35 +1633,46 @@ debug-font setfont
     index-entries  c1 c2 getinterval
     {one-ix} forall
     grestore
-
-    % Registration marks for final booklet cutting:
-    1 dict begin
-    /d 11 def
-    newpath
-
-    lx by M
-    0 d neg RM
-    d neg 0 RL
-    0 d RL
-    stroke
-
-    lx ty M
-    d neg 0 RM
-    0 d RL
-    d 0 RL
-    stroke
-
-    rx ty M
-    0 d RM
-    d 0 RL
-    stroke
-
-    rx by M
-    0 d neg RM
-    d 0 RL
-    stroke
     end
-    
+
+    % % Registration marks for final booklet cutting:
+    % 1 dict begin
+    % /d 11 def
+    % newpath
+    % 
+    % lx by M
+    % 0 d neg RM
+    % d neg 0 RL
+    % 0 d RL
+    % stroke
+    % 
+    % lx ty M
+    % d neg 0 RM
+    % 0 d RL
+    % d 0 RL
+    % stroke
+    % 
+    % rx ty M
+    % 0 d RM
+    % d 0 RL
+    % stroke
+    % 
+    % rx by M
+    % 0 d neg RM
+    % d 0 RL
+    % stroke
+    % end
+
+    sect-vs
+} def
+
+/index-page
+{
+    /page-label () def
+    lx ty moveto
+
+    index-section
+    user-notes
     showpage
 } def
 /index-cmp
@@ -1628,15 +1713,6 @@ debug-font setfont
                 /ydiv   PPH 6 div
             >> begin
             0 setlinewidth
-    
-            % % Test of clipping region (??)
-            % 0.9 setgray
-            % newpath
-            % -600 -800 moveto
-            % 1200 -800 lineto
-            % 1200 1600 lineto
-            % -600 1600 lineto
-            % closepath fill
     
             % Staple marks
             newpath
