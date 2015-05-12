@@ -1,7 +1,9 @@
 %!PS
 
-% Rewrite from scratch.
-% EJR 11/25/2014
+% Eric's GNU Emacs Calc quick reference booklet.
+%
+% This is meant to be printed as a quarter-page booklet, stapled,
+% trimmed, and kept near the computer for quick reference.
 
 %%% Setup
 % (../postscript-utils/error.ps) run
@@ -18,19 +20,19 @@
 %%% ---------------------------------------------------------------------------------
 %%% Page Setup
 /ejr? true def                  % Prints stuff specific to my configuration
-/color false def
-/large-print? true def
+/color false def                % This does nothing yet
+/large-print? true def          % Makes fonts slightly larger
+/Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
+/Duplex? true def               % Print on both sides of the page
 
 /doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
-/doc-date     (2015 MAY 08) def
-/doc-version  large-print? {(1.01.01-LP)} {(1.01.01)} ifelse def
+/doc-date     (2015 MAY 12) def
+/doc-version  large-print? {(1.01.02-LP)} {(1.01.02)} ifelse def
 
 /lm 0.75 in def
 /rm 0.75 in def
 /tm 0.75 in def
 /bm 0.75 in def
-/Nup 4 def
-/Duplex? true def
 
 (../postscript-utils/page-init.ps) run
 
@@ -739,7 +741,7 @@ debug-font setfont
 {
     (General arithmetic) head
 
-    nl         (&)k    (Inverse: 1/§Vx)ss
+    nl         (&)k    (Inverse: 1/§Vx  )ss ((Also inverts matrices.))s=c
     nl         (\\)k   (Integer division)ss
     nl         (:)k    (Fraction division)ss
     nl         (%)k    (Modulo)ss
@@ -844,7 +846,7 @@ debug-font setfont
 {
     (Random Numbers) head
 
-    nl    (k r)k     (Random number in the interval §K[§00 , §Vx§K\))ss
+    nl    (k r)k     (Random number in the interval §K[§00, §Vx§K\))ss
     nlct             (Result will be integer or Êoat, depending on x's type)s=c
     nlp   pfx-any    (Use argument instead of top-of-stack)s=p
     nl    (k a)k     (Random-again: make another with the same parameters)ss
@@ -852,7 +854,7 @@ debug-font setfont
 
     nl    (k h)k     (ShufÊe: Pick §Vx§0 elements from §Vy§0, without duplicates)ss
     nlct             (§Vy§0 may be a vector §T(set)§0, interval, or error form)s=c
-    nlct             (If §Vy§0 is an integer or Êoat, values are drawn from the interval §K[§00 , §Vy§K\))s=c
+    nlct             (If §Vy§0 is an integer or Êoat, values are drawn from the interval §K[§00, §Vy§K\))s=c
     nlp  (>) ( 0)pfx (Draw §Vn§0 elements from §Vx§0 )s=p ((instead of §Vy§0))s=c
     nlp  (=) (­1)pfx (ShufÊe elements of vector )s=p
     sect-vs
@@ -866,7 +868,7 @@ debug-font setfont
     nl   (c F)k  (Convert to fraction approximation)ss
     nl   (c d)k  (Convert to degrees (from radians))ss
     nl   (c r)k  (Convert to radians (from degrees))ss
-    nl   (c h)k  (convert angle to HMS form)ss
+    nl   (c h)k  (Convert angle to HMS form)ss
     sect-vs
 }def
 
@@ -915,6 +917,8 @@ debug-font setfont
 /date-time    % 503
 {
     (Date-Time operations) head
+    nlc  (Note: Default time display is «§Thh§K@§T mm§K'§T ss§K"§T §Kmod§T 24§K@§T 0§K'§T 0§K"§0».)s=c
+    nlc  (To remove the modulus, use §Kv u§0. To change the time/date display use §Kd h§0 / §Kd d§0.)s=c
 
     nl        (t N)k    (Push current date/time onto stack)ss
     nl        (t N F)k  (Current date only)ss
@@ -1059,7 +1063,7 @@ debug-font setfont
 {
     (Programming) head
 
-    nlc (Note: the letter Z in this section is uppercase, except where noted.)s=c
+    nlc (Note: the letter Z in commands in this section is uppercase, except where noted.)s=c
     nl  (C-)pc  (x \()k  (Start recording keyboard macro)ss
     nl  (C-)pc  (x \))k  (Stop recording)ss
     nl          (X)k     (Execute macro (or use §KC-x e§0))ss
@@ -1079,7 +1083,7 @@ debug-font setfont
 /flow-control    % 260
 {
     (Flow control in keyboard macros) head
-    nlc (Note: §KZ[§0, §KZ:§0, and §KZ|§0 expect (and consume) a boolean value from the stack.)s=c
+    nlc (Note: §KZ[§0 and §KZ|§0 expect (and consume) a boolean value from the stack.)s=c
 
     nl xt x= (§Vbool §KZ[§V ¨ §KZ])ss
     nl xt x= (§Vbool §KZ[§V ¨ §KZ:§V ¨ §KZ])ss
@@ -1087,21 +1091,19 @@ debug-font setfont
     small-vs
 
     nl          (Z [)k          (IF ¯ pops §Vx§0, then if:)ss
-    nlp     (=) (0)pfx-x            (skip to §KZ:§0 or §KZ]§0)s=p
-    nlp     /notequal (0)pfx-x      (keep executing until §KZ:§0 or §KZ]§0)s=p
+    nlp     (=) (0)pfx-x            (skip to §KZ:§0 or §KZ])s=p
+    nlp     (Ø) (0)pfx-x            (keep executing until §KZ:§0 or §KZ])s=p
     nl          (Z :)k          (ELSE)ss
-    % nl [FK(Z: ) [FV(bool)] ( Z|)]ss  [FT {xt x=} (ELSE IF)]ss
-    nl (Z :)pk  (Z |)k          (ELSE IF¯ pops §Vx§0, then if §Vx§M Ø §00, keeps executing here, else skips to next §KZ:§0 or §KZ]§0)ss
+    nl (Z :)pk  (Z |)k          (ELSE IF¯ pops §Vx§0, then if §Vx§M Ø §00, keeps executing here, else skips to next §KZ:§0 or §KZ])ss
     nl          (Z ])k          (END IF)ss
     small-vs
 
     nl          (Z <)k          (Counted loop.  Pops §Vx§0, then loops for §Vx§0 times (§Vx§0 > 0))ss
     nl          (Z >)k          (End counted loop)ss
-    % nl [FV(bool)]pk (Z |)k   [(Conditional break; pops §Vx§0, then if )vx [FM( Ø )] (0, breaks out of ) [FK(Z<) [FV( ¨ )] (Z>)] ( loop)]ss
     nl          (Z |)k          (Conditional break; pops §Vx§0, then if §Vx§M Ø §00, breaks out of §KZ<§V ¨ §KZ>§0 loop)ss
     small-vs
 
-    nl          (Z \()k         (For loop: §Vy§0 is initial value, §Vx§0 is Înal value. )ss (Loop counter pushed onto stack each iter.)s=c
+    nl          (Z \()k         (For loop: §Vy§0 is initial value, §Vx§0 is Înal value. )ss (Counter pushed onto stack each iteration)s=c
     nl [FV(step)]pk (Z \))k     (End for-loop. §Vx§0 is the step value, and is required.)ss
     small-vs
 
@@ -1117,7 +1119,7 @@ debug-font setfont
     (Vectors (building)) head
 
     nl         (v x)k    (Build vector of integers from 1 to §VpreÎx)ss
-    nl (C-u)pk (v x)k    (Build vector of §Vz§0 elements, starting at §Vy§0 and incrementing §Vx§0 each time)ss
+    nl (C-u)pk (v x)k    (Build vector of §Vz§0 elements, starting at §Vy§0 and incrementing by §Vx§0 each time)ss
     nl         (v b)k    (Build vector of §VpreÎx§0 copies of §Vx)ss
     nl         (v i)k    (Build an identity matrix of order §VpreÎx)ss
     nl         (v d)k    (Create a diagonal square matrix (of order §VpreÎx§0) from §Vx)ss
@@ -1269,12 +1271,11 @@ debug-font setfont
 /symbolic-algebra    % 254
 {
     (Algebraic (symbolic) manipulation) head
-    nlc(Notes: Enter algebraic expressions with §K'§0 (apostrophe).)s=c
-    nlc(Edit algebraic expressions with §K`§0 (backtick).)s=c
+    nlc(Notes: Enter algebraic expressions with §K´§0 (apostrophe). Edit algebraic expressions with §K`§0 (backtick).)s=c
     nlc(Enter systems of related equations as vectors of equations.)s=c
     
     nl         (a S)k  (Solve equation/inequality/system for speciÎed variable)ss
-    nl  (H)pk  (a S)k  (Solve, reporting general family of solutions)ss
+    nl  (H)pk  (a S)k  (Solve, reporting general family of solutions  )ss  (Manual: 10.6.1 «Multiple Solutions»)s=c
     nlct               (§Vs1§0, §Vs2§0, etc. represent signs)s=c
     nlct               (§Vn1§0, §Vn2§0, etc. represent integers)s=c
     small-vs
@@ -1284,7 +1285,7 @@ debug-font setfont
     nl         (a n)k  (Arrange formula into quotient of polynomials)ss
     nl         (a a)k  (Expand rational polynomial by partial fractions)ss
     small-vs
-    nl         (a R)k  (Find root of equation in §Vy§0; §Vx§0 is initial guess)ss
+    nl         (a R)k  (Find root of equation in §Vy§0; §Vx§0 is initial guess  )ss  (Manual: 10.7.1 «Root Finding»)s=c
     nl         xt x=   (Returns §V[root, error])ss
     small-vs
     nl         (a N)k  (Find local minimum of equation in §Vy§0; §Vx§0 is initial guess)ss
