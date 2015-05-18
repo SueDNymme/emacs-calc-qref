@@ -8,7 +8,7 @@
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
 
-/doc-version  (1.01.05)     def
+/doc-version  (1.02.00)     def
 /doc-date     (2015 MAY 18) def
 
 (qref-config.ps) run
@@ -17,7 +17,7 @@
 /def-if-not-def{1 index where{pop pop pop}{def}ifelse}def
 
 /Nup           4     def-if-not-def     % Number of pages per physical sheet: 1, 2, or 4
-/ejr?          true  def-if-not-def     % Prints stuff specific to my configuration
+/ejr?          false def-if-not-def     % Prints stuff specific to my configuration
 /color         false def-if-not-def     % This does nothing yet
 /large-print?  true  def-if-not-def     % Makes fonts slightly larger
 /doc-title     [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def-if-not-def
