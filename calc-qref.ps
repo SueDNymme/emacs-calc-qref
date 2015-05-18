@@ -2,26 +2,34 @@
 
 % Eric's GNU Emacs Calc quick reference booklet.
 %
-% This is meant to be printed as a quarter-page booklet, stapled,
+% This is intended to be printed as a quarter-page booklet, stapled,
 % trimmed, and kept near the computer for quick reference.
 
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
-/ejr? true def                  % Prints stuff specific to my configuration
-/color false def                % This does nothing yet
-/large-print? true def          % Makes fonts slightly larger
-/Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
-/Duplex? true def               % Print on both sides of the page
 
-/doc-title    [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def
+/doc-version  (1.01.05)     def
 /doc-date     (2015 MAY 18) def
-/doc-version  large-print? {(1.01.04-LP)} {(1.01.04)} ifelse def
 
-% Margins
-/lm 54 def    % ¾"
-/rm 54 def    % ¾"
-/tm 54 def    % ¾"
-/bm 54 def    % ¾"
+(qref-config.ps) run
+
+% Defaults:
+/def-if-not-def{1 index where{pop pop pop}{def}ifelse}def
+
+/Nup           4     def-if-not-def     % Number of pages per physical sheet: 1, 2, or 4
+/ejr?          true  def-if-not-def     % Prints stuff specific to my configuration
+/color         false def-if-not-def     % This does nothing yet
+/large-print?  true  def-if-not-def     % Makes fonts slightly larger
+/doc-title     [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def-if-not-def
+
+% Page margins (scaled, for the small virtual pages)
+/lm  54  def-if-not-def    % ¾"
+/rm  54  def-if-not-def    % ¾"
+/tm  54  def-if-not-def    % ¾"
+/bm  54  def-if-not-def    % ¾"
+
+% Adjust document version if "large-type edition"
+large-print? {/doc-version [doc-version (-LP)] def} if
 
 %%% ---------------------------------------------------------------------------------
 %%% Library functions
@@ -77,7 +85,6 @@ end
 /1UP{*VP begin/vn 0 def/nup 1 def/sf 1 def/orig<<false[[0 0 0]]true[[90 PPW 0]]>>def end}def
 /2UP{*VP begin/vn 0 def/nup 2 def/sf PPH PPW 2 mul div def/orig<<false[[90 PPH 0][90 PPH PPW]]true[[0 0 PPW][0 0 0]]>>def end}def
 /4UP{*VP begin/vn 0 def/nup 4 def/sf 0.5 def/orig<<false[[0 0 PPH][0 PPW PPH][0 0 0][0 PPW 0]]true[[90 PPW 0][90 PPW 2 mul 0][90 PPW PPH][90 PPW 2 mul PPH]]>>def end}def
-/def-if-not-def{1 index where{pop pop pop}{def}ifelse}bd
 /page-init{/Paper where{pop true}{false}ifelse/Duplex? where{pop true}{false}ifelse or/Paper PaperSizes/Default get def-if-not-def PaperSizes Paper 2 copy known not{pop dup/Default get/Paper 1 index store}if get aload pop/PPH exch def/PPW exch def/PPN 1 def/Duplex? false def-if-not-def/Landscape? false def-if-not-def/Nup 1 def-if-not-def/lm 0 def-if-not-def/rm 0 def-if-not-def/tm 0 def-if-not-def/bm 0 def-if-not-def *VP/nupok get Nup known not{/Nup 1 def}if{<</PageSize[PPW PPH]/Duplex Duplex?>>setpagedevice}if *VP/GS 2 copy known{pop pop}{gstate currentgstate put}ifelse *VP/OM 2 copy known{pop pop}{matrix currentmatrix put}ifelse/ph{Landscape?{PPW}{PPH}ifelse}def/pw{Landscape?{PPH}{PPW}ifelse}def/pn 1 def/lx lm def/rx pw rm sub def/cx rx lx add 2 div def/by bm def/ty ph tm sub def/cy ty by add 2 div def Nup dup 1 eq{1UP}{dup 2 eq{2UP}{dup 4 eq{4UP}if}ifelse}ifelse pop orient-subpage}def
 
 page-init
@@ -1667,7 +1674,7 @@ Nup
     1
     {
         pop
-%       front-cover
+        front-cover
         page1
         page2
         page3

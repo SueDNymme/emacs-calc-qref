@@ -6,6 +6,6 @@ TAGS
 # Distro files
 *.tar.gz
 
-# Library files that are only here for scaffolding
-ejrlib.ps
-error.ps
+# Output
+calc-qref.pdf
+
