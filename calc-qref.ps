@@ -5,7 +5,27 @@
 % This is meant to be printed as a quarter-page booklet, stapled,
 % trimmed, and kept near the computer for quick reference.
 
-%%% Setup
+%%% ---------------------------------------------------------------------------------
+%%% Document configuration
+/ejr? true def                  % Prints stuff specific to my configuration
+/color false def                % This does nothing yet
+/large-print? true def          % Makes fonts slightly larger
+/Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
+/Duplex? true def               % Print on both sides of the page
+
+/doc-title    [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def
+/doc-date     (2015 MAY 18) def
+/doc-version  large-print? {(1.01.04-LP)} {(1.01.04)} ifelse def
+
+% Margins
+/lm 54 def    % ¾"
+/rm 54 def    % ¾"
+/tm 54 def    % ¾"
+/bm 54 def    % ¾"
+
+%%% ---------------------------------------------------------------------------------
+%%% Library functions
+
 % (../postscript-utils/error.ps) run
 /bd {bind def}bind def
 /LD {load def}bd
@@ -59,23 +79,6 @@ end
 /4UP{*VP begin/vn 0 def/nup 4 def/sf 0.5 def/orig<<false[[0 0 PPH][0 PPW PPH][0 0 0][0 PPW 0]]true[[90 PPW 0][90 PPW 2 mul 0][90 PPW PPH][90 PPW 2 mul PPH]]>>def end}def
 /def-if-not-def{1 index where{pop pop pop}{def}ifelse}bd
 /page-init{/Paper where{pop true}{false}ifelse/Duplex? where{pop true}{false}ifelse or/Paper PaperSizes/Default get def-if-not-def PaperSizes Paper 2 copy known not{pop dup/Default get/Paper 1 index store}if get aload pop/PPH exch def/PPW exch def/PPN 1 def/Duplex? false def-if-not-def/Landscape? false def-if-not-def/Nup 1 def-if-not-def/lm 0 def-if-not-def/rm 0 def-if-not-def/tm 0 def-if-not-def/bm 0 def-if-not-def *VP/nupok get Nup known not{/Nup 1 def}if{<</PageSize[PPW PPH]/Duplex Duplex?>>setpagedevice}if *VP/GS 2 copy known{pop pop}{gstate currentgstate put}ifelse *VP/OM 2 copy known{pop pop}{matrix currentmatrix put}ifelse/ph{Landscape?{PPW}{PPH}ifelse}def/pw{Landscape?{PPH}{PPW}ifelse}def/pn 1 def/lx lm def/rx pw rm sub def/cx rx lx add 2 div def/by bm def/ty ph tm sub def/cy ty by add 2 div def Nup dup 1 eq{1UP}{dup 2 eq{2UP}{dup 4 eq{4UP}if}ifelse}ifelse pop orient-subpage}def
-
-%%% ---------------------------------------------------------------------------------
-%%% Page Setup
-/ejr? false def                 % Prints stuff specific to my configuration
-/color false def                % This does nothing yet
-/large-print? true def          % Makes fonts slightly larger
-/Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
-/Duplex? true def               % Print on both sides of the page
-
-/doc-title    [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def
-/doc-date     (2015 MAY 18) def
-/doc-version  large-print? {(1.01.03-LP)} {(1.01.03)} ifelse def
-
-/lm 0.75 in def
-/rm 0.75 in def
-/tm 0.75 in def
-/bm 0.75 in def
 
 page-init
 
@@ -347,7 +350,6 @@ definefont fsT scalefont def
 /FH  fsH  /Typeface-for-Headings       SF
 /FPN fsN  /Typeface-for-Page-Headings  SF
 /FF  fsF  /Typeface-for-Front-Cover    SF
-/debug-font 10 /Typeface-for-Prefix-Args SF
 
 % Superscript/subscript fonts.
 % FTS: Text superscript font. For numeric exponents.
@@ -363,9 +365,9 @@ definefont fsT scalefont def
 /f=t {FT  setfont}bd    % Set text font
 /f=k {FK  setfont}bd    % Set keystroke font
 /f=c {FC  setfont}bd    % Set comment/note font
+/f=v {FV  setfont}bd    % Set prefix argument font
 /f=a {FPA setfont}bd    % Set prefix argument font
 /f=p {FPT setfont}bd    % Set prefix documentation font
-/f=d {debug-font setfont}bd
 
 % And for setting the font and showing a string
 /s=t {f=t s-show}bd    % Set text font and show
@@ -388,8 +390,6 @@ FPA setfont
 /xpvr xpv (4,5,6) stringwidth pop add def   % prefix value (right-justified)
 /xpvR xpv (­00)   stringwidth pop add def   % prefix value (alt right-justified)
 /xpt  xpvr 9 add def                        % prefix text description
-/ts   {1 x+} def    % "tiny space" for fake-kerning
-
 
 % Starting a new line (and similar)
 /nl   {lx  fsT  x=y-} def
@@ -398,22 +398,11 @@ FPA setfont
 /nlct {xt  fsC  x=y-  FC setfont} def   % comment (text column)
 /nlp  {xpa fsP  x=y-  FPA setfont} def
 /small-vs {body-small-vs y-} def
-/nl* {nl Hline} def   % temp for debugging
 /sect-vs
 {
     /deb-b CY store
-    debug-positions
     end-sect-vs y-
 } def               % vertical space after a section
-
-% Debugging positions
-debug-font setfont
-/deb-r  rx 60 sub def
-/deb-m  deb-r  ( = 999) stringwidth pop sub def
-/deb-l  deb-m  ( - 999) stringwidth pop sub def
-/deb-t 0 def
-/deb-h 0 def
-/deb-b 0 def
 
 
 %%% ---------------------------------------------------------------------------------
@@ -429,65 +418,9 @@ debug-font setfont
         index-entries aload pop
     ] def
 
-    % for debugging:
-    /deb-t CY store
-
     nlh show
-    /deb-h CY store   % more debugging
     begin-sect-vs y-
 } def
-
-/debug-positions
-{
-    % deb-t 0 ne
-    % deb-h 0 ne and
-    % deb-b 0 ne and
-    % {
-    %     gsave
-    %     debug-font setfont
-    %     deb-l deb-h moveto
-    %     deb-t            0.5 add cvi 3 string cvs s-rshow
-    %     ( -) show
-    %     deb-m deb-h moveto
-    %     deb-t deb-b sub  0.5 add cvi 3 string cvs s-rshow
-    %     ( =) show
-    %     deb-r deb-h moveto
-    %     deb-b            0.5 add cvi 3 string cvs s-rshow
-    %     grestore
-    % } if
-} def
-
-% Show text in comment style
-% /com
-% {
-%     2 dict begin
-%     /com-save-m matrix currentmatrix def
-%     /com-save-f currentfont def
-%     FI setfont
-%
-%     fsC fsT div dup scale
-%     s-show
-%
-%     com-save-f setfont
-%     com-save-m setmatrix
-%     end
-% } def
-
-% Show text in prefix-documentation style
-% /pdoc
-% {
-%     2 dict begin
-%     /com-save-m matrix currentmatrix def
-%     /com-save-f currentfont def
-%     FT setfont
-%
-%     fsP fsT div dup scale
-%     s-show
-%
-%     com-save-f setfont
-%     com-save-m setmatrix
-%     end
-% } def
 
 % Show a prefix key sequence on the current line.
 /pk {FK setfont xp x= s-rshow} def
@@ -565,21 +498,12 @@ debug-font setfont
         rx ty  moveto   fsN y-
         [(Page ) page-label] s-rshow
     }if
-
-    % Temp for development: outline each page (within margins)
-    % 0 setlinewidth
-    % lx by moveto rx ty rectto stroke
 } def
 
-% Misc shortcuts
-/vx [FV(x)] def    % variable "x"
-/vy [FV(y)] def    % variable "y"
-/vz [FV(z)] def    % variable "z"
-/vn [FV(n)] def    % variable "n"
-/vnth [FV(nth)] def    % variable "nth"
+% Misc shortcut
 /ss /s-show load def
 
-% Experiment to show a fraction a/b
+% Show a fraction a/b
 % assumes args are lowercase letters
 /a-over-b
 {
@@ -610,7 +534,7 @@ debug-font setfont
 % The reference materials are stored in blocks; this makes it easier
 % to rearrange (to make them fit on the pages, for example).
 
-/data-entry  % 238
+/data-entry
 {
     (Data Entry) head
 
@@ -630,9 +554,6 @@ debug-font setfont
     nl  ([§V a §0,§V b §0,§V ¨ §0])   data-ent  (Vector. Nest vectors to make a matrix.)ss
     nl  ("§Vhello§0")                 data-ent  (String: vector of ASCII codes)ss
     nl  (´<§Vdate§0>)                 data-ent  (Date form \(rather Êexible\))ss
-    % nl  [[FV(16){ts}](h) [FV( 40){ts}](m)  [FV( 20){ts}](s)]  data-ent  (HMS form (hour, minute, second))ss
-    % nl  [[FV(16){ts}](@) [FV( 40){ts}](')  [FV( 20){ts}](")]  data-ent  (HMS form (degree, minute, second))ss
-    % nl  [[FV(16){ts}](o) [FV( 40){ts}](')  [FV( 20){ts}](")]  data-ent  (HMS form \(§Ko§0 represents «degree»\))ss
     nl  (§V16§Kh§V 40§Km§V 20§Ks)     data-ent  (HMS form (hour, minute, second))ss
     nl  (§V16§K@§V 40§K'§V 20§K")     data-ent  (HMS form (degree, minute, second))ss
     nl  (§V16§Ko§V 40§K'§V 20§K")     data-ent  (HMS form \(§Ko§0 represents «degree»\))ss
@@ -649,7 +570,7 @@ debug-font setfont
     sect-vs
 } def
 
-/stack-ops    % 317
+/stack-ops
 {
     (Stack Operations) head
 
@@ -688,7 +609,7 @@ debug-font setfont
     sect-vs
 } def
 
-/meta-ops    % 108
+/meta-ops
 {
     (Meta operations) head
 
@@ -702,7 +623,7 @@ debug-font setfont
     sect-vs
 } def
 
-/display-modes    % 304
+/display-modes
 {
     (Display Modes) head
 
@@ -735,7 +656,7 @@ debug-font setfont
     sect-vs
 } def
 
-/killing-etc    % 244
+/killing-etc
 {
     (Killing, Copying, Yanking) head
 
@@ -762,7 +683,7 @@ debug-font setfont
     sect-vs
 } def
 
-/rounding    % 95
+/rounding
 {
     (Rounding) head
 
@@ -781,7 +702,7 @@ debug-font setfont
     sect-vs
 } def
 
-/general-math    % 178
+/general-math
 {
     (General arithmetic) head
 
@@ -789,7 +710,7 @@ debug-font setfont
     nl         (\\)k   (Integer division)ss
     nl         (:)k    (Fraction division)ss
     nl         (%)k    (Modulo)ss
-    nl         (A)k    [(|)vx {ts}(| ¯ absolute value, or complex magnitude)]ss
+    nl         (A)k    (| §Vx §0| ¯ absolute value, or complex magnitude)ss
     nl         (n)k    (Negate §Vx)ss
     nl         (f s)k  (Sign operator, returns ­1, 0, or 1)ss
     nl         (f n)k  (Minimum of §Vx§0 and §Vy)ss
@@ -797,12 +718,12 @@ debug-font setfont
     nl         (f [)k  (Decrement §Vx)ss
     nl         (f ])k  (Increment §Vx)ss
     small-vs
-    nl         (=)k    [(Evaluate ) [FC((formula, variable, etc.))]]ss
+    nl         (=)k    (Evaluate )ss ((formula, variable, etc.))s=c
     nlct               (§Tsome predeÎned variables: §0e, pi, i, phi, gamma, inf, nan)s=c
     sect-vs
 } def
 
-/algebraic-ops    % 160
+/algebraic-ops
 {
     (Algebraic operations) head
 
@@ -815,12 +736,12 @@ debug-font setfont
     nl (I H)pk (L)k    [(10)FVS(x)]ss
     nl         (B)k    [(log)[FVs(x)] (\(§Vy§0\)) ]ss
     nl         (^)k    [(General exponent: y)FVS(x)]ss
-    nl (I)pk   (^)k    (General root: )ss   vy vx radical
+    nl (I)pk   (^)k    (General root: )ss   f=v (y) (x) radical
     nl         (f h)k  [(Hypotenuse operation: ) {(§Vx§0² + §Vy§0²) root}]ss
     sect-vs
 } def
 
-/trigonometry    % 93
+/trigonometry
 {
     (Trigonometry) head
 
@@ -828,13 +749,12 @@ debug-font setfont
     nl         (S)k    (Sine)ss
     nl         (C)k    (Cosine)ss
     nl         (T)k    (Tangent)ss
-  % nl         (f T)k  [(Two-argument arctangent: \() [FV(y/x)] (\))]ss
-    nl         (f T)k  [(Two-argument arctangent: \() {vy vx a-over-b} (\))]ss
+    nl         (f T)k  [(Two-argument arctangent: \() FV {(y) (x) a-over-b} (\))]ss
     nl         (P)k    (Push §Gp§0 onto the stack)ss
     sect-vs
 } def
 
-/complex-numbers    % 134
+/complex-numbers
 {
     (Complex numbers) head
 
@@ -850,7 +770,7 @@ debug-font setfont
     sect-vs
 } def
 
-/percentages    % 82
+/percentages
 {
     (Percentages) head
 
@@ -860,13 +780,13 @@ debug-font setfont
     nl   (M-)pc (%)k    [(Convert §Vx§0 to percentage:) {xt x= conv-str s-width x+ (8.5 )s-rshow}  (§M]§0 8.5%)]ss
     nl          (c %)k  [conv-str (§M]§0 8.5%)]ss
     end
-    nl  (M-)pc  (% *)k  [(Compute §Vx) {ts} (% of §Vy)]ss
+    nl  (M-)pc  (% *)k  (Compute §Vx§0% of §Vy)ss
     nl (/ &)pk  (c %)k  (Compute what percent §Vx§0 is of §Vy)ss
     nl          (b %)k  (Compute percent change from §Vy§0 to §Vx)ss
     sect-vs
 } def
 
-/combinatorics    % 193
+/combinatorics
 {
     (Combinatorics) head
 
@@ -887,7 +807,7 @@ debug-font setfont
     sect-vs
 } def
 
-/random-numbers    % 132
+/random-numbers
 {
     (Random Numbers) head
 
@@ -905,7 +825,7 @@ debug-font setfont
     sect-vs
 }def
 
-/conversions    % 82
+/conversions
 {
     (Conversions) head
 
@@ -917,7 +837,7 @@ debug-font setfont
     sect-vs
 }def
 
-/binary    % 151
+/binary
 {
     (Binary) head
 
@@ -931,11 +851,11 @@ debug-font setfont
     nl   (b u)k      (Unpack binary number into a vector of bit position indices)ss
     nl   (b p)k      (Pack such a vector into a binary number)ss
     small-vs
-    nlc  (There are also a ton of shift & rotate operations not listed here)s=c
+    nlc  (There are also a ton of shift & rotate operations not listed here; see manual 7.7 «Binary Number Functions»)s=c
     sect-vs
 }def
 
-/logical    % 197
+/logical
 {
     (Logical operations) head
     nlc (Note: 0 represents «false»; 1 (or any nonzero value) represents «true»)s=c
@@ -959,7 +879,7 @@ debug-font setfont
     sect-vs
 }def
 
-/date-time    % 503
+/date-time
 {
     (Date-Time operations) head
     nlc  (Note: Default time display is «§Thh§K@§T mm§K'§T ss§K"§T §Kmod§T 24§K@§T 0§K'§T 0§K"§0».)s=c
@@ -1019,7 +939,7 @@ debug-font setfont
     sect-vs
 } def
 
-/units    % 262
+/units
 {
     (Units) head
     nlc (Note: enter units expressions in algebraic mode)s=c
@@ -1052,7 +972,7 @@ debug-font setfont
     sect-vs
 } def
 
-/storing-recalling    % 225
+/storing-recalling
 {
     (Storing/recalling) head
 
@@ -1078,7 +998,7 @@ debug-font setfont
     sect-vs
 } def
 
-/stack-trail    % 249
+/stack-trail
 {
     (Stack Trail) head
 
@@ -1104,7 +1024,7 @@ debug-font setfont
     sect-vs
 }def
 
-/programming    % 191
+/programming
 {
     (Programming) head
 
@@ -1125,7 +1045,7 @@ debug-font setfont
     sect-vs
 } def
 
-/flow-control    % 260
+/flow-control
 {
     (Flow control in keyboard macros) head
     nlc (Note: §KZ[§0 and §KZ|§0 expect (and consume) a boolean value from the stack.)s=c
@@ -1159,7 +1079,7 @@ debug-font setfont
 }def
 
 
-/vector-building    % 115
+/vector-building
 {
     (Vectors (building)) head
 
@@ -1176,7 +1096,7 @@ debug-font setfont
     sect-vs
 } def
 
-/vector-extraction    % 139
+/vector-extraction
 {
     (Vectors (extracting)) head
 
@@ -1195,7 +1115,7 @@ debug-font setfont
     sect-vs
 } def
 
-/vector-ops    % 271
+/vector-ops
 {
     (Vector operations) head
 
@@ -1240,7 +1160,7 @@ debug-font setfont
     sect-vs
 }def
 
-/vectors-as-sets    % 160
+/vectors-as-sets
 {
     (Vectors as sets) head
 
@@ -1259,7 +1179,7 @@ debug-font setfont
     sect-vs
 } def
 
-/vector-packing    % 235
+/vector-packing
 {
     (Vector packing/unpacking) head
     1 dict begin
@@ -1288,7 +1208,7 @@ debug-font setfont
     sect-vs
 } def
 
-/mapping    % 193
+/mapping
 {
     (Vector mapping/reduction) head
 
@@ -1313,7 +1233,7 @@ debug-font setfont
     sect-vs
 } def
 
-/symbolic-algebra    % 254
+/symbolic-algebra
 {
     (Algebraic (symbolic) manipulation) head
     nlc(Notes: Enter algebraic expressions with §K´§0 (apostrophe). Edit algebraic expressions with §K`§0 (backtick).)s=c
@@ -1341,7 +1261,7 @@ debug-font setfont
     sect-vs
 } def
 
-/summations    % 69
+/summations
 {
     (Summations) head
 
@@ -1353,7 +1273,7 @@ debug-font setfont
     sect-vs
 } def
 
-/calculus    % 82
+/calculus
 {
     (Calculus) head
 
@@ -1483,34 +1403,6 @@ debug-font setfont
     rx by moveto
     [{/tx1 CX store}   (Last updated: ) doc-date] s-rshow
     tx1 x=  fsN y+  [(Version: ) doc-version] s-show
-
-    % % Registration marks for final booklet cutting:
-    % 1 dict begin
-    % /d 11 def
-    % newpath
-    % 
-    % lx by M
-    % 0 d neg RM
-    % d neg 0 RL
-    % stroke
-    % 
-    % lx ty M
-    % 0 d RM
-    % d neg 0 RL
-    % stroke
-    % 
-    % rx ty M
-    % 0 d RM
-    % d 0 RL
-    % 0 d neg RL
-    % stroke
-    % 
-    % rx by M
-    % 0 d neg RM
-    % d 0 RL
-    % 0 d RL
-    % stroke
-    % end
 
     showpage
 
@@ -1695,34 +1587,6 @@ debug-font setfont
     grestore
     end
 
-    % % Registration marks for final booklet cutting:
-    % 1 dict begin
-    % /d 11 def
-    % newpath
-    % 
-    % lx by M
-    % 0 d neg RM
-    % d neg 0 RL
-    % 0 d RL
-    % stroke
-    % 
-    % lx ty M
-    % d neg 0 RM
-    % 0 d RL
-    % d 0 RL
-    % stroke
-    % 
-    % rx ty M
-    % 0 d RM
-    % d 0 RL
-    % stroke
-    % 
-    % rx by M
-    % 0 d neg RM
-    % d 0 RL
-    % stroke
-    % end
-
     sect-vs
 } def
 
@@ -1803,7 +1667,7 @@ Nup
     1
     {
         pop
-%        front-cover
+%       front-cover
         page1
         page2
         page3
