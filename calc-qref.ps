@@ -47,6 +47,18 @@
 /y+{C BCA add M}bd
 /y-{C BCA sub M}bd
 /y={C pop exch M}bd
+/PaperSizes<</A4[595.28 841.89]/US-Letter[612 792]/US-Legal[612 1008]/Both[595.28 792]/Default/US-Letter>>readonly def
+/*VP 10 dict def
+*VP begin
+/vn 0 def/nup 1 def/sf 1 def/orig null def *VP/SP 2 copy known{pop pop}{/showpage load put}ifelse/nupok<<1 true 2 true 4 true>>def
+end
+/showpage{/end-of-page dup where{exch get exec}{pop}ifelse *VP begin/vn vn 1 add def vn nup ge{/end-of-physical-page dup where{exch get GS setgstate currentdict exch end exec begin}{pop}ifelse SP/PPN PPN 1 add store/vn 0 def}if/pn pn 1 add store GS setgstate orient-subpage newpath 0 0 M pw 0 L pw ph L 0 ph L closepath clip end}def
+/orient-subpage{*VP begin sf dup scale orig Landscape? get vn get aload pop translate rotate end}def
+/1UP{*VP begin/vn 0 def/nup 1 def/sf 1 def/orig<<false[[0 0 0]]true[[90 PPW 0]]>>def end}def
+/2UP{*VP begin/vn 0 def/nup 2 def/sf PPH PPW 2 mul div def/orig<<false[[90 PPH 0][90 PPH PPW]]true[[0 0 PPW][0 0 0]]>>def end}def
+/4UP{*VP begin/vn 0 def/nup 4 def/sf 0.5 def/orig<<false[[0 0 PPH][0 PPW PPH][0 0 0][0 PPW 0]]true[[90 PPW 0][90 PPW 2 mul 0][90 PPW PPH][90 PPW 2 mul PPH]]>>def end}def
+/def-if-not-def{1 index where{pop pop pop}{def}ifelse}bd
+/page-init{/Paper where{pop true}{false}ifelse/Duplex? where{pop true}{false}ifelse or/Paper PaperSizes/Default get def-if-not-def PaperSizes Paper 2 copy known not{pop dup/Default get/Paper 1 index store}if get aload pop/PPH exch def/PPW exch def/PPN 1 def/Duplex? false def-if-not-def/Landscape? false def-if-not-def/Nup 1 def-if-not-def/lm 0 def-if-not-def/rm 0 def-if-not-def/tm 0 def-if-not-def/bm 0 def-if-not-def *VP/nupok get Nup known not{/Nup 1 def}if{<</PageSize[PPW PPH]/Duplex Duplex?>>setpagedevice}if *VP/GS 2 copy known{pop pop}{gstate currentgstate put}ifelse *VP/OM 2 copy known{pop pop}{matrix currentmatrix put}ifelse/ph{Landscape?{PPW}{PPH}ifelse}def/pw{Landscape?{PPH}{PPW}ifelse}def/pn 1 def/lx lm def/rx pw rm sub def/cx rx lx add 2 div def/by bm def/ty ph tm sub def/cy ty by add 2 div def Nup dup 1 eq{1UP}{dup 2 eq{2UP}{dup 4 eq{4UP}if}ifelse}ifelse pop orient-subpage}def
 
 %%% ---------------------------------------------------------------------------------
 %%% Page Setup
@@ -56,16 +68,16 @@
 /Nup 4 def                      % Number of pages per physical sheet: 1, 2, or 4
 /Duplex? true def               % Print on both sides of the page
 
-/doc-title    (Eric's Gnu Emacs Calc Quick Reference) def
-/doc-date     (2015 MAY 12) def
-/doc-version  large-print? {(1.01.02-LP)} {(1.01.02)} ifelse def
+/doc-title    [(Eric's) (Gnu Emacs Calc) (Quick Reference Guide)] def
+/doc-date     (2015 MAY 18) def
+/doc-version  large-print? {(1.01.03-LP)} {(1.01.03)} ifelse def
 
 /lm 0.75 in def
 /rm 0.75 in def
 /tm 0.75 in def
 /bm 0.75 in def
 
-(../postscript-utils/page-init.ps) run
+page-init
 
 %%% ---------------------------------------------------------------------------------
 %%% Font Setup
@@ -778,6 +790,7 @@ debug-font setfont
     nl         (:)k    (Fraction division)ss
     nl         (%)k    (Modulo)ss
     nl         (A)k    [(|)vx {ts}(| ¯ absolute value, or complex magnitude)]ss
+    nl         (n)k    (Negate §Vx)ss
     nl         (f s)k  (Sign operator, returns ­1, 0, or 1)ss
     nl         (f n)k  (Minimum of §Vx§0 and §Vy)ss
     nl         (f x)k  (Maximum of §Vx§0 and §Vy)ss
@@ -861,7 +874,7 @@ debug-font setfont
     nl         (k l)k    (LCM of two integers or fractions)ss
     nl         (k E)k    (Extended GCD: returns vector §K[§Vg, a, b§K]§0, where §Vg§0 is the GCD, and §Vg§M = §Vax§M + §Vby§0.)ss
     nl         (!)k      (Factorial function)ss
-    nl         (k g)k    (Euler gamma function)ss
+    nl         (k e)k    (Euler gamma function)ss
     nl         (k d)k    (Double factorial)ss
     small-vs
     nl         (k c)k    (Combinations: (§Vy§0 choose §Vx§0))ss
@@ -950,7 +963,7 @@ debug-font setfont
 {
     (Date-Time operations) head
     nlc  (Note: Default time display is «§Thh§K@§T mm§K'§T ss§K"§T §Kmod§T 24§K@§T 0§K'§T 0§K"§0».)s=c
-    nlc  (To remove the modulus, use §Kv u§0. To change the time/date display use §Kd h§0 / §Kd d§0.)s=c
+    nlc  (To remove the modulus, use §Kv u§0. To change the time/date display use §Kd h§0 or §Kd d§0.)s=c
 
     nl        (t N)k    (Push current date/time onto stack)ss
     nl        (t N F)k  (Current date only)ss
@@ -1108,7 +1121,7 @@ debug-font setfont
     nl          (Z K)k   (Bind a keyboard macro to a §Kz§0-key)ss
     nl          (Z E)k   (Edit keyboard macro, or formula, bound to a §Kz§0-key. §KC-c C-c§0 to end)ss
     nl          (Z U)k   (Forget a §Kz§0-key binding)ss
-    nl          (Z P)k   (Make a §Kz§0-key binding permanent )ss (\(via config Île calc.el\))s=c
+    nl          (Z P)k   (Make a §Kz§0-key binding permanent )ss (\(via conÎg Île calc.el\))s=c
     sect-vs
 } def
 
@@ -1353,18 +1366,6 @@ debug-font setfont
     sect-vs
 } def
 
-/j-show
-{
-    1 index stringwidth pop 450 exch sub exch div
-    0 32 2 index 0 6 -1 roll awidthshow
-
-    % currentpoint pop   % x
-    % gsave
-    % rx CY moveto  10 0 rmoveto
-    % f=d 20 string cvs s-rshow
-    % grestore
-} def
-
 /note-num
 {
     xn  fsH  x=y-
@@ -1390,11 +1391,11 @@ debug-font setfont
 %   f=d (    textleft = ) show  xt 20 string cvs show
     f=t
     (1.) note-num
-    (The term §I«pfx»§0 or §I«preÎx»§0 means the Emacs prefix argument. This guide sometimes)91 j-show
+    (The term §I«pfx»§0 or §I«preÎx»§0 means the Emacs preÎx argument. This guide sometimes)show
     note-nl
     (refers to it as §In§0 or §Inth§0.)show
     (2.) note-num
-    (The top of the stack is called §Vx§0. The second stack position is §Vy§0; the third is §Vz§0. Algebraic)109 j-show
+    (The top of the stack is called §Vx§0. The second stack position is §Vy§0; the third is §Vz§0. Algebraic)show
     note-nl
     (formulas can refer to these as §V$, $$, $$$§0 (etc), or §V$1, $2, $3§0 (etc).)show
 
@@ -1406,26 +1407,60 @@ debug-font setfont
     (1.) note-num
     (Most keys in this guide are typed as you see them: §Kj§0 means to type a lowercase j.)show
     (2.) note-num
-    (Most calc commands require multiple keystrokes. Type the keys sequentially, with)90 j-show
+    (Most calc commands require multiple keystrokes. Type the keys sequentially, with)show
     note-nl
     (no spaces in between.)show
     (3.) note-num
-    (The notation «§KC-§0» means to press the Ctrl key with another key; e.g., §KC-j§0 means)93 j-show
+    (The notation «§KC-§0» means to press the Ctrl key with another key; e.g., §KC-j§0 means)show
     note-nl
     («control j».)show
     (4.) note-num
-    (The notation «§KM-§0» means to press the Meta key with another key. Most modern key-)94 j-show
+    (The notation «§KM-§0» means to press the Meta key with another key. Most modern key-)show
     note-nl
     (boards do not have a Meta key, but you can generally use the Alt key.)show
     (5.) note-num
-    (§KRET§0 means the «return» or «enter» key; §KDEL§0 means the delete key; §KTAB§0 means the)92 j-show
+    (§KRET§0 means the «return» or «enter» key; §KDEL§0 means the delete key; §KTAB§0 means the)show
     note-nl
     (tab key.)show
     (6.) note-num
+    (The §I«preÎx argument»§0 is a number that you can use to modify certain commands.)show
+    note-nl
+    (To specify it, type §KC-u§0, type the number, then type the command as usual.)show
+    (7.) note-num
     (§ICopy§0 is §KM-k§0; §Icut§0 is §KC-k§0; §Ipaste§0 is §KC-y§0. They just are.)show
 
     sect-vs
     end
+} def
+
+/show-doc-title
+{
+    FF setfont
+    doc-title type
+    [
+        /stringtype
+        {
+            cx cy moveto
+            s-cshow
+        }
+
+        /arraytype
+        {
+            pop
+            % Move up from the center by half the number of array elements
+            cx cy
+            doc-title length 1 sub 2 idiv
+            fsF mul add
+            moveto
+
+            doc-title
+            {
+                s-cshow
+                cx fsF x=y-
+            } forall
+        }
+
+    ]cond
 } def
 
 
@@ -1442,46 +1477,40 @@ debug-font setfont
 /front-cover
 {
     /page-label () def
-    cx cy moveto
-    FF setfont
-    doc-title s-cshow
-
-    % 306 396 moveto
-    % /Times-Roman 24 selectfont
-    % (HEY PRINT THIS!) show
+    show-doc-title
 
     FPN setfont
     rx by moveto
     [{/tx1 CX store}   (Last updated: ) doc-date] s-rshow
     tx1 x=  fsN y+  [(Version: ) doc-version] s-show
 
-    % Registration marks for final booklet cutting:
-    1 dict begin
-    /d 11 def
-    newpath
-
-    lx by M
-    0 d neg RM
-    d neg 0 RL
-    stroke
-
-    lx ty M
-    0 d RM
-    d neg 0 RL
-    stroke
-
-    rx ty M
-    0 d RM
-    d 0 RL
-    0 d neg RL
-    stroke
-
-    rx by M
-    0 d neg RM
-    d 0 RL
-    0 d RL
-    stroke
-    end
+    % % Registration marks for final booklet cutting:
+    % 1 dict begin
+    % /d 11 def
+    % newpath
+    % 
+    % lx by M
+    % 0 d neg RM
+    % d neg 0 RL
+    % stroke
+    % 
+    % lx ty M
+    % 0 d RM
+    % d neg 0 RL
+    % stroke
+    % 
+    % rx ty M
+    % 0 d RM
+    % d 0 RL
+    % 0 d neg RL
+    % stroke
+    % 
+    % rx by M
+    % 0 d neg RM
+    % d 0 RL
+    % 0 d RL
+    % stroke
+    % end
 
     showpage
 
