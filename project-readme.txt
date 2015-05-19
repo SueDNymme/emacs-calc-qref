@@ -25,6 +25,9 @@ This file, project-readme.txt, contains a high-level description of the project
     Also, library routines are now included inline, instead of being loaded from
     files in a separate directory.
 
+05/19/2015    "new-doco"
+    Add some documentation files, so as to be friendlier to users, now that I'm
+    making the guide public.
 
 -------------------------------------------------------------------------------------
 For emacs:
