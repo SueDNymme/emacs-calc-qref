@@ -4,6 +4,11 @@
 %
 % This is intended to be printed as a quarter-page booklet, stapled,
 % trimmed, and kept near the computer for quick reference.
+%
+% This work is licensed under the Creative Commons (CC BY 4.0).  See details
+% in the README file that should have accompanied this PostScript source file,
+% or at the project home: https://github.com/SueDNymme/emacs-calc-qref
+% or at http://creativecommons.org/licenses/by/4.0/
 
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
@@ -30,6 +35,9 @@
 
 % Adjust document version if "large-type edition"
 large-print? {/doc-version [doc-version (-LP)] def} if
+
+% For the Creative Commons icon EPS:
+/AI3_noCropMarks true def
 
 %%% ---------------------------------------------------------------------------------
 %%% Library functions
@@ -533,6 +541,30 @@ FPA setfont
 
 % Index entries
 /index-entries [] def
+
+/copyright-notice
+{
+    gsave
+    % Position icon's lower-left corner at the bottom-left of the page
+    lx by translate
+    -340 -278 translate
+
+    % Call the EPS
+    1 dict begin
+    /showpage {} def
+    (cc-by.eps) run
+    end
+
+    % Add the Creative Commons license text, plus a pointer to GitHub.
+    470 324 M
+    fsC y-
+    (This work is licensed under the Creative Commons Attribution 4.0 International License.)s=c
+    470 fsC x=y-
+    (To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.)s=c
+    470 278 M
+    (This document is stored on GitHub at https://github.com/SueDNymme/emacs-calc-qref)s=c
+    grestore
+} def
 
 
 %%% -------------------------------------------------------------------------------------
@@ -1604,6 +1636,7 @@ FPA setfont
 
     index-section
     user-notes
+    copyright-notice
     showpage
 } def
 /index-cmp
@@ -1674,17 +1707,17 @@ Nup
     1
     {
         pop
-        front-cover
-        page1
-        page2
-        page3
-        page4
-        page5
-        page6
-        page7
-        page8
-        page9
-        page10
+        % front-cover
+        % page1
+        % page2
+        % page3
+        % page4
+        % page5
+        % page6
+        % page7
+        % page8
+        % page9
+        % page10
         index-page
     }
 
