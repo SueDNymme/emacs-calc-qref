@@ -1,0 +1,16 @@
+# -*- mode: Org; -*-
+#+STARTUP: showall
+* Latest changes:
+** v1.02    [2015-05-18 Mon]
+- Make the code self-contained, and easier to build into PDF.
+- Make extensive use of Postscript composite fonts for simplicity.
+- Several minor formatting changes, typo corrections.
+* All changes:
+** v1.00    [2015-02-12 Thu]
+- First public version
+** v1.01    [2015-04-20 Mon]
+- Add vector-packing, calculus, summations, and symbolic algebra sections.
+** v1.02    [2015-05-18 Mon]
+- Make the code self-contained, and easier to build into PDF.
+- Make extensive use of Postscript composite fonts for simplicity.
+- Several minor formatting changes, typo corrections.
