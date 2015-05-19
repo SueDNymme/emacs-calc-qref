@@ -1,5 +1,3 @@
--*-Text-*-
-
 *** Eric's Gnu Emacs Calc Quick-Reference Guide ***
 
 [This file describes v1.02 of the guide, of 2015 MAY 18]
@@ -10,7 +8,7 @@ into a little booklet that you keep by your computer, but you can
 also leave it in PDF form and refer to it that way.
 
 
-** How to make the booklet
+** How to make the booklet:
 
   1. Print the 4-up document on both sides of the paper (duplex).
      If your printer does not do two-sided printing, you'll need
@@ -41,3 +39,30 @@ also leave it in PDF form and refer to it that way.
 Alternatively, if you don't mind a larger booklet, print the 2-up
 edition of the document and assemble it similarly.
 
+
+** Where to get this guide:
+
+As of 19 MAY 2015, this document is maintained on GitHub at
+    https://github.com/SueDNymme/emacs-calc-qref
+
+Feel free to clone it, fork it, adapt it to your needs.
+
+
+** Legal:
+
+This document, including the entire Git repository (listed above) that
+houses it (EXCEPT the files in the fonts/ directory which are covered
+by a different license) is being made available and licensed under the
+Creative Commons Attribution 4.0 International License. To view a copy
+of this license, visit http://creativecommons.org/licenses/by/4.0/.
+
+See the above link for full details, but in short you are free to copy,
+share, redistribute this material, or adapt, edit, transform, or build
+upon it, for any purpose, including commercial use, so long as you abide
+by the license terms detailed at that website page.
+
+-------------------------------------------------------------------------------------
+For emacs:
+;; Local Variables: **
+;; mode: text **
+;; End: **
