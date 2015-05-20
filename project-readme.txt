@@ -3,9 +3,10 @@ Project "emacs-calc-qref" - A quick-reference guide for Emacs Calc.
 This is a PostScript document that lists many useful Calc commands.
 
 Releases:
-    v1.00  02/12/2015 - First version
-    v1.01  04/20/2015 - Add some vector/algebra/calculus sections
+    v1.00  02/12/2015 - First version.
+    v1.01  04/20/2015 - Add some vector/algebra/calculus sections.
     v1.02  05/18/2015 - Use composite fonts for most text work.
+    v1.03  05/20/2015 - Add README and other helpful documentation.
 
 -------------------------------------------------------------------------------------
 This file, project-readme.txt, contains a high-level description of the project

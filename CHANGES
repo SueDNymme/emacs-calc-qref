@@ -1,10 +1,9 @@
 # -*- mode: Org; -*-
 #+STARTUP: showall
 * Latest changes:
-** v1.02    [2015-05-18 Mon]
-- Make the code self-contained, and easier to build into PDF.
-- Make extensive use of Postscript composite fonts for simplicity.
-- Several minor formatting changes, typo corrections.
+** v1.03    [2015-05-20 Wed]
+- Add user meta-documentation (README, CHANGES).
+- Release under a Creative Commons license.
 * All changes:
 ** v1.00    [2015-02-12 Thu]
 - First public version
@@ -14,3 +13,6 @@
 - Make the code self-contained, and easier to build into PDF.
 - Make extensive use of Postscript composite fonts for simplicity.
 - Several minor formatting changes, typo corrections.
+** v1.03    [2015-05-20 Wed]
+- Add user meta-documentation (README, CHANGES).
+- Release under a Creative Commons license.

@@ -1,6 +1,6 @@
 *** Eric's Gnu Emacs Calc Quick-Reference Guide ***
 
-[This file describes v1.02 of the guide, of 2015 MAY 18]
+[This file describes v1.03 of the guide, of 2015 MAY 20]
 
 This is a quick-reference booklet for the "calc" command that is
 distributed with Gnu Emacs.  It is meant to be printed and folded
@@ -42,7 +42,7 @@ edition of the document and assemble it similarly.
 
 ** Where to get this guide:
 
-As of 19 MAY 2015, this document is maintained on GitHub at
+As of 20 MAY 2015, this document is maintained on GitHub at
     https://github.com/SueDNymme/emacs-calc-qref
 
 Feel free to clone it, fork it, adapt it to your needs.

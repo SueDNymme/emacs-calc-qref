@@ -7,5 +7,4 @@ TAGS
 *.tar.gz
 
 # Output
-calc-qref.pdf
-
+calc-qref*.pdf
