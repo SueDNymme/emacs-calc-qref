@@ -655,10 +655,10 @@ FPA setfont
     nl        (U)k      (Undo)ss
     nl        (D)k      (Redo)ss
     nl (M-)pc (RET)k    (Recall last operation's arguments)ss
-    nl        (`)k      ((backtick))s=c ( Edit top of stack. §KC-c C-c§0 to return)ss
+    nl        (`)k      ((backtick))s=c ( Edit top of stack. §KC-c C-c§0 to return)s=t
     nl        (w)k      (Display recent error messages)ss
     nl (C-)pc (g)k      (Abort command in progress)ss
-    nl (C-x * 0)buf-cmd ((zero))s=c ( Reset calculator to initial state)ss
+    nl (C-x * 0)buf-cmd ((zero))s=c ( Reset calculator to initial state)s=t
     sect-vs
 } def
 
@@ -676,7 +676,7 @@ FPA setfont
     nl         (d 8)k                     tx1 x=      (octal)ss
     nl         (d 0)k                     tx1 x=      (decimal)ss
     nl         (d 6)k                     tx1 x=      (hexadecimal)ss
-    nl         (d r)k  ((with preÎx))s=c  tx1 x=      (arbitrary radix from 2¬36)ss
+    nl         (d r)k  ((with preÎx))s=c  tx1 x=      (arbitrary radix from 2¬36)s=t
 
     small-vs
     nl         (d f)k  (Fixed-point display)ss
@@ -991,12 +991,12 @@ FPA setfont
     nl    (u g)k    (Explain a speciÎed unit's description)ss
     nl    (u e)k    (Explain (in words) the units on the top of the stack)ss
     nl    (u d)k    (Create a new unit from the expression on top of stack)ss
-    nl    (u p)k    (Store user-deÎned units permanently )ss ((in calc.el))s=c
+    nl    (u p)k    (Store user-deÎned units permanently )ss ((in conÎg Île calc.el))s=c
     small-vs
 
     /tx1 lx store
     /tx2 lx 30 add store
-    /tx3 tx2 (§Tcomposite) s-width add store
+    /tx3 tx2 (§Tcomposite) s-width add 10 add store
     nlc  tx1 x=  (§TCommon units)s=c
     nlc  tx2 x=  (§Tlength)s=c      tx3 x=  (m, in, ft, yd, mi, lyr, nmi, point)s=c
     nlc  tx2 x=  (§Tvolume)s=c      tx3 x=  (l, gal, qt, pt, cup, ozfl)s=c
@@ -1224,8 +1224,8 @@ FPA setfont
     1 dict begin
     /xpvr xpvR def   % adjust spacing on right-justified numbers
 
-    nl         (V p)k   (Pack vector from stack elements)ss
     nl         (V u)k   (Unpack vector into stack elements)ss
+    nl         (V p)k   (Pack vector from stack elements)ss
     nlp (>)   (0)pfx-r  (Pack §Vn§0 stack elements into a vector of length §Vn)s=p
     nlp (=)  (­1)pfx-r  [(Rectangular complex number: ) {/tx1 CX store} (§Vy§0 + §Vx§Ki)]s=p
     nlp (=)  (­2)pfx-r  [(Polar complex number:)        {tx1 x=}        (§Vr = y§0, §Gt§V = x)]s=p
@@ -1290,7 +1290,7 @@ FPA setfont
     nl         (a a)k  (Expand rational polynomial by partial fractions)ss
     small-vs
     nl         (a R)k  (Find root of equation in §Vy§0; §Vx§0 is initial guess  )ss  (Manual: 10.7.1 «Root Finding»)s=c
-    nl         xt x=   (Returns §V[root, error])ss
+    nl         xt x=   (Returns §V[root, error])s=t
     small-vs
     nl         (a N)k  (Find local minimum of equation in §Vy§0; §Vx§0 is initial guess)ss
     nl         (a X)k  (Find local maximum of equation in §Vy§0; §Vx§0 is initial guess)ss
