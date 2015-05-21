@@ -30,6 +30,9 @@ This file, project-readme.txt, contains a high-level description of the project
     Add some documentation files, so as to be friendlier to users, now that I'm
     making the guide public.
 
+05/21/2015    "fix-fmt"
+    Fix some minor formatting problems.
+
 -------------------------------------------------------------------------------------
 For emacs:
 ;; Local Variables: **
