@@ -1,9 +1,8 @@
 # -*- mode: Org; -*-
 #+STARTUP: showall
 * Latest changes:
-** v1.03    [2015-05-20 Wed]
-- Add user meta-documentation (README, CHANGES).
-- Release under a Creative Commons license.
+** v1.04    [2015-05-21 Thu]
+- Fix a couple of minor formatting problems (discovered after yesterday's public release, of course).
 * All changes:
 ** v1.00    [2015-02-12 Thu]
 - First public version
@@ -16,3 +15,5 @@
 ** v1.03    [2015-05-20 Wed]
 - Add user meta-documentation (README, CHANGES).
 - Release under a Creative Commons license.
+** v1.04    [2015-05-21 Thu]
+- Fix a couple of minor formatting problems (discovered after yesterday's public release, of course).
