@@ -13,8 +13,8 @@
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
 
-/doc-version  (1.04)        def
-/doc-date     (2015 MAY 21) def
+/doc-version  (1.04.01)     def
+/doc-date     (2015 MAY 26) def
 
 (qref-config.ps) run
 
@@ -44,56 +44,49 @@ large-print? {/doc-version [doc-version (-LP)] def} if
 
 % (../postscript-utils/error.ps) run
 /bd {bind def}bind def
-/LD {load def}bd
-/--lines{{dup 2 le{pop exit}if --lines-pop2 L}loop}bd
-/--lines-pop2{dup -2 add exch -2 roll}bd
-/BCA{3 -1 roll}bd
-/C  /currentpoint LD
-/CAB{3 1 roll}bd
-/CL /closepath LD
-/CX{C pop}bd
-/CY{C exch pop}bd
-/EncodeFont{findfont dup maxlength dict copy dup /FID undef begin ISOLatin1Encoding 1 index type/arraytype eq{[exch aload pop] exch{1 index exch aload pop 1 index type /stringtype eq{exch 0 get exch}if put}forall}if /Encoding exch def dup /FontName exch def currentdict end definefont pop}bd
-/Hline{{C newpath M initmatrix initclip 0 setlinewidth -100 C exch pop M 1000 0 RL S}gprotect}bd
-/L  /lineto LD
-/M  /moveto LD
-/RL /rlineto LD
-/RM /rmoveto LD
-/S  /stroke LD
-/all-true{true exch{2 index exch exec not{not exit}if}forall exch pop}bd
-/any-true{false exch{2 index exch exec{not exit}if}forall exch pop}bd
 /bubble-sort{1 index length 1 sub -1 1{2 index exch 2 copy get 3 copy 0 1 3 index 1 sub{3 index 1 index get 2 index 1 index 10 index exec{4 2 roll}if pop pop}for 4 -1 roll exch 4 1 roll put put}for pop}bd
 /cond{true exch{exch{false}{exch dup type /booleantype eq{{exec exit}{pop true}ifelse}{2 index exch dup xcheck{exec}{eq}ifelse{exec exit}{pop true}ifelse}ifelse}ifelse}forall}bd
-/gprotect{gsave exec grestore}bd
-/in{72 mul}bd
-/radical{C 2 dict begin/om matrix currentmatrix def translate currentfont/FontMatrix get 3 get currentfont/FDepVector known{currentfont/FDepVector get 0 get/FontMatrix get 3 get mul}if dup scale/m matrix currentmatrix def gsave 400 400 M om setmatrix 0.66667 dup scale s-rshow grestore gsave newpath 90 80 M 73.1 116.3 L 236.2 192.3 L 410.7 -181.7 L 712.8 865.8 L 807.1 865.8 L 807.1 800.8 L 747.1 800.8 L 426.2 -297.0 L 374.4 -297.0 L 171.6 118.0 L closepath fill grestore 807.1 0 M om setmatrix s-show m setmatrix C pop 80 add newpath dup dup 800.8 M 865.8 L 807.1 865.8 L 807.1 800.8 L closepath fill 0 M om setmatrix}bd
-/rect{4 2 roll M rectto}bd
-/rectto{C newpath M exch 2 copy C exch 2 copy 8 3 roll L L L L CL}bd
-/root{C 2 dict begin/om matrix currentmatrix def translate currentfont/FontMatrix get 3 get currentfont/FDepVector known{currentfont/FDepVector get 0 get/FontMatrix get 3 get mul}if dup scale/m matrix currentmatrix def gsave newpath 90 80 M 73.1 116.3 L 236.2 192.3 L 410.7 -181.7 L 712.8 865.8 L 807.1 865.8 L 807.1 800.8 L 747.1 800.8 L 426.2 -297.0 L 374.4 -297.0 L 171.6 118.0 L closepath fill grestore 807.1 0 M om setmatrix s-show m setmatrix C pop 80 add newpath dup dup 800.8 M 865.8 L 807.1 865.8 L 807.1 800.8 L closepath fill 0 M om setmatrix}bd
-/s /show LD
-/s-bounds{1 dict begin/old-mode s-show-dict/mode get def s-show-dict/mode false put gsave C nulldevice newpath M s-show flattenpath pathbbox grestore s-show-dict/mode old-mode put end}bd
-/s-cshow{dup s-width -2 div 0 RM s-show}bd
-/s-rshow{dup s-width neg 0 RM s-show}bd
-/s-show{1 dict begin[{type/stringtype eq}{s-show-dict/mode get{s}{true charpath}ifelse}{type/nametype eq}{s-show-dict/mode get{glyphshow}{C BCA glyphshow C 4 2 roll M 2 copy L S M}ifelse}{xcheck}{[exch s-show-dict/Uexec get exec]dup length 0 eq{pop}{s-show}ifelse}{/is-f-obj? where{pop is-f-obj?}{pop false}ifelse}{/previous-font dup dup where{exch get null eq}{pop false}ifelse{f-current store}{pop}ifelse f-usefont}{s-show-dict/is-font? get exec}{/previous-font dup dup where{exch get null eq}{pop false}ifelse{currentfont store}{pop}ifelse setfont}{type/arraytype eq}{[{0 get/matrix eq}{/previous-matrix dup dup where{exch get null eq}{pop false}ifelse{matrix currentmatrix store}{pop}ifelse 1 get concat}true{/previous-font null def/previous-matrix null def{s-show}forall/previous-font load[null{pop}{/is-f-obj? where{pop is-f-obj?}{pop false}ifelse}{f-usefont}{s-show-dict/is-font? get exec}{setfont}true{dup errordict/typecheck get exec}]cond/previous-matrix load[null{pop}{type/arraytype eq}{setmatrix}true{dup errordict/typecheck get exec}]cond}]cond}true{dup errordict/typecheck get exec}]cond end}bd
-/s-show-dict<</mode true/Udict<<>>/Uexec{s-show-dict/Udict get begin exec end}bind /is-font?{[{type/dicttype eq}{/FontType known}{/Encoding known}{[{[{/FontType get 0 eq} {/FMapType known}{/FDepVector known}]all-true}{[{/FontType get 1 eq}{/FontMatrix known} {/FontName known}]all-true}]any-true}]all-true}bind>>def
-/s-width{gsave nulldevice 0 0 M s-show C pop grestore}bd
-/x+{C CAB add exch M}bd
-/x={C exch pop M}bd
-/x=y-{C exch pop exch sub M}bd
-/y+{C BCA add M}bd
-/y-{C BCA sub M}bd
-/y={C pop exch M}bd
+/CX{C pop}bd
+/LD {load def}bd
+/C  /currentpoint LD
+/CY{C exch pop}bd
+/EncodeFont{findfont dup maxlength dict copy dup /FID undef begin ISOLatin1Encoding 1 index type/arraytype eq{[exch aload pop] exch{1 index exch aload pop 1 index type /stringtype eq{exch 0 get exch}if put}forall}if /Encoding exch def dup /FontName exch def currentdict end definefont pop}bd
+/BCA{3 -1 roll}bd
+/js-a{BCA CX sub 2 index stringwidth pop sub exch div 0 32 2 index 0 6 -1 roll awidthshow}bd
+/L  /lineto LD
+/M  /moveto LD
+/*VP 10 dict def *VP begin/vn 0 def/nup 1 def/sf 1 def/orig null def *VP/SP 2 copy known{pop pop}{/showpage load put}ifelse/nupok<<1 true 2 true 4 true>>def end
 /PaperSizes<</A4[595.28 841.89]/US-Letter[612 792]/US-Legal[612 1008]/Both[595.28 792]/Default/US-Letter>>readonly def
-/*VP 10 dict def
-*VP begin
-/vn 0 def/nup 1 def/sf 1 def/orig null def *VP/SP 2 copy known{pop pop}{/showpage load put}ifelse/nupok<<1 true 2 true 4 true>>def
-end
-/showpage{/end-of-page dup where{exch get exec}{pop}ifelse *VP begin/vn vn 1 add def vn nup ge{/end-of-physical-page dup where{exch get GS setgstate currentdict exch end exec begin}{pop}ifelse SP/PPN PPN 1 add store/vn 0 def}if/pn pn 1 add store GS setgstate orient-subpage newpath 0 0 M pw 0 L pw ph L 0 ph L closepath clip end}def
 /orient-subpage{*VP begin sf dup scale orig Landscape? get vn get aload pop translate rotate end}def
 /1UP{*VP begin/vn 0 def/nup 1 def/sf 1 def/orig<<false[[0 0 0]]true[[90 PPW 0]]>>def end}def
 /2UP{*VP begin/vn 0 def/nup 2 def/sf PPH PPW 2 mul div def/orig<<false[[90 PPH 0][90 PPH PPW]]true[[0 0 PPW][0 0 0]]>>def end}def
 /4UP{*VP begin/vn 0 def/nup 4 def/sf 0.5 def/orig<<false[[0 0 PPH][0 PPW PPH][0 0 0][0 PPW 0]]true[[90 PPW 0][90 PPW 2 mul 0][90 PPW PPH][90 PPW 2 mul PPH]]>>def end}def
+/showpage{/end-of-page dup where{exch get exec}{pop}ifelse *VP begin/vn vn 1 add def vn nup ge{/end-of-physical-page dup where{exch get GS setgstate currentdict exch end exec begin}{pop}ifelse SP/PPN PPN 1 add store/vn 0 def}if/pn pn 1 add store GS setgstate orient-subpage newpath 0 0 moveto pw 0 lineto pw ph lineto 0 ph lineto closepath clip end}bd
 /page-init{/Paper where{pop true}{false}ifelse/Duplex? where{pop true}{false}ifelse or/Paper PaperSizes/Default get def-if-not-def PaperSizes Paper 2 copy known not{pop dup/Default get/Paper 1 index store}if get aload pop/PPH exch def/PPW exch def/PPN 1 def/Duplex? false def-if-not-def/Landscape? false def-if-not-def/Nup 1 def-if-not-def/lm 0 def-if-not-def/rm 0 def-if-not-def/tm 0 def-if-not-def/bm 0 def-if-not-def *VP/nupok get Nup known not{/Nup 1 def}if{<</PageSize[PPW PPH]/Duplex Duplex?>>setpagedevice}if *VP/GS 2 copy known{pop pop}{gstate currentgstate put}ifelse *VP/OM 2 copy known{pop pop}{matrix currentmatrix put}ifelse/ph{Landscape?{PPW}{PPH}ifelse}def/pw{Landscape?{PPH}{PPW}ifelse}def/pn 1 def/lx lm def/rx pw rm sub def/cx rx lx add 2 div def/by bm def/ty ph tm sub def/cy ty by add 2 div def Nup dup 1 eq{1UP}{dup 2 eq{2UP}{dup 4 eq{4UP}if}ifelse}ifelse pop orient-subpage}def
+/radical{C 2 dict begin/om matrix currentmatrix def translate currentfont/FontMatrix get 3 get currentfont/FDepVector known{currentfont/FDepVector get 0 get/FontMatrix get 3 get mul}if dup scale/m matrix currentmatrix def gsave 400 400 M om setmatrix 0.66667 dup scale s-rshow grestore gsave newpath 90 80 M 73.1 116.3 L 236.2 192.3 L 410.7 -181.7 L 712.8 865.8 L 807.1 865.8 L 807.1 800.8 L 747.1 800.8 L 426.2 -297.0 L 374.4 -297.0 L 171.6 118.0 L closepath fill grestore 807.1 0 M om setmatrix s-show m setmatrix C pop 80 add newpath dup dup 800.8 M 865.8 L 807.1 865.8 L 807.1 800.8 L closepath fill 0 M om setmatrix}bd
+/CL /closepath LD
+/rectto{C newpath M exch 2 copy C exch 2 copy 8 3 roll L L L L CL}bd
+/rect{4 2 roll M rectto}bd
+/RL /rlineto LD
+/root{C 2 dict begin/om matrix currentmatrix def translate currentfont/FontMatrix get 3 get currentfont/FDepVector known{currentfont/FDepVector get 0 get/FontMatrix get 3 get mul}if dup scale/m matrix currentmatrix def gsave newpath 90 80 M 73.1 116.3 L 236.2 192.3 L 410.7 -181.7 L 712.8 865.8 L 807.1 865.8 L 807.1 800.8 L 747.1 800.8 L 426.2 -297.0 L 374.4 -297.0 L 171.6 118.0 L closepath fill grestore 807.1 0 M om setmatrix s-show m setmatrix C pop 80 add newpath dup dup 800.8 M 865.8 L 807.1 865.8 L 807.1 800.8 L closepath fill 0 M om setmatrix}bd
+/s /show LD
+/all-true{true exch{2 index exch exec not{not exit}if}forall exch pop}bd
+/any-true{false exch{2 index exch exec{not exit}if}forall exch pop}bd
+/s-show-dict<</mode true/Udict<<>>/Uexec{s-show-dict/Udict get begin exec end}bind /is-font?{[{type/dicttype eq}{/FontType known}{/Encoding known}{[{[{/FontType get 0 eq} {/FMapType known}{/FDepVector known}]all-true}{[{/FontType get 1 eq}{/FontMatrix known} {/FontName known}]all-true}]any-true}]all-true}bind>>def
+/S  /stroke LD
+/s-show{1 dict begin[{type/stringtype eq}{s-show-dict/mode get{s}{true charpath}ifelse}{type/nametype eq}{s-show-dict/mode get{glyphshow}{C BCA glyphshow C 4 2 roll M 2 copy L S M}ifelse}{xcheck}{[exch s-show-dict/Uexec get exec]dup length 0 eq{pop}{s-show}ifelse}{/is-f-obj? where{pop is-f-obj?}{pop false}ifelse}{/previous-font dup dup where{exch get null eq}{pop false}ifelse{f-current store}{pop}ifelse f-usefont}{s-show-dict/is-font? get exec}{/previous-font dup dup where{exch get null eq}{pop false}ifelse{currentfont store}{pop}ifelse setfont}{type/arraytype eq}{[{0 get/matrix eq}{/previous-matrix dup dup where{exch get null eq}{pop false}ifelse{matrix currentmatrix store}{pop}ifelse 1 get concat}true{/previous-font null def/previous-matrix null def{s-show}forall/previous-font load[null{pop}{/is-f-obj? where{pop is-f-obj?}{pop false}ifelse}{f-usefont}{s-show-dict/is-font? get exec}{setfont}true{dup errordict/typecheck get exec}]cond/previous-matrix load[null{pop}{type/arraytype eq}{setmatrix}true{dup errordict/typecheck get exec}]cond}]cond}true{dup errordict/typecheck get exec}]cond end}bd
+/s-bounds{1 dict begin/old-mode s-show-dict/mode get def s-show-dict/mode false put gsave C nulldevice newpath M s-show flattenpath pathbbox grestore s-show-dict/mode old-mode put end}bd
+/s-width{gsave nulldevice 0 0 M s-show C pop grestore}bd
+/RM /rmoveto LD
+/s-cshow{dup s-width -2 div 0 RM s-show}bd
+/s-rshow{dup s-width neg 0 RM s-show}bd
+/CAB{3 1 roll}bd
+/x+{C CAB add exch M}bd
+/x={C exch pop M}bd
+/x=y-{C exch pop exch sub M}bd
+/y-{C BCA sub M}bd
+/y+{C BCA add M}bd
+/y={C pop exch M}bd
 
 page-init
 
