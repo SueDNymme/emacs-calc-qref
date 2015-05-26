@@ -34,6 +34,10 @@ This file, project-readme.txt, contains a high-level description of the project
 05/21/2015    "fix-fmt"
     Fix some minor formatting problems.
 
+05/26/2015    "tweak-notes"
+    Minor rearrangements to the "User notes" section.
+
+
 -------------------------------------------------------------------------------------
 For emacs:
 ;; Local Variables: **
