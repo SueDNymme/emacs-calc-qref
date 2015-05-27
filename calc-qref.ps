@@ -13,7 +13,7 @@
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
 
-/doc-version  (1.04.03)     def
+/doc-version  (1.04.04)     def
 /doc-date     (2015 MAY 27) def
 
 (qref-config.ps) run
@@ -853,7 +853,7 @@ FPA setfont
     nlct             (§Vy§0 may be a vector §T(set)§0, interval, or error form)s=c
     nlct             (If §Vy§0 is an integer or Êoat, values are drawn from the interval §K[§00, §Vy§K\))s=c
     nlp  (>) ( 0)pfx (Draw §Vn§0 elements from §Vx§0 )s=p ((instead of §Vy§0))s=c
-    nlp  (=) (­1)pfx (ShufÊe elements of vector )s=p
+    nlp  (=) (­1)pfx (ShufÊe elements of vector in §Vx)s=p
     sect-vs
 }def
 
@@ -1268,7 +1268,7 @@ FPA setfont
 /statistics
 {
     (Statistics) head
-    nlc (Each of the following functions operates on a vector or data values on the top of the stack)s
+    nlc (Each of the following functions operates on a vector of data values on the top of the stack)s
 
     nl         (u #)k    (Count number of items in §Vx)s
     nl         (u +)k    (Sum elements of §Vx)s
@@ -1306,13 +1306,10 @@ FPA setfont
     nl         (a n)k  (Arrange formula into quotient of polynomials)ss
     nl         (a a)k  (Expand rational polynomial by partial fractions)ss
     small-vs
-    nl         (a R)k  (Find root of equation in §Vy§0; §Vx§0 is initial guess  )ss  (Manual: 10.7.1 «Root Finding»)s=c
-    nl         xt x=   (Returns §V[root, error])s=t
-    small-vs
-    nl         (a N)k  (Find local minimum of equation in §Vy§0; §Vx§0 is initial guess)ss
-    nl         (a X)k  (Find local maximum of equation in §Vy§0; §Vx§0 is initial guess)ss
-    nl         xt x=   (Returns §V[root, min/max value])ss
-    small-vs
+    nlct               (For more info on the following, see section 10.7.1 «Root Finding» in the manual)s
+    nl         (a R)k  (Find root of equation in §Vy§0; §Vx§0 is initial guess  )ss  (Returns §V[root, error])s=c
+    nl         (a X)k  (Find local maximum of equation in §Vy§0; §Vx§0 is initial guess  )ss  /t0 CX store (Returns §V[root, max value])s=c
+    nl         (a N)k  (Find local minimum of equation in §Vy§0; §Vx§0 is initial guess)ss    t0 x=        (Returns §V[root, min value])s=c
 
     sect-vs
 } def
