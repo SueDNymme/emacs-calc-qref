@@ -13,7 +13,7 @@
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
 
-/doc-version  (1.04.02)     def
+/doc-version  (1.04.03)     def
 /doc-date     (2015 MAY 27) def
 
 (qref-config.ps) run
@@ -1265,6 +1265,30 @@ FPA setfont
     sect-vs
 } def
 
+/statistics
+{
+    (Statistics) head
+    nlc (Each of the following functions operates on a vector or data values on the top of the stack)s
+
+    nl         (u #)k    (Count number of items in §Vx)s
+    nl         (u +)k    (Sum elements of §Vx)s
+    nl         (u *)k    (Compute product of elements of §Vx)s
+    nl         (u X)k    (Maximum element)s
+    nl         (u N)k    (Minimum element)s
+    small-vs
+
+    nl         (u M)k    (Mean)s
+    nl   (I)pk (u M)k    (Mean, as error form)s
+    nl   (H)pk (u M)k    (Median)s
+    nl (I H)pk (u M)k    (Harmonic mean)s
+    nl         (u G)k    (Geometric mean)s
+    nl         (u S)k    (Standard deviation )s ((sample))s=c
+    nl   (I)pk (u S)k    (Standard deviation )s ((population))s=c
+    nl   (H)pk (u S)k    (Variance )s ((§Gs§0²))s=c
+
+    sect-vs
+} def
+
 /symbolic-algebra
 {
     (Algebraic (symbolic) manipulation) head
@@ -1338,6 +1362,9 @@ FPA setfont
     4 dict begin
     /xn  lx (19.) stringwidth pop add  def
     /xt  xn ( )   stringwidth pop add  def
+
+    % To show the right margin (for debugging justification), uncomment this:
+    % gsave 0 setlinewidth 0 setgray rx by M rx ty L S grestore
 
     nlc (For everbody:)s
     f=t
@@ -1496,6 +1523,7 @@ FPA setfont
     lx ty moveto
     storing-recalling
     stack-trail
+    ejr? not {linear-algebra} if
     showpage
 } def
 
@@ -1518,7 +1546,7 @@ FPA setfont
 
     vector-ops
     mapping
-    ejr? not {linear-algebra} if
+    statistics
     showpage
 } def
 
