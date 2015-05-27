@@ -13,8 +13,8 @@
 %%% ---------------------------------------------------------------------------------
 %%% Document configuration
 
-/doc-version  (1.04.01)     def
-/doc-date     (2015 MAY 26) def
+/doc-version  (1.04.02)     def
+/doc-date     (2015 MAY 27) def
 
 (qref-config.ps) run
 
@@ -52,7 +52,7 @@ large-print? {/doc-version [doc-version (-LP)] def} if
 /CY{C exch pop}bd
 /EncodeFont{findfont dup maxlength dict copy dup /FID undef begin ISOLatin1Encoding 1 index type/arraytype eq{[exch aload pop] exch{1 index exch aload pop 1 index type /stringtype eq{exch 0 get exch}if put}forall}if /Encoding exch def dup /FontName exch def currentdict end definefont pop}bd
 /BCA{3 -1 roll}bd
-/js-a{BCA CX sub 2 index stringwidth pop sub exch div 0 32 2 index 0 6 -1 roll awidthshow}bd
+/js{dup type/stringtype eq{dup length}if BCA CX sub 2 index stringwidth pop sub exch div 0 BCA ashow}bd
 /L  /lineto LD
 /M  /moveto LD
 /*VP 10 dict def *VP begin/vn 0 def/nup 1 def/sf 1 def/orig null def *VP/SP 2 copy known{pop pop}{/showpage load put}ifelse/nupok<<1 true 2 true 4 true>>def end
@@ -725,7 +725,7 @@ FPA setfont
     ejr? {
     nl  (z)pk (r)k     (Round to §VpreÎx§0 decimal places )ss             ((negative preÎx means round to left of decimal))s=c
     }{
-    nl (´§Tround($,§Vn§0))ss   xt x= (Round to §Vpfx§0 decimal places )ss ((negative n means round to left of decimal))s=c
+    nl f=t (§K´§0round($,§Vn§0))s   xt x= (Round to §Vpfx§0 decimal places )s ((negative n means round to left of decimal))s=c
     } ifelse
 
     nl        (F)k     (Floor; truncate toward §M­æ§0 )ss                 ((also truncates dates))s=c
@@ -1339,47 +1339,46 @@ FPA setfont
     /xn  lx (19.) stringwidth pop add  def
     /xt  xn ( )   stringwidth pop add  def
 
-    nlc (For everbody:)show
-%   f=d (    textleft = ) show  xt 20 string cvs show
+    nlc (For everbody:)s
     f=t
     (1.) note-num
-    (The term §I«pfx»§0 or §I«preÎx»§0 means the Emacs preÎx argument. This guide sometimes)show
-    note-nl
-    (refers to it as §In§0 or §Inth§0.)show
+    (Most keys in this guide are typed as you see them: §Kj§0 means to type a lowercase j.)s
     (2.) note-num
-    (The top of the stack is called §Vx§0. The second stack position is §Vy§0; the third is §Vz§0. Algebraic)show
+    rx (Most calc commands require multiple keystrokes. Type the keys sequentially, with no spaces) js
     note-nl
-    (formulas can refer to these as §V$, $$, $$$§0 (etc), or §V$1, $2, $3§0 (etc).)show
-
-    small-vs
-    small-vs
-
-    nlc (For Emacs newbies:)show
-    f=t
-    (1.) note-num
-    (Most keys in this guide are typed as you see them: §Kj§0 means to type a lowercase j.)show
-    (2.) note-num
-    (Most calc commands require multiple keystrokes. Type the keys sequentially, with)show
-    note-nl
-    (no spaces in between.)show
+    (in between.)s
     (3.) note-num
-    (The notation «§KC-§0» means to press the Ctrl key with another key; e.g., §KC-j§0 means)show
+    rx (The term §I«pfx»§0 or §I«preÎx»§0 means the Emacs preÎx argument. This guide sometimes refers) 85 js
     note-nl
-    («control j».)show
+    (to it as §In§0 or §Inth§0.)s
     (4.) note-num
-    (The notation «§KM-§0» means to press the Meta key with another key. Most modern key-)show
+    rx (The top of the stack is called §Vx§0. The second stack position is §Vy§0; the third is §Vz§0. Algebraic for-) 96 js
     note-nl
-    (boards do not have a Meta key, but you can generally use the Alt key.)show
+    (mulas can refer to these as §V$, $$, $$$§0 (etc), or §V$1, $2, $3§0 (etc).)s
+
+    small-vs
+    small-vs
+
+    nlc (For Emacs newbies:)s
+    f=t
+    (1.) note-num
+    rx (The notation «§KC-§0» means to press the Ctrl key with another key; for example, §KC-j§0 means) 86 js
+    note-nl
+    («control j».)s
+    (2.) note-num
+    rx (The notation «§KM-§0» means to press the Meta key with another key. Most modern keyboards) 85 js
+    note-nl
+    (do not have a Meta key, but you can generally use the Alt key.)s
+    (3.) note-num
+    rx (§KRET§0 means the «return» or «enter» key; §KDEL§0 means the backspace key \(§Inot §0the delete key,) 87 js
+    note-nl
+    ( normally\); §KTAB§0 means the tab key.)s
+    (4.) note-num
+    rx (The §I«preÎx argument»§0 is a number that you can use to modify certain commands. To spec-) 86 js
+    note-nl
+    (ify it, type §KC-u§0, type the number, then type the command as usual.)s
     (5.) note-num
-    (§KRET§0 means the «return» or «enter» key; §KDEL§0 means the delete key; §KTAB§0 means the)show
-    note-nl
-    (tab key.)show
-    (6.) note-num
-    (The §I«preÎx argument»§0 is a number that you can use to modify certain commands.)show
-    note-nl
-    (To specify it, type §KC-u§0, type the number, then type the command as usual.)show
-    (7.) note-num
-    (§ICopy§0 is §KM-k§0; §Icut§0 is §KC-k§0; §Ipaste§0 is §KC-y§0. They just are.)show
+    (§ICopy§0 is §KM-k§0; §Icut§0 is §KC-k§0, which Emacs calls §I«kill»§0; §Ipaste§0 is §KC-y§0 §I(«yank»)§0. They just are.)s
 
     sect-vs
     end
