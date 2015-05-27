@@ -37,6 +37,9 @@ This file, project-readme.txt, contains a high-level description of the project
 05/26/2015    "tweak-notes"
     Minor rearrangements to the "User notes" section.
 
+05/27/2015    "statistics"
+    Add a new section for statistical operations on vectors of data
+
 
 -------------------------------------------------------------------------------------
 For emacs:
