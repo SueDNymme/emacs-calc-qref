@@ -5,3 +5,4 @@ For Emacs Calc Quick-Reference booklet
 /Or maybe not— that might screw up my custom booklet layout./
 ** TODO : Since [2015-05-12 Tue] — Add booklet-assembly instructions
 [2015-05-20 Wed] — Okay, there are now text-based instructions in README. Still would like graphic instructions to be printed with the guide.
+** TODO : Since [2015-05-27 Wed] — Print staple-guide marks in 2-up edition
