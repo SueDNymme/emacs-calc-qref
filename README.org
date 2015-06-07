@@ -1,4 +1,4 @@
-*** Eric's Gnu Emacs Calc Quick-Reference Guide ***
+ * Eric's Gnu Emacs Calc Quick-Reference Guide 
 
 [This file describes v1.05 of the guide, of 2015 MAY 27]
 
@@ -63,6 +63,6 @@ by the license terms detailed at that website page.
 
 -------------------------------------------------------------------------------------
 For emacs:
-;; Local Variables: **
-;; mode: text **
-;; End: **
+# Local Variables:
+# mode: org
+# End:
