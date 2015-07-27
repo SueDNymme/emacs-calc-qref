@@ -1,10 +1,9 @@
 # -*- mode: Org; -*-
 #+STARTUP: showall
 * Latest changes:
-** v1.05    [2015-05-27 Wed]
-- Add "Statistics" section (p. 8) for various mean/stdev operations on vectors.
-- Move "Linear algebra" to p. 6 to make room for it.
-- Minor changes and rearrangement of the "Notes" section on the back page.
+** v1.06    [2015-07-27 Mon]
+- Fix typo in the "Algebraic (symbolic) manipulation" section, reported as GitHub Issue #3 by [[https://github.com/sykora][sykora]].
+- Convert the README text file to an Org-mode document; hat tip to [[https://github.com/dieter-wilhelm][dieter-wilhelm]]. (GitHub Issue #2)
 * All changes:
 ** v1.00    [2015-02-12 Thu]
 - First public version
@@ -23,3 +22,6 @@
 - Add "Statistics" section (p. 8) for various mean/stdev operations on vectors.
 - Move "Linear algebra" to p. 6 to make room for it.
 - Minor changes and rearrangement of the "Notes" section on the back page.
+** v1.06    [2015-07-27 Mon]
+- Fix typo in the "Algebraic (symbolic) manipulation" section, reported as GitHub Issue #3 by [[https://github.com/sykora][sykora]].
+- Convert the README text file to an Org-mode document; hat tip to [[https://github.com/dieter-wilhelm][dieter-wilhelm]].

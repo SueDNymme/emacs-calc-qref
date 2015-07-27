@@ -9,6 +9,7 @@ Releases:
     v1.03  05/20/2015 - Add README and other helpful documentation.
     v1.04  05/21/2015 - Fix some minor formatting problems.
     v1.05  05/27/2015 - Add "Statistics" section.
+    v1.06  07/27/2015 - Fix typo in "Algebraic (symbolic) manipulation" section.
 
 -------------------------------------------------------------------------------------
 This file, project-readme.txt, contains a high-level description of the project
