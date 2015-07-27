@@ -2,60 +2,53 @@
 
 [This file describes v1.05 of the guide, of 2015 MAY 27]
 
-This is a quick-reference booklet for the "calc" command that is
-distributed with Gnu Emacs.  It is meant to be printed and folded
-into a little booklet that you keep by your computer, but you can
-also leave it in PDF form and refer to it that way.
+This is a quick-reference booklet for the ``calc'' command that is distributed with Gnu
+Emacs.  It is meant to be printed and folded into a little booklet that you keep by
+your computer, but you can also leave it in PDF form and refer to it that way.
 
-** How to make the booklet:
+** How to make the booklet
 
-  1. Print the 4-up document on both sides of the paper (duplex).
-     If your printer does not do two-sided printing, you'll need
-     to feed the pages through a second time, or whatever it is
-     you do to get duplex printing on your printer.
+  1. Print the 4-up document on both sides of the paper (duplex).  If your printer
+     does not do two-sided printing, you'll need to feed the pages through a second
+     time, or whatever it is you do to get duplex printing on your printer.
 
-  2. Cut each sheet in half across the short dimension (widthwise).
-     One side of each page has a guide line; cut along that.
+  2. Cut each sheet in half across the short dimension (widthwise).  One side of each
+     page has a guide line; cut along that.
 
   3. Arrange the pages in the proper order.
 
-  4. Staple the booklet together, in the center, where the binding
-     fold will be.  One side of the booklet has guide marks where
-     the staples should go.
+  4. Staple the booklet together, in the center, where the binding fold will be.  One
+     side of the booklet has guide marks where the staples should go.
 
-     Most ordinary staplers aren't long enough to reach the marks.
-     For me, the following works: Gently fold part of one page toward
-     the center, then slip that folded part between the base and arm
-     of the stapler.  Staple the booklet on the guide marks, then
-     unfold the page and smooth it out.
+     Most ordinary staplers aren't long enough to reach the marks.  For me, the
+     following works: Gently fold part of one page toward the center, then slip that
+     folded part between the base and arm of the stapler.  Staple the booklet on the
+     guide marks, then unfold the page and smooth it out.
 
-  5. Fold the booklet in half, right where you stapled it.
-     You may want to rest a heavy book upon it overnight.
+  5. Fold the booklet in half, right where you stapled it.  You may want to rest a
+     heavy book upon it overnight.
 
-  6. Finally, trim the edges of the booklet with a razor blade
-     or good scissors.
+  6. Finally, trim the edges of the booklet with a razor blade or good scissors.
 
-Alternatively, if you prefer a larger booklet, print the 2-up
-edition of the document and assemble it similarly.
+Alternatively, if you prefer a larger booklet, print the 2-up edition of the document
+and assemble it similarly.
 
-
-** Where to get this guide:
+** Where to get this guide
 
 As of 20 MAY 2015, this document is maintained on GitHub at
     https://github.com/SueDNymme/emacs-calc-qref
 
 Feel free to clone it, fork it, adapt it to your needs.
 
+** Legal
 
-** Legal:
+This document, including the entire Git repository (listed above) that houses it
+(/EXCEPT/ the files in the =fonts/= directory which are covered by a different
+license) is being made available and licensed under the Creative Commons Attribution
+4.0 International License. To view a copy of this license, visit
+http://creativecommons.org/licenses/by/4.0/.
 
-This document, including the entire Git repository (listed above) that
-houses it (EXCEPT the files in the fonts/ directory which are covered
-by a different license) is being made available and licensed under the
-Creative Commons Attribution 4.0 International License. To view a copy
-of this license, visit http://creativecommons.org/licenses/by/4.0/.
-
-See the above link for full details, but in short you are free to copy,
-share, redistribute this material, or adapt, edit, transform, or build
-upon it, for any purpose, including commercial use, so long as you abide
-by the license terms detailed at that website page.
+See the above link for full details, but in short you are free to copy, share,
+redistribute this material, or adapt, edit, transform, or build upon it, for any
+purpose, including commercial use, so long as you abide by the license terms detailed
+at that website page.
