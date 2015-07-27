@@ -7,7 +7,6 @@ distributed with Gnu Emacs.  It is meant to be printed and folded
 into a little booklet that you keep by your computer, but you can
 also leave it in PDF form and refer to it that way.
 
-
 ** How to make the booklet:
 
   1. Print the 4-up document on both sides of the paper (duplex).
@@ -36,7 +35,7 @@ also leave it in PDF form and refer to it that way.
   6. Finally, trim the edges of the booklet with a razor blade
      or good scissors.
 
-Alternatively, if you don't mind a larger booklet, print the 2-up
+Alternatively, if you prefer a larger booklet, print the 2-up
 edition of the document and assemble it similarly.
 
 
@@ -60,9 +59,3 @@ See the above link for full details, but in short you are free to copy,
 share, redistribute this material, or adapt, edit, transform, or build
 upon it, for any purpose, including commercial use, so long as you abide
 by the license terms detailed at that website page.
-
--------------------------------------------------------------------------------------
-For emacs:
-# Local Variables:
-# mode: org
-# End:
