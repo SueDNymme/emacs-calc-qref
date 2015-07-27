@@ -41,6 +41,10 @@ This file, project-readme.txt, contains a high-level description of the project
 05/27/2015    "statistics"
     Add a new section for statistical operations on vectors of data
 
+07/27/2015    "fix-symalg-let"
+    Fix a typo in the symbolic algebra section, specifically the `calc-let'
+    function.  Thanks to GitHub user sykora.
+
 
 -------------------------------------------------------------------------------------
 For emacs:
